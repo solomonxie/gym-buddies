@@ -1,7 +1,7 @@
 import Foundation
 
 public enum Equipment: String, Codable, Sendable, CaseIterable {
-    case barbell, dumbbell, machine, cable, kettlebell, band, bodyweight, none
+    case barbell, dumbbell, machine, cable, kettlebell, band, bodyweight, treadmill, none
 
     public var displayName: String {
         switch self {
@@ -12,15 +12,31 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
         case .kettlebell: "Kettlebell"
         case .band: "Band"
         case .bodyweight: "Bodyweight"
+        case .treadmill: "Treadmill"
         case .none: "Other"
         }
     }
 
     /// True when the load is a number worth tracking at all. A resistance band
-    /// has a colour, not a weight.
+    /// has a colour, not a weight; a treadmill has an incline instead.
     public var isLoadable: Bool {
-        self != .band && self != .none
+        self != .band && self != .none && self != .treadmill
     }
+
+    /// The incline control's step, percent, for equipment that has one.
+    public var inclineStep: Double? {
+        self == .treadmill ? 0.5 : nil
+    }
+
+    /// One tap of the incline stepper, kept within what a treadmill offers
+    /// and rounded so repeated taps can't drift off the 0.5% grid.
+    public func stepped(incline: Double, by steps: Int) -> Double {
+        guard let step = inclineStep else { return incline }
+        let raw = min(Self.maxIncline, max(0, incline + step * Double(steps)))
+        return (raw / step).rounded() * step
+    }
+
+    public static let maxIncline = 30.0
 
     /// The smallest change the equipment physically allows. A barbell moves in
     /// plate *pairs*, a machine in stack plates, a dumbbell in rack steps — so
@@ -34,7 +50,7 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
             case .machine: Weight(kilograms: 5)
             case .kettlebell: Weight(kilograms: 4)
             case .bodyweight: Weight(kilograms: 1.25)
-            case .band, .none: Weight.zero
+            case .band, .treadmill, .none: Weight.zero
             }
         case .pounds:
             switch self {
@@ -43,7 +59,7 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
             case .machine: Weight(pounds: 10)
             case .kettlebell: Weight(pounds: 10)
             case .bodyweight: Weight(pounds: 2.5)
-            case .band, .none: Weight.zero
+            case .band, .treadmill, .none: Weight.zero
             }
         }
     }
