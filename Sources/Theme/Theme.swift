@@ -1,26 +1,27 @@
 import SwiftUI
 
-/// Colours are deliberately flat and high-contrast: the app is read at arm's
-/// length, through sweat, on a screen angled away from you.
+/// Neutral surfaces and one accent. Colour means "you can act on this";
+/// everything else is greyscale so the one thing that matters stands out.
 enum Theme {
-    static let chrome = Color(red: 0.17, green: 0.42, blue: 0.63)
-    static let headerCard = Color(red: 0.04, green: 0.16, blue: 0.27)
-    static let restBar = Color(red: 0.15, green: 0.22, blue: 0.28)
-
-    static let setTile = Color(red: 0.23, green: 0.23, blue: 0.23)
-    static let repsTile = Color(red: 0.25, green: 0.32, blue: 0.71)
-    static let weightTile = Color(red: 0.75, green: 0.27, blue: 0.18)
+    static let accent = Color.accentColor
+    static let accentSoft = Color.accentColor.opacity(0.14)
+    /// Kept for shared drawing code (muscle map) — same as the accent.
+    static let chrome = accent
 
     static let surface = Color(.systemGroupedBackground)
     static let card = Color(.secondarySystemGroupedBackground)
+    static let fill = Color(.tertiarySystemFill)
+    static let record = Color(red: 1.0, green: 0.72, blue: 0.0)
+    static let done = Color.green
 
     /// Nothing that takes a tap mid-set is smaller than this. Apple's 44pt
     /// minimum assumes a steady hand and a dry finger; neither applies here.
     static let tapTarget: CGFloat = 60
 
     enum Metrics {
-        static let corner: CGFloat = 10
-        static let gutter: CGFloat = 12
+        static let corner: CGFloat = 20
+        static let smallCorner: CGFloat = 14
+        static let gutter: CGFloat = 16
     }
 }
 
@@ -28,5 +29,26 @@ extension Font {
     /// Numbers that change while you watch them, so the layout can't jitter.
     static func tabular(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
         .system(size: size, weight: weight, design: .rounded).monospacedDigit()
+    }
+
+    /// Small caps-style label over a value.
+    static let eyebrow = Font.system(size: 12, weight: .semibold, design: .rounded)
+}
+
+extension View {
+    /// A rounded card on the grouped background.
+    func card(padding: CGFloat = Theme.Metrics.gutter) -> some View {
+        self
+            .padding(padding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: Theme.Metrics.corner, style: .continuous).fill(Theme.card))
+    }
+
+    func eyebrow() -> some View {
+        self
+            .font(.eyebrow)
+            .textCase(.uppercase)
+            .tracking(0.6)
+            .foregroundStyle(.secondary)
     }
 }
