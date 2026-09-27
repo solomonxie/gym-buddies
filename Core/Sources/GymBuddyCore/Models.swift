@@ -1,31 +1,119 @@
 import Foundation
 
+/// What the count on a set means. A plank is held in seconds, a treadmill
+/// is walked in minutes; calling either "reps" puts the wrong number on screen.
+public enum Measure: String, Codable, Sendable, CaseIterable {
+    case reps, seconds, minutes
+
+    public var displayName: String {
+        switch self {
+        case .reps: "Reps"
+        case .seconds: "Seconds"
+        case .minutes: "Minutes"
+        }
+    }
+
+    /// One tap of the stepper.
+    public var step: Int { self == .seconds ? 5 : 1 }
+
+    /// Where a new plan line starts.
+    public var defaultTarget: Int {
+        switch self {
+        case .reps: 10
+        case .seconds: 30
+        case .minutes: 20
+        }
+    }
+
+    /// `10`, `60s`, `20 min`.
+    public func format(_ count: Int) -> String {
+        switch self {
+        case .reps: "\(count)"
+        case .seconds: "\(count)s"
+        case .minutes: "\(count) min"
+        }
+    }
+}
+
 public struct Exercise: Identifiable, Hashable, Codable, Sendable {
     public var id: String
     public var name: String
     public var muscleGroup: MuscleGroup
     public var equipment: Equipment
-    public var illustration: String?
+    /// Primary muscles first; drives the muscle-map highlight.
+    public var muscles: [Muscle]
+    /// Reviewed how-to steps, one per line. Absent rather than guessed.
     public var instructions: String?
     public var isFavourite: Bool
+    public var isCustom: Bool
+    /// What the reps field counts.
+    public var measure: Measure
 
     public init(
         id: String,
         name: String,
         muscleGroup: MuscleGroup,
         equipment: Equipment,
-        illustration: String? = nil,
+        muscles: [Muscle] = [],
         instructions: String? = nil,
-        isFavourite: Bool = false
+        isFavourite: Bool = false,
+        isCustom: Bool = false,
+        measure: Measure = .reps
     ) {
         self.id = id
         self.name = name
         self.muscleGroup = muscleGroup
         self.equipment = equipment
-        self.illustration = illustration
+        self.muscles = muscles
         self.instructions = instructions
         self.isFavourite = isFavourite
+        self.isCustom = isCustom
+        self.measure = measure
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, muscleGroup, equipment, muscles, instructions, isFavourite, isCustom, measure, isTimed
+    }
+
+    /// Reads sessions saved before `measure` existed, when a Bool said "seconds".
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        muscleGroup = try c.decode(MuscleGroup.self, forKey: .muscleGroup)
+        equipment = try c.decode(Equipment.self, forKey: .equipment)
+        muscles = try c.decodeIfPresent([Muscle].self, forKey: .muscles) ?? []
+        instructions = try c.decodeIfPresent(String.self, forKey: .instructions)
+        isFavourite = try c.decodeIfPresent(Bool.self, forKey: .isFavourite) ?? false
+        isCustom = try c.decodeIfPresent(Bool.self, forKey: .isCustom) ?? false
+        if let measure = try c.decodeIfPresent(Measure.self, forKey: .measure) {
+            self.measure = measure
+        } else {
+            self.measure = try c.decodeIfPresent(Bool.self, forKey: .isTimed) == true ? .seconds : .reps
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(name, forKey: .name)
+        try c.encode(muscleGroup, forKey: .muscleGroup)
+        try c.encode(equipment, forKey: .equipment)
+        try c.encode(muscles, forKey: .muscles)
+        try c.encodeIfPresent(instructions, forKey: .instructions)
+        try c.encode(isFavourite, forKey: .isFavourite)
+        try c.encode(isCustom, forKey: .isCustom)
+        try c.encode(measure, forKey: .measure)
+    }
+
+    public var isTimed: Bool { measure != .reps }
+
+    public var steps: [String] {
+        (instructions ?? "").split(separator: "\n").map(String.init)
+    }
+
+    /// One tap of the reps stepper: a rep, or five seconds of a hold.
+    public var repStep: Int { measure.step }
 }
 
 /// One line of a workout: an exercise plus what you intend to do to it.
@@ -37,6 +125,8 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
     public var targetWeight: Weight
     /// Overrides the app-wide default when this movement needs longer.
     public var restSeconds: Int?
+    /// Treadmill incline, percent. Nil for equipment without one.
+    public var targetIncline: Double?
 
     public init(
         id: String,
@@ -44,10 +134,12 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
         targetSets: Int,
         targetReps: Int,
         targetWeight: Weight,
-        restSeconds: Int? = nil
+        restSeconds: Int? = nil,
+        targetIncline: Double? = nil
     ) {
         self.id = id
         self.exerciseID = exerciseID
+        self.targetIncline = targetIncline
         self.targetSets = targetSets
         self.targetReps = targetReps
         self.targetWeight = targetWeight
@@ -84,6 +176,13 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
     public var reps: Int
     public var weight: Weight
     public var completedAt: Date
+    /// The plan line it was logged against, so a movement listed twice keeps
+    /// its two lines apart and drift can be pushed back to the right one.
+    public var planLineID: String?
+    /// What the plan asked for, kept so "under target" survives plan edits.
+    public var targetReps: Int?
+    /// Treadmill incline, percent — a setting, not a load, so never a `Weight`.
+    public var incline: Double?
 
     public init(
         id: String,
@@ -92,8 +191,12 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
         setNumber: Int,
         reps: Int,
         weight: Weight,
-        completedAt: Date
+        completedAt: Date,
+        planLineID: String? = nil,
+        targetReps: Int? = nil,
+        incline: Double? = nil
     ) {
+        self.incline = incline
         self.id = id
         self.sessionID = sessionID
         self.exerciseID = exerciseID
@@ -101,6 +204,12 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
         self.reps = reps
         self.weight = weight
         self.completedAt = completedAt
+        self.planLineID = planLineID
+        self.targetReps = targetReps
+    }
+
+    public var isUnderTarget: Bool {
+        targetReps.map { reps < $0 } ?? false
     }
 
     /// Reps moved through the full load — the only volume number that survives
@@ -115,6 +224,9 @@ public struct WorkoutLog: Identifiable, Hashable, Codable, Sendable {
     public var startedAt: Date
     public var finishedAt: Date
     public var sets: [SetLog]
+    /// Exercises passed over with nothing logged, in plan order.
+    public var skippedExerciseIDs: [String]
+    public var notes: String
 
     public init(
         id: String,
@@ -122,7 +234,9 @@ public struct WorkoutLog: Identifiable, Hashable, Codable, Sendable {
         workoutName: String,
         startedAt: Date,
         finishedAt: Date,
-        sets: [SetLog]
+        sets: [SetLog],
+        skippedExerciseIDs: [String] = [],
+        notes: String = ""
     ) {
         self.id = id
         self.workoutID = workoutID
@@ -130,6 +244,14 @@ public struct WorkoutLog: Identifiable, Hashable, Codable, Sendable {
         self.startedAt = startedAt
         self.finishedAt = finishedAt
         self.sets = sets
+        self.skippedExerciseIDs = skippedExerciseIDs
+        self.notes = notes
+    }
+
+    /// Exercise IDs in the order they were first logged.
+    public var exerciseOrder: [String] {
+        var seen = Set<String>()
+        return sets.map(\.exerciseID).filter { seen.insert($0).inserted }
     }
 
     public var duration: TimeInterval { finishedAt.timeIntervalSince(startedAt) }

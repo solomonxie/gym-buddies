@@ -82,12 +82,15 @@ final class WorkoutSessionTests: XCTestCase {
         session.completeSet(at: Fixtures.t0 + 40, logID: "l1")
         session.completeSet(at: Fixtures.t0 + 120, logID: "l2")
 
-        session.changeTargetSets(to: 1)
-        XCTAssertEqual(session.currentEntry?.plan.targetSets, 2)
-
         session.changeTargetSets(to: 5)
         XCTAssertEqual(session.currentEntry?.plan.targetSets, 5)
         XCTAssertEqual(session.currentSetNumber, 3)
+
+        // Below what's logged clamps to it, which finishes the line.
+        session.changeTargetSets(to: 1)
+        XCTAssertEqual(session.entries[1].plan.targetSets, 2)
+        XCTAssertEqual(session.completedSets(for: "p-rows"), 2)
+        XCTAssertEqual(session.currentEntry?.id, "p-pulldowns")
     }
 
     func testPerExerciseRestOverridesTheDefault() {
