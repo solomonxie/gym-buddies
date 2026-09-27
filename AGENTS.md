@@ -64,7 +64,8 @@ Arm's length, sweaty fingers, thirty seconds, one hand on the bar. So:
 # Nothing leaves the phone, and nothing is borrowed
 
 No server, no analytics, no telemetry, no ad SDK, no crash reporter that phones
-home. The only data egress is a file the user explicitly exports. Adding a
+home. The only data egress is a file the user explicitly exports, or the
+user's own iCloud Drive when they turn on iCloud backup. Adding a
 network call is a design decision, not an implementation detail — it goes in
 `docs/DESIGN.md` first.
 

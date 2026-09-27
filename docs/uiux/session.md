@@ -5,161 +5,220 @@ nothing else is happening for the next hour.
 
 This is the screen the app exists for. Everything on it is sized by how often
 it gets touched: **log a set** fifty times a workout, **± reps/weight** a few
-times, everything else almost never.
+times, everything else almost never. So the top half is for reading, the bottom
+half is for thumbs.
 
 ```
-  Exit      Fraiser Heights      00:14:22
- ──────────────────────────────────────────
-  ≡   Seated Machine Rows            ▶|
-      Back · Machine
- ──────────────────────────────────────────
-  SET 2 of 3          last time: 10 × 50 lb
- ──────────────────────────────────────────
+ (×)          Fraiser Heights          (≡)
+                  00:14:22
+ ━━━━━━ ▓▓▓▓▓▓ ░░░░░░ ░░░░░░ ░░░░░░ ░░░░░░    ← one segment per exercise:
+                                                 done · current (accent) · to go
+  Seated Machine Rows          ( ▶| Skip )
+  Back · Machine
 
+  ● ○ ○  Set 2 of 3 ⌄             LAST TIME
+                                 10 × 50 lb
 
-          10                50.0
-         REPS                LB
-
-      [  −  ] [  +  ]   [  −  ] [  +  ]      ← 60pt targets, machine = 10 lb
-                                               a tap, not a flat 1
-
+            [ muscle map, faded ]              ← decoration, never tapped
  ╭────────────────────────────────────────╮
- │           LOG SET  ·  2 of 3           │  ← full width, thumb zone
+ │ ( − )             10             ( + ) │
+ │                  REPS                  │
  ╰────────────────────────────────────────╯
- ──────────────────────────────────────────
-  UP NEXT
-  Lat Pull Downs        3 × 10 · 50 lb   ›
-  Seated Leg Curls      3 × 10 · 50 lb   ›
-  Seated Machine Press  3 × 10 · 40 lb   ›
+ ╭────────────────────────────────────────╮
+ │ ( − )            50.0            ( + ) │  ← 60pt round targets at the
+ │              LB  ± 10 lb               │     thumb's edges; machine =
+ ╰────────────────────────────────────────╯     10 lb a tap, not a flat 1
+ ╭────────────────────────────────────────╮
+ │               ✓  Log set               │  ← 72pt, the one accent fill
+ ╰────────────────────────────────────────╯
+  Next  Lat Pull Downs  3 × 10 · 60 lb  ⌃    ← opens the jump sheet
 ```
 
-Reached from: ▶ on a workout ([`workouts.md`](workouts.md)) · resuming an
-unfinished session on launch
+Reached from: `Start` / `▶` on Train ([`workouts.md`](workouts.md)) · `Resume`
+on an unfinished session
 
 ## States
 
 ```
 resting — the bar appears ABOVE the button and never replaces it
+ ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────────────╮
+ │ ◷ Rest  00:00:28          ( +30s ) (×) │  ← tinted fill grows left→right:
+ ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────────────╯     the ring, unrolled
  ╭────────────────────────────────────────╮
- │ RESTING  00:00:28 [███░░░░░░] +30s   × │
- ╰────────────────────────────────────────╯
- ╭────────────────────────────────────────╮
- │           LOG SET  ·  3 of 3           │  ← still live: starting early
+ │               ✓  Log set               │  ← still live: starting early
  ╰────────────────────────────────────────╯     is a legitimate choice
+
+rest elapsed, on screen
+ ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╮
+ │ ◷ Rest over                        (×) │  ← bell, green; stays until ×
+ ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╯     or the next set
 
 rest elapsed, phone in a pocket
  ⌐ Rest over · Seated Machine Rows 3 of 3 ¬   ← local notification, not a
                                                 foreground timer
 
 first ever time
-  SET 1 of 3                  last time: —
+  ○ ○ ○  Set 1 of 3               LAST TIME
+                                          —
 
 last set of the last exercise
- ╭────────────────────────────────────────╮
- │        LOG SET  ·  FINISH WORKOUT      │
- ╰────────────────────────────────────────╯
+ │          ✓  Log set & finish           │  ← opens the summary directly
 
 exercise with no load (bodyweight, band)
-          12
-         REPS                                 ← weight column gone entirely,
-      [  −  ] [  +  ]                           not a disabled "0.0"
+ │ ( − )             12             ( + ) │
+ │                  REPS                  │  ← weight tile gone entirely,
+                                              not a disabled "0.0"
 
-progression offer, shown once per exercise per session
-  SET 1 of 3          last time: 10 × 50 lb
-  ⌐ Hit all 3 × 10 last time. Try 60 lb? ¬
-                        ( No )   ( Use 60 )
+treadmill — minutes, and incline instead of weight
+ │ ( − )             20             ( + ) │
+ │                MINUTES                 │  ← ± 1 min
+ │ ( − )            8.5             ( + ) │
+ │           INCLINE %  ± 0.5%            │  ← steps and clamps 0–30%,
+                                              never a weight
+ LAST TIME  20 min · 8% incline
 
-at risk of stranding sets
-  CHANGE SETS                                 ← 2 already logged
-  [ 1 ]·  [ 2 ]  [ 3 ]  [ 4 ]  [ 5 ]            1 is disabled, not hidden
+progression offer, set 1 only, once per exercise per session
+ ╭────────────────────────────────────────╮
+ │ ↗ Hit all 3 × 10 last time. Try 60 lb? │
+ │ ( Not today )  ( Use 60 lb )           │
+ ╰────────────────────────────────────────╯
 
-skipped exercise, seen in the ≡ list
-  ✓ Walking              1 × 5 · 3 lb
-    Seated Machine Rows  2 of 3           ●    ← ● = where you are
-    Lat Pull Downs       skipped
+change sets — tap "Set 3 of 4 ⌄", unfolds in place
+  ● ● ○ ○  Set 3 of 4 ⌃
+  (1)· (2)  (3) [4] (5)  (6)                  ← 1 dimmed, not hidden
+  2 already logged, so fewer isn't offered.
+
+every exercise done or skipped
+                    ✓
+     Every exercise is done or skipped.
+            ( Go back to one )
+ ╭────────────────────────────────────────╮
+ │             Finish workout             │
+ ╰────────────────────────────────────────╯
 ```
 
 ## Overlays
 
 ```
- ≡ exercise list — jump anywhere, the rack you wanted is busy
- ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-  Jump to                              Done
-  ✓ Walking               1 × 5 · 3 lb
-  ● Seated Machine Rows   2 of 3 done
-    Lat Pull Downs        3 × 10 · 50 lb
-    Seated Leg Curls      3 × 10 · 50 lb
+ ≡ jump sheet — the rack you wanted is busy
+ ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+                 Jump to              Done
+  ✓ Walking                  1 × 5 · 3 lb    ← done rows are disabled
+  ● Seated Machine Rows      1 of 3 done     ← ● = where you are
+    Lat Pull Downs          3 × 10 · 60 lb
+    Seated Leg Curls             skipped
 
- Exit, with sets logged
+ keypad — tap a number; 50 → 135 isn't a job for ±
+ ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+               Weight (lb)
+                  50
+  ( Cancel )                  [[ Set ]]
+
+ long-press Log set, 2+ sets left
+ ┌──────────────────────────────────────┐
+ │ Log several identical sets           │
+ │ For warm-ups: each at the reps and   │
+ │ weight shown.                        │
+ │ ( Log 2 sets )  ( Log 3 sets )       │
+ │ ( Cancel )                           │
+ └──────────────────────────────────────┘
+
+ × with sets logged
  ┌──────────────────────────────────────┐
  │ Finish this workout?                 │
  │ 7 sets logged, 14 minutes.           │
+ │ ( Save & exit )                      │
+ │ ( Discard )!                         │
  │ ( Keep going )                       │
- │ ( Discard )!        [[ Save & exit ]]│
  └──────────────────────────────────────┘
 
- Exit, nothing logged
+ × with nothing logged
  ┌──────────────────────────────────────┐
- │ Leave? Nothing was logged, so        │
- │ nothing will be saved.               │
- │ ( Keep going )       [[ Leave ]]     │
+ │ Leave?                               │
+ │ Nothing was logged, so nothing will  │
+ │ be saved.                            │
+ │ ( Leave )!          ( Keep going )   │
  └──────────────────────────────────────┘
 
  Summary, after the last set
- ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-  Fraiser Heights            42:18
-  11 sets · 3,240 lb moved
-  ★ Lat Pull Downs 60 lb × 10 — best yet
-  ─────────────────────────────────────
-  Weights differed from the plan on 2
-  lines. Update the workout?
-  ( Leave the plan )     ( Update it )
-  ─────────────────────────────────────
-  ( Discard )!            [[ Save ]]
+ ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+  WORKOUT COMPLETE                           ← "FINISHING EARLY" +
+  Fraiser Heights                               ( Keep going ) otherwise
+  ╭──────────╮ ╭──────────╮ ╭────────────╮
+  │ 42:18    │ │ 11       │ │ 3,240 lb   │
+  │ TIME     │ │ SETS     │ │ MOVED      │
+  ╰──────────╯ ╰──────────╯ ╰────────────╯
+  ╭──────────────────────────────────────╮
+  │ PERSONAL RECORDS                     │
+  │ ★ Lat Pull Downs         60 lb × 10  │
+  ╰──────────────────────────────────────╯
+  ╭──────────────────────────────────────╮
+  │ SKIPPED                              │
+  │ Seated Leg Curls                     │
+  ╰──────────────────────────────────────╯
+  ╭──────────────────────────────────────╮
+  │ Weights differed from the plan on 1  │
+  │ line. Update the workout?            │
+  │ [ Leave the plan | Update it ]       │
+  │ Lat Pull Downs        50 lb → 60 lb  │
+  ╰──────────────────────────────────────╯
+  ╭──────────────────────────────────────╮
+  │ NOTES                                │
+  │ How it went, anything to remember    │
+  ╰──────────────────────────────────────╯
+  ( Discard )!         [[ Save ]]           ← Discard asks once more
 ```
 
 ## Interactions
 
 | Target | Action | Result |
 |---|---|---|
-| `[[ LOG SET ]]` | tap | writes the log, starts rest, advances the counter |
-| `[[ LOG SET ]]` | long-press | log several sets at once, for warm-ups |
-| `[ + ] / [ − ]` weight | tap | one real increment of *that* equipment |
-| `[ + ] / [ − ]` weight | press-hold | repeats, accelerating |
-| reps / weight number | tap | keypad, for when ± is the wrong tool |
-| `SET 2 of 3` | tap | the change-sets row, can't drop below what's logged |
-| `▶\|` | tap | skip to the next exercise; anything logged stays logged |
-| `≡` | tap | jump sheet |
-| `UP NEXT` row | tap | jumps straight to it |
+| `[[ ✓ Log set ]]` | tap | writes the log, starts rest, advances the counter |
+| `[[ ✓ Log set ]]` | long-press | log several identical sets, for warm-ups |
+| `( + ) / ( − )` weight | tap | one real increment of *that* equipment |
+| `( + ) / ( − )` | press-hold | repeats, accelerating every five steps |
+| reps / weight number | tap | keypad sheet |
+| `Set 2 of 3 ⌄` | tap | change-sets row; can't drop below what's logged |
+| `( ▶\| Skip )` | tap | skip to the next exercise; anything logged stays logged |
+| `(≡)` / `Next …` | tap | jump sheet |
+| jump-sheet row | tap | jumps straight to it |
 | `+30s` | tap | extends rest, keeping the time already rested |
-| `×` on rest | tap | dismiss, no penalty, no confirm |
-| `Exit` | tap | confirm sheet above |
+| `(×)` on rest | tap | dismiss, no penalty, no confirm |
+| `(×)` top-left | tap | exit dialog above |
 
 ## Copy
 
 | Key | String |
 |---|---|
-| `session.logSet` | LOG SET · {n} of {total} |
-| `session.logSet.final` | LOG SET · FINISH WORKOUT |
-| `session.set` | SET {n} of {total} |
-| `session.lastTime` | last time: {reps} × {weight} |
-| `session.lastTime.none` | last time: — |
-| `session.resting` | RESTING |
-| `session.restOver` | Rest over · {exercise} {n} of {total} |
+| `session.logSet` | Log set |
+| `session.logSet.final` | Log set & finish |
+| `session.set` | Set {n} of {total} |
+| `session.lastTime` | LAST TIME / {reps} × {weight} |
+| `session.lastTime.none` | — |
+| `session.skip` | Skip |
+| `session.next` | Next {exercise} {sets} × {reps} · {weight} |
+| `session.resting` | Rest |
+| `session.restOver` | Rest over |
+| `session.restOver.notification` | Rest over · {exercise} {n} of {total} |
 | `session.extend` | +30s |
-| `session.upNext` | UP NEXT |
 | `session.jump` | Jump to |
 | `session.skipped` | skipped |
 | `session.progression` | Hit all {sets} × {reps} last time. Try {weight}? |
+| `session.deload` | Short of {sets} × {reps} twice running. Try {weight}? |
+| `session.progression.no` | Not today |
+| `session.progression.yes` | Use {weight} |
+| `session.setsFloor` | {n} already logged, so fewer isn't offered. |
+| `session.multi` | For warm-ups: each at the reps and weight shown. |
+| `session.allDone` | Every exercise is done or skipped. |
 | `session.exit.some` | {n} sets logged, {m} minutes. |
-| `session.exit.none` | Leave? Nothing was logged, so nothing will be saved. |
-| `session.summary.volume` | {n} sets · {volume} moved |
-| `session.summary.pr` | ★ {exercise} {weight} × {reps} — best yet |
+| `session.exit.none` | Nothing was logged, so nothing will be saved. |
+| `session.summary.stats` | TIME · SETS · MOVED |
 | `session.summary.drift` | Weights differed from the plan on {n} lines. Update the workout? |
+| `session.summary.discard` | {n} logged sets won't be saved. |
 
 ## Notes
 
-**`last time:` is the whole reason to open an app instead of using paper.** It's
+**`LAST TIME` is the whole reason to open an app instead of using paper.** It's
 the one number you actually want at the top of a set and it costs one query.
 
 The `✗` that got rejected, so it doesn't come back:
