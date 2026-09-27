@@ -109,11 +109,27 @@ WorkoutLog        one finished session: started, finished, [SetLog]
 ```
 
 - **Storage**: one SQLite file on device. No cloud, no account.
-- **Backup**: the database file out through the share sheet; same file back in.
+- **Backup, automatic**: after every change (debounced 3 s) a snapshot goes to
+  the app container — never overwritten, newest 20 per day, last 7 days.
+  Restoring one snapshots the current data first, so a restore is undoable.
+- **Backup, iCloud** (off by default): the same snapshot to the user's own
+  iCloud Drive → Gym Buddy, one file per day replaced by each change, 30 days
+  kept. The one network egress, chosen because a phone-only backup dies with
+  the phone. It's the user's account and quota; we run nothing and see nothing,
+  so App Privacy stays "Data Not Collected".
+- **Backup, manual**: the database file out through the share sheet; same file
+  back in.
 - **Cost**: zero. No service, no API key, no ad SDK.
 - **HealthKit**: optional, write-only workout records. Off by default, v2.
 
 ## Constraints
+
+Rest alert, measured choice (T4.4): a scheduled `UNUserNotificationCenter`
+notification, replaced on `+30s`, removed on dismiss. The alternative — a
+silent keep-alive audio session — keeps the process running for a live
+countdown on the lock screen but holds the audio hardware awake for the whole
+workout, a steady battery cost, and App Review treats background audio that
+plays nothing as abuse. The notification costs nothing between sets.
 
 - **The rest timer must fire with the screen locked and the phone in a pocket.**
   iOS does not keep a foreground timer running, so the alert is a scheduled
@@ -127,18 +143,21 @@ WorkoutLog        one finished session: started, finished, [SetLog]
 
 ## Risks / open questions
 
-- **Exercise artwork is the expensive part, and it's a licensing question, not
-  a drawing one.** The reference app uses a commercially licensed illustration
-  set; those images cannot be copied. Three real options: licence a set, use an
-  openly-licensed one, or render SF Symbols plus a muscle-map highlight drawn
-  in code. Until one is picked, the library ships text-only. This blocks
-  nothing technical and everything visual.
-- **Content volume.** ~300 exercises with correct instructions is weeks of
-  writing, and wrong instructions on a deadlift are worse than none. The seed
-  library is 24 movements; the rest is staged.
+- **Exercise artwork — decided: drawn in code.** The reference app's
+  illustrations are commercially licensed and can't be copied. Of the three
+  options (licence a set, an openly-licensed one, draw our own), the app draws a
+  front/back muscle map in SwiftUI plus an SF Symbol per equipment. Zero
+  licensing risk, works in dark mode, and the map says more than a pose would.
+- **Content volume.** ~300 movements ship; ~73% carry three-step how-tos.
+  Movements where the cues weren't certain (Olympic variants, Turkish get-ups,
+  dragon flags…) ship with the section absent — wrong text on a deadlift is
+  worse than none.
 - **Not a coach.** Progression suggestions are double progression and nothing
   cleverer — anything smarter needs RPE or bar speed, which this app doesn't
   ask for and shouldn't pretend to know.
+- **Five tabs became four.** Favourites was always "the library with a
+  filter"; as a ♥ chip in the library it stops being a second place to look.
+  Train · Exercises · Progress · Settings.
 - Open: does the workout builder need supersets in v1? Currently no — a
   superset is two lines with rest 0 on the first, which covers most of it
   without a new concept.

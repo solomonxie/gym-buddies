@@ -1,34 +1,40 @@
-# Logs & Graphs
+# Progress
 
-What you've actually done. Fourth tab.
+What you've actually done. Third tab.
 
 ```
-  Logs & Graphs            [ 30d | 90d | All ]
- ──────────────────────────────────────────
-  THIS WEEK          4 sessions · 12,400 lb
-  M  T  W  T  F  S  S
-  ●  ·  ●  ●  ·  ●  ·                        ← ● = trained, no streak fire,
- ──────────────────────────────────────────     no guilt for the gaps
-  VOLUME BY MUSCLE GROUP
-  Back      [████████████░░░░]  4,800 lb
-  Legs      [█████████░░░░░░░]  3,600 lb
-  Chest     [██████░░░░░░░░░░]  2,400 lb
-  Shoulders [████░░░░░░░░░░░░]  1,600 lb
-  Arms      [░░░░░░░░░░░░░░░░]      0 lb    ← the useful row is the empty one
- ──────────────────────────────────────────
-  HISTORY
-  Fraiser Heights                        ›
-  Tue 23 Sep · 42:18 · 11 sets · 3,240 lb
- ──────────────────────────────────────────
-  Push Day                           ★   ›
-  Sun 21 Sep · 38:02 · 15 sets · 4,100 lb
- ──────────────────────────────────────────
-  Fraiser Heights                        ›
-  Thu 18 Sep · 45:51 · 18 sets · 5,060 lb
-  ⋮
+  Progress                                ⇪  ← CSV of every session
+  [    30d    |    90d    |    All    ]
+ ╭───────────╮ ╭───────────╮ ╭────────────╮
+ │ 12        │ │ 38k       │ │ 8h 40m     │
+ │ SESSIONS  │ │ LB MOVED  │ │ TIME       │
+ ╰───────────╯ ╰───────────╯ ╰────────────╯  ← all three follow the range
+ ╭────────────────────────────────────────╮
+ │ THIS WEEK                              │
+ │  (✓)  ( )  (✓)  (✓)  ( )  (✓)  ( )     │  ← filled accent + ✓ = trained;
+ │   M    T    W    T    F    S    S      │     no streak fire, no guilt
+ ╰────────────────────────────────────────╯     for the gaps
+ ╭────────────────────────────────────────╮
+ │ VOLUME BY MUSCLE GROUP                 │
+ │ Back      [██████████░░░░]    4,800 lb │
+ │ Legs      [███████░░░░░░░]    3,600 lb │
+ │ Chest     [█████░░░░░░░░░]    2,400 lb │
+ │ Shoulders [███░░░░░░░░░░░]    1,600 lb │
+ │ Arms      [░░░░░░░░░░░░░░]        0 lb │  ← the useful row is the
+ ╰────────────────────────────────────────╯     empty one
+  HISTORY                                12
+ ╭────────────────────────────────────────╮
+ │  23  Fraiser Heights                 › │
+ │ SEP  42:18 · 11 sets · 3,240 lb        │
+ ╰────────────────────────────────────────╯
+ ╭────────────────────────────────────────╮
+ │  21  Push Day ★                      › │
+ │ SEP  38:02 · 15 sets · 4,100 lb        │
+ ╰────────────────────────────────────────╯
+   ⋮
 ```
 
-Reached from: tab bar · `LAST DONE` on an exercise
+Reached from: tab bar · `Last done` on an exercise opens a session log
 
 `★` marks a session that set a personal record. It's the only decoration on the
 screen and it means something specific.
@@ -36,26 +42,26 @@ screen and it means something specific.
 ## Session log
 
 ```
- ‹ Back    Fraiser Heights      ⋯
+ ‹ Progress     Fraiser Heights         ⋯
  ──────────────────────────────────────────
-  Tue 23 Sep 2026 · 15:44 – 16:26
+  Tue, 23 Sep 2026 · 3:44 PM – 4:26 PM
   42:18 · 11 sets · 3,240 lb moved
  ──────────────────────────────────────────
-  Walking                    Cardio
-   1   5 reps          3 lb
+  Walking                     Cardio    ›   ← header → trend
+   1   5 reps                     3 lb
  ──────────────────────────────────────────
-  Seated Machine Rows        Back
-   1  10 reps         50 lb
-   2  10 reps         50 lb
-   3   8 reps         50 lb            ▼     ← ▼ = under the target
+  Seated Machine Rows         Back      ›
+   1  10 reps                    50 lb
+   2  10 reps                    50 lb
+   3   8 reps                    50 lb    ▼  ← ▼ = under the target
  ──────────────────────────────────────────
-  Lat Pull Downs             Back
-   1  10 reps         60 lb         ★ PR
-   2  10 reps         60 lb
-   3  10 reps         60 lb
+  Lat Pull Downs              Back      ›
+   1  10 reps                    60 lb  ★ PR
+   2  10 reps                    60 lb
+   3  10 reps                    60 lb
  ──────────────────────────────────────────
-  Seated Leg Curls           Legs
-                             skipped
+  Seated Leg Curls            Legs      ›
+  skipped
  ──────────────────────────────────────────
   NOTES
   Left shoulder tight on the rows, went
@@ -64,28 +70,27 @@ screen and it means something specific.
 
 ## Trend
 
-Pushed from an exercise, or from tapping an exercise name in a session log.
+Pushed from `Every session` on an exercise, or an exercise header in a log.
 
 ```
- ‹ Back     Lat Pull Downs      ⋯
+ ‹ Back          Lat Pull Downs          ⓘ  ← ⓘ → exercise detail
  ──────────────────────────────────────────
   [ Top set | Volume | Reps ]
-  [ 30d | 90d | All ]
- ──────────────────────────────────────────
+  [   30d   |   90d   |  All ]
+  60 lb  Thu 18 Sep
   70 ┤                              ●
-  60 ┤                    ●    ●
-  50 ┤    ●    ●    ●
-  40 ┤
+  60 ┤                    ●────●
+  50 ┤    ●────●────●
      └────────────────────────────────────
       Jul        Aug        Sep
  ──────────────────────────────────────────
-  BEST                      60 lb × 10   ›
-  Thu 18 Sep
+  BEST
+  60 lb × 10                 Thu 18 Sep  ›
  ──────────────────────────────────────────
   EVERY SESSION
-  Thu 18 Sep    3 × 10 · 60 lb       ★  ›
-  Mon 15 Sep    3 × 10 · 55 lb          ›
-  Thu 11 Sep    3 ×  9 · 55 lb       ▼  ›
+  Thu 18 Sep    3 × 10 · 60 lb       ★   ›
+  Mon 15 Sep    3 × 10 · 55 lb           ›
+  Thu 11 Sep    3 × 9 · 55 lb        ▼   ›
   ⋮
 ```
 
@@ -94,59 +99,80 @@ Pushed from an exercise, or from tapping an exercise name in a session log.
 ```
 nothing logged
  ┌────────────────────────────────────────┐
- │        No sessions yet                 │
+ │           No sessions yet              │
  │  Finish a workout and it shows up here │
  │  with the numbers filled in.           │
- │        ( Go to workouts )              │
+ │           [[ Go to Train ]]            │
  └────────────────────────────────────────┘
 
-one session
-  VOLUME BY MUSCLE GROUP
-  Back      [████████████████]  3,240 lb   ← one bar is 100%; no comparison
-                                              is claimed
+empty range
+  HISTORY                                 0
+ ╭────────────────────────────────────────╮
+ │ Nothing in the last 30d.               │
+ ╰────────────────────────────────────────╯
 
-exporting
-  ( Exporting… ⟳ )
+one session
+ │ Back      [██████████████]    3,240 lb │  ← one bar is 100%; no
+                                               comparison is claimed
+
+tap ★ PR in a log
+ ┌──────────────────────────────────────┐
+ │ ★ Lat Pull Downs 60 lb × 10          │
+ │ Beat 55 lb × 10 from Mon 15 Sep.     │
+ │                             ( OK )   │
+ └──────────────────────────────────────┘
+
+editing sets (⋯ → Edit sets)
+  Set 1 · reps          [−]   10   [+]
+  weight / lb           [−]   50   [+]    ← swipe ← to delete a set
+                                   Done
 
 deleting a session
  ┌──────────────────────────────────────┐
  │ Delete this session?                 │
  │ 11 sets, and the Lat Pull Downs PR   │
  │ it set.                              │
- │  ( Cancel )       [[ Delete ]]!      │
+ │  ( Cancel )        ( Delete )!       │
  └──────────────────────────────────────┘
 
-all-time range, hundreds of sessions
-  [ 30d | 90d | ALL ]
-  HISTORY                          (284)     ← paged, 50 at a time
+hundreds of sessions
+  HISTORY                               284
+   ⋮
+  ( Show 50 more )                         ← paged, 50 at a time
 ```
 
 ## Interactions
 
 | Target | Action | Result |
 |---|---|---|
-| history row | tap | → session log |
-| exercise name in a log | tap | → trend for that exercise |
-| `★` | tap | popover naming the record and the one it beat |
-| chart point | tap/drag | value and date readout follows the finger |
-| range segment | tap | remembered across tabs |
+| history card | tap | → session log |
+| exercise header in a log | tap | → trend for that exercise |
+| `★ PR` set line | tap | alert naming the record and the one it beat |
+| chart | tap/drag | value and date readout follows the finger |
+| range segment | tap | remembered, shared with Trend |
+| `⇪` | tap | `[ share sheet ]` with every session as CSV |
 | `⋯` on a session | tap | `Edit sets` `Export CSV…` `Delete`! |
-| week dots | tap | → that day's sessions |
+| `ⓘ` on a trend | tap | → exercise detail |
 
 ## Copy
 
 | Key | String |
 |---|---|
-| `logs.thisWeek` | THIS WEEK |
-| `logs.weekSummary` | {n} sessions · {volume} |
-| `logs.byGroup` | VOLUME BY MUSCLE GROUP |
-| `logs.history` | HISTORY |
-| `logs.sessionLine` | {Day d Mon} · {duration} · {n} sets · {volume} |
-| `logs.empty` | Finish a workout and it shows up here with the numbers filled in. |
-| `log.range` | {start} – {end} |
+| `progress.tiles` | SESSIONS · {unit} MOVED · TIME |
+| `progress.thisWeek` | THIS WEEK |
+| `progress.byGroup` | VOLUME BY MUSCLE GROUP |
+| `progress.history` | HISTORY |
+| `progress.sessionLine` | {duration} · {n} sets · {volume} |
+| `progress.emptyRange` | Nothing in the last {range}. |
+| `progress.more` | Show {n} more |
+| `progress.empty` | Finish a workout and it shows up here with the numbers filled in. |
+| `progress.empty.action` | Go to Train |
+| `log.range` | {date} · {start} – {end} |
+| `log.totals` | {duration} · {n} sets · {volume} moved |
 | `log.skipped` | skipped |
 | `log.underTarget` | ▼ |
 | `log.pr` | ★ PR |
+| `log.pr.beat` | Beat {weight} × {reps} from {day}. |
 | `log.delete` | {n} sets, and the {exercise} PR it set. |
 | `trend.best` | BEST |
 | `trend.every` | EVERY SESSION |

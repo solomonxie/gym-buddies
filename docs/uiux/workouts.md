@@ -1,23 +1,39 @@
-# Workouts
+# Train
 
 The workouts you've built, what's in each one, and how exercises get added.
-Middle tab — the one you open to start training.
+First tab — the one you open to start training.
 
 ```
-  Workouts                              +
- ──────────────────────────────────────────
+  Train                                   +
  ╭────────────────────────────────────────╮
- │ Fraiser Heights                     ▶  │
+ │ UP NEXT                                │  ← least recently done: a
+ │ Fraiser Heights                        │     rotation without asking
+ │ 6 exercises · ~45 min · last 6 days ago│     for one
+ │                                        │
+ │ Walking                   1 × 5 · 3 lb │
+ │ Seated Machine Rows     3 × 10 · 50 lb │
+ │ Lat Pull Downs          3 × 10 · 50 lb │
+ │ Seated Leg Curls        3 × 10 · 50 lb │
+ │ + 2 more                               │
+ │ ╭────────────────────────────────────╮ │
+ │ │              ▶  Start              │ │
+ │ ╰────────────────────────────────────╯ │
+ ╰────────────────────────────────────────╯
+  WORKOUTS
+ ╭────────────────────────────────────────╮
+ │ Fraiser Heights                   (▶)  │
  │ 6 exercises · ~45 min                  │
- │ last done 3 days ago                  ›│
- ├────────────────────────────────────────┤
- │ Push Day                            ▶  │
+ │ Last done 6 days ago                   │
+ ╰────────────────────────────────────────╯
+ ╭────────────────────────────────────────╮
+ │ Push Day                          (▶)  │
  │ 5 exercises · ~40 min                  │
- │ last done 6 days ago                  ›│
- ├────────────────────────────────────────┤
- │ Legs                                ▶  │
- │ 4 exercises · ~35 min                  │
- │ never done                            ›│
+ │ Last done 3 days ago                   │
+ ╰────────────────────────────────────────╯
+ ╭────────────────────────────────────────╮
+ │ Legs                              (▶)  │
+ │ 1 exercise · ~4 min                    │
+ │ Never done                             │
  ╰────────────────────────────────────────╯
 ```
 
@@ -26,37 +42,32 @@ Reached from: tab bar
 ## Workout detail
 
 ```
- ‹ Back    Fraiser Heights    ⋯    🗑    +
- ──────────────────────────────────────────
+ ‹ Train      Fraiser Heights       ⋯   +
  ╭────────────────────────────────────────╮
- │            ▶  START WORKOUT            │  ← the reason you're here,
+ │           ▶  Start workout             │  ← the reason you're here,
  ╰────────────────────────────────────────╯     not a small icon in a bar
- ──────────────────────────────────────────
-  6 exercises · ~45 min · 18 sets
- ──────────────────────────────────────────
-  ☰ Walking                             ›
-    Cardio · 1 × 5 · 3 lb
- ──────────────────────────────────────────
-  ☰ Seated Machine Rows                 ›
-    Back · 3 × 10 · 50 lb
- ──────────────────────────────────────────
-  ☰ Lat Pull Downs                      ›
-    Back · 3 × 10 · 50 lb · rest 90s
- ──────────────────────────────────────────
-  ☰ Seated Leg Curls                    ›
-    Legs · 3 × 10 · 50 lb
- ──────────────────────────────────────────
-  ☰ Seated Machine Presses              ›
-    Shoulders · 3 × 10 · 40 lb
- ──────────────────────────────────────────
-  ☰ Planking                            ›
-    Core · 3 × 60s
- ──────────────────────────────────────────
-  ( + Add an exercise )
+  6 EXERCISES · ~45 MIN · 18 SETS
+ ╭────────────────────────────────────────╮
+ │ [▣] Walking                         ☰  │
+ │     Cardio · 1 × 5 · 3 lb              │
+ │ [▣] Seated Machine Rows             ☰  │
+ │     Back · 3 × 10 · 50 lb              │
+ │ [▣] Lat Pull Downs                  ☰  │
+ │     Back · 3 × 10 · 50 lb · rest 90s   │
+ │ [▣] Seated Leg Curls                ☰  │
+ │     Legs · 3 × 10 · 50 lb              │
+ │ [▣] Seated Machine Presses          ☰  │
+ │     Shoulders · 3 × 10 · 40 lb         │
+ │ [▣] Planking                        ☰  │
+ │     Core · 3 × 60s                     │
+ │ ⊕ Add exercises                        │
+ ╰────────────────────────────────────────╯
+  Tap to edit · hold and drag ☰ to reorder
 ```
 
-`☰` is the drag handle; order is the order you'll do them in, and it's meant to
-be dragged, so it gets a visible grip rather than a hidden long-press.
+`[▣]` is the equipment glyph on an accent-tinted tile — the row's only picture.
+`☰` is a visible grip: order is the order you'll do them in, and it's meant to
+be dragged.
 
 ## Editing a line — unfolds in place
 
@@ -66,42 +77,40 @@ below moves down. Nothing gets covered, so there's nothing to dismiss.
 ```
       tap the row                 unfolded in place
  ┌────────────────────────┐   ┌────────────────────────┐
- │ ☰ Lat Pull Downs     › │   │ ☰ Lat Pull Downs     ⌄ │
- │   Back · 3 × 10 · 50 │   │┌──────────────────────┐│
- ├────────────────────────┤ → ││ Sets    [−]  3  [+]  ││
- │ ☰ Seated Leg Curls   › │   ││ Reps    [−] 10  [+]  ││
- │   Legs · 3 × 10 · 50 │   ││ Weight  [−] 50  [+]  ││  ← machine: 10 lb
- └────────────────────────┘   ││ Rest    [ 60 | 90 |  ││     a tap
-                              ││          120 | ⌨ ]   ││
-                              ││ ( Remove )!          ││
+ │ Lat Pull Downs       ☰ │   │ Lat Pull Downs       ☰ │
+ │ Back · 3 × 10 · 50 lb  │   │┌──────────────────────┐│
+ ├────────────────────────┤ → ││ Sets     [−]  3  [+] ││
+ │ Seated Leg Curls     ☰ │   ││ Reps     [−] 10  [+] ││
+ │ Legs · 3 × 10 · 50 lb  │   ││ Weight   [−] 50  [+] ││
+ └────────────────────────┘   ││  lb, 10 lb a tap     ││  ← what + will do
+                              ││ Rest   Default (60s)⌄││  ← menu: default, 30–180s
+                              ││ Remove!              ││
                               │└──────────────────────┘│
-                              │ ☰ Seated Leg Curls   › │
+                              │ Seated Leg Curls     ☰ │
                               └────────────────────────┘
 ```
 
-## Add exercise
+## Add exercises
 
 ```
- ‹ Back    Add to Fraiser Heights     ✓
- ──────────────────────────────────────────
+ ‹ Back     Add to Fraiser Heights
   ┌──────────────────────────────────────┐
   │ 🔍 Search                            │
   └──────────────────────────────────────┘
-  [ ALL | Arms | Back | Chest | Legs | … ]  ← scrolls horizontally
- ──────────────────────────────────────────
-  ✓ Barbell Curls            Arms · Bar
-    Cable Tricep Extensions  Arms · Cable
-  ✓ Dumbbell Hammer Curls    Arms · DB
-    Bench Spider Curls       Arms · Bar
-    Cable Preacher Curls     Arms · Cable
-    ⋮
- ──────────────────────────────────────────
-  2 selected               [[ Add 2 ]]
+  ( All ) ( Arms ) ( Back ) ( Chest ) …     ← scrolls horizontally
+ ╭────────────────────────────────────────╮
+ │ ◉ Barbell Curls   ♥   Arms · Barbell   │  ← favourites sort first
+ │ ○ Cable Tricep Extensions Arms · Cable │
+ │ ◉ Dumbbell Hammer Curls Arms · Dumbbell│
+ │ ○ Bench Spider Curls  Arms · Barbell   │
+ │   ⋮                                    │
+ ╰────────────────────────────────────────╯
+  2 selected               [[ Add 2 ]]       ← only while something's picked
 ```
 
 Multi-select, because nobody adds exactly one exercise. Added lines take the
-app's default sets/reps and the weight from the last time you did that movement
-— a brand-new exercise starts at an empty bar, not at zero.
+default 3 sets, and the reps and weight from the last time you did that
+movement — a brand-new one starts at 10 reps and no load.
 
 ## States
 
@@ -114,17 +123,32 @@ no workouts
  │        [[ Build a workout ]]           │
  └────────────────────────────────────────┘
 
-empty workout
-  0 exercises
- ┌────────────────────────────────────────┐
- │   ( + Add an exercise )                │
- └────────────────────────────────────────┘
-  ▶ START WORKOUT·        ← disabled, nothing to do
+new workout (+ or Build a workout)
+ ┌──────────────────────────────────────┐
+ │ New workout                          │
+ │ [ Name                             ] │
+ │ ( Cancel )           [[ Create ]]    │
+ └──────────────────────────────────────┘
 
-session already running
+empty workout
+ │           ▶  Start workout·            │  ← disabled
+  Add an exercise to start.
+
+session running — Train swaps UP NEXT for this
  ╭────────────────────────────────────────╮
- │  ▶  RESUME — Fraiser Heights  00:14:22 │
+ │ IN PROGRESS                            │
+ │ Fraiser Heights                        │
+ │ 7 sets logged · 00:14:22               │
+ │ ╭────────────────────────────────────╮ │
+ │ │             ↻  Resume              │ │
+ │ ╰────────────────────────────────────╯ │
  ╰────────────────────────────────────────╯
+ │ Push Day                          (▶)· │  ← other ▶s grey: one session
+                                              at a time
+
+another workout's detail, mid-session
+ │           ▶  Start workout·            │
+  "Fraiser Heights" is still running.
 
 search finds nothing
   No exercise called "beep test".
@@ -135,49 +159,66 @@ deleting
  │ Delete "Fraiser Heights"?            │
  │ The 8 sessions you logged from it    │
  │ are kept.                            │
- │  ( Cancel )        [[ Delete ]]!     │
+ │  ( Cancel )        ( Delete )!       │
  └──────────────────────────────────────┘
+  never done → "It has never been done, so
+  no history is affected."
 
 long name
-  ☰ Seated Cable Row with Wide…        ›
+ │ [▣] Seated Cable Row with Wide…     ☰  │
 ```
 
 ## Interactions
 
 | Target | Action | Result |
 |---|---|---|
-| card `▶` | tap | straight into [`session.md`](session.md), no detail stop |
-| card body | tap | → workout detail |
-| `☰` | drag | reorder; saved on drop, no Done button |
+| `Start` / card `(▶)` | tap | straight into [`session.md`](session.md), no detail stop |
+| card or hero body | tap | → workout detail |
+| `+` on Train | tap | new-workout name alert |
+| `☰` | hold & drag | reorder; saved on drop, no Done button |
 | row | tap | unfolds the editor in place |
-| row | swipe ← | `[ Remove ]`! |
-| `⋯` | tap | `Duplicate` `Rename` `Export…` |
-| `+` | tap | → add exercise, multi-select |
-| chip row | tap | filters the list, `ALL` clears |
+| row | swipe ← | `[ Delete ]`! |
+| `⋯` | tap | `Rename` `Duplicate` `Export…` `Delete`! |
+| `+` / `⊕ Add exercises` | tap | → add exercises, multi-select |
+| chip row | tap | filters the list, `All` clears |
 
 ## Copy
 
 | Key | String |
 |---|---|
+| `train.upNext` | UP NEXT |
+| `train.inProgress` | IN PROGRESS |
+| `train.heroSummary` | {n} exercises · ~{minutes} min · last {n} days ago |
+| `train.more` | + {n} more |
+| `train.progress` | {n} sets logged · {elapsed} |
+| `workouts.header` | WORKOUTS |
 | `workouts.summary` | {n} exercises · ~{minutes} min |
-| `workouts.lastDone` | last done {n} days ago |
-| `workouts.neverDone` | never done |
+| `workouts.lastDone` | Last done {n} days ago |
+| `workouts.neverDone` | Never done |
 | `workouts.empty` | A workout is a list of exercises in the order you'll do them. |
-| `workout.start` | ▶ START WORKOUT |
-| `workout.resume` | ▶ RESUME — {name} {elapsed} |
+| `workout.start` | Start |
+| `workout.startFull` | Start workout |
+| `workout.resume` | Resume |
+| `workout.header` | {n} exercises · ~{minutes} min · {sets} sets |
 | `workout.line` | {group} · {sets} × {reps} · {weight} |
 | `workout.lineWithRest` | {group} · {sets} × {reps} · {weight} · rest {n}s |
+| `workout.hint` | Tap to edit · hold and drag ☰ to reorder |
+| `workout.cantStart.empty` | Add an exercise to start. |
+| `workout.cantStart.busy` | "{name}" is still running. |
 | `workout.delete` | The {n} sessions you logged from it are kept. |
 | `add.selected` | {n} selected |
 | `add.noResults` | No exercise called "{query}". |
 
 ## Notes
 
-`▶` on the card, not just inside the detail screen: the common case is "do the
-thing I did last Tuesday", and that shouldn't cost a screen transition.
+The hero card answers "what am I doing today?" before it's asked. It picks the
+least recently done workout, so a three-way split rotates on its own.
+
+`▶` on every card, not just inside the detail screen: the common case is "do
+the thing I did last Tuesday", and that shouldn't cost a screen transition.
 
 Deleting a workout keeps its logged sessions. History is a record of what you
 did, and it doesn't stop being true because you reorganised your plan.
 
-`~45 min` is estimated from the logged sessions of this workout, not from sets
-× rest. Once there's one real session, the estimate uses it.
+`~45 min` is the average of the last five logged sessions of this workout.
+Before there is one, it's planned: sets × (40s work + rest).

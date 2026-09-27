@@ -1,30 +1,29 @@
 # A gym tracker built around the set you're about to do
 
-> 🚧 Work in progress — domain engine and scaffold only, screens are placeholders.
-
 An iPhone workout tracker: exercise library, workouts you build, sets logged as
 you lift them, rest timer, and the graphs afterwards. Native Swift, no ads, no
-account, nothing leaves the phone.
+account. Your data stays on the phone, plus your own iCloud Drive if you
+turn backup on.
 
 The active-workout screen is the product. Everything else is setup for it.
 
 ```
-  Exit      Fraiser Heights      00:14:22
- ──────────────────────────────────────────
-  ≡   Seated Machine Rows            ▶|
-      Back · Machine
- ──────────────────────────────────────────
-  SET 2 of 3          last time: 10 × 50 lb
- ──────────────────────────────────────────
-
-          10                50.0
-         REPS                LB
-
-      [  −  ] [  +  ]   [  −  ] [  +  ]
-
- ╭────────────────────────────────────────╮
- │           LOG SET  ·  2 of 3           │
- ╰────────────────────────────────────────╯
+ ×          Fraiser Heights  00:14:22       ≡
+ ▬▬▬ ━━━ ▬▬▬ ▬▬▬ ▬▬▬ ▬▬▬
+ Seated Machine Rows                 ( ▶| Skip )
+ Back · Machine
+ ● ○ ○  Set 2 of 3 ⌄              LAST TIME
+                                  10 × 50 lb
+ ╭──────────────────────────────────────────╮
+ │ ( − )           10 REPS           ( + )  │
+ ╰──────────────────────────────────────────╯
+ ╭──────────────────────────────────────────╮
+ │ ( − )      50.0 LB  ± 10 lb       ( + )  │
+ ╰──────────────────────────────────────────╯
+ ╭──────────────────────────────────────────╮
+ │                ✓ Log set                 │
+ ╰──────────────────────────────────────────╯
+ Next  Lat Pull Downs          3 × 10 · 60 lb
 ```
 
 ## Three decisions worth knowing
@@ -46,7 +45,8 @@ into the template is a separate, deliberate question at the end.
 
 ```
 Core/       pure Foundation — session state machine, rest timer, units,
-            equipment increments, stats, progression. No SwiftUI, no SQLite.
+            equipment increments, stats, progression, the SQLite store and
+            the 300-movement catalogue. No SwiftUI.
 Sources/    SwiftUI. Draws Core's state and sends it events. Holds no rules.
 docs/       design, interface, build order
 ```
@@ -62,6 +62,7 @@ that never matches because two equal weights compare unequal. Those live in
 - [`docs/UIUX_DESIGN.md`](docs/UIUX_DESIGN.md) — screen map and flows
 - [`docs/uiux/`](docs/uiux/) — every screen and state, drawn
 - [`docs/IMPLEMENT_PLAN.md`](docs/IMPLEMENT_PLAN.md) — build order, task by task
+- [`docs/release/`](docs/release/) — App Store listing, privacy policy, screenshots
 
 ## Development
 
@@ -75,8 +76,15 @@ brew install xcodegen          # once
 xcodegen generate
 open GymBuddy.xcodeproj
 
-cd Core && swift test          # 46 tests, ~1s, no simulator
+cp Local.xcconfig.example Local.xcconfig   # your Team ID, gitignored
+make test                      # Core, ~1s, no simulator
+make device                    # build + install on the paired iPhone
+make release                   # archive + upload — docs/release/
 ```
+
+Debug builds take `-demo` (a phone full of history, in memory — the real
+database is never opened) and `-screen <name>` to open straight onto one
+screen; `make capture` uses both for store screenshots.
 
 Signing is not committed. Set your team at build time:
 

@@ -12,18 +12,18 @@ gestures, in-place pickers, and the ⓘ rule.
 | Surface | Kind | Drawing |
 |---|---|---|
 | **Session** (active workout) | full-screen cover | [`uiux/session.md`](uiux/session.md) |
-| Exercises · Favourites · Exercise detail | tabs, pushed page | [`uiux/exercises.md`](uiux/exercises.md) |
-| Workouts · Workout detail · Add exercise | tab, pushed pages | [`uiux/workouts.md`](uiux/workouts.md) |
-| Logs & Graphs · Session log · Trend | tab, pushed pages | [`uiux/logs.md`](uiux/logs.md) |
-| Settings and children | tab | [`uiux/settings.md`](uiux/settings.md) |
+| Train · Workout detail · Add exercises | tab, pushed pages | [`uiux/workouts.md`](uiux/workouts.md) |
+| Exercises (♥ filter) · Exercise detail · Editor | tab, pushed page, sheet | [`uiux/exercises.md`](uiux/exercises.md) |
+| Progress · Session log · Trend | tab, pushed pages | [`uiux/logs.md`](uiux/logs.md) |
+| Settings · About | tab, pushed page | [`uiux/settings.md`](uiux/settings.md) |
 | Components | reused parts | [`uiux/components.md`](uiux/components.md) |
 
-Five tabs, matching what the reference app established — this is a category
-where people arrive with muscle memory from somewhere else, and moving Workouts
-off the middle tab buys nothing.
+Four tabs, Train first: the tab you open is the one that starts a workout.
+Favourites is a `♥` chip at the head of the Exercises filter row, not a tab —
+it's the library with a filter, so it lives in the same list and drawing.
 
-Favourites is the library with a filter applied, not a second list, so it lives
-in the same drawing file.
+Look: neutral system surfaces, cards with 20pt corners, one accent (ember
+orange). Colour means "you can act on this"; everything else is grey.
 
 ## Screen map
 
@@ -31,26 +31,31 @@ in the same drawing file.
       Launch
         │
         ▼
- ┌──────────┬────────────┬──────────┬───────────────┬──────────┐
- │ Exercises│ Favourites │ Workouts │ Logs & Graphs │ Settings │
- └──────────┴────────────┴──────────┴───────────────┴──────────┘
-      │           │            │             │            │
-      └──▶ Exercise detail ◀───┤             │            ├─▶ Units
-                               │             │            ├─▶ Rest defaults
-                               │             │            └─▶ Backup ─▶ [share]
-                               │             │
-                               │             └─▶ Session log ─▶ Trend
-                               │
-                               ├─▶ Workout detail ─┬─▶ Add exercise
-                               │                   └─▶ Edit line
-                               │
-                               └─▶ ▶ Start ═══════▶ ┏━━━━━━━━━━━━━┓
-                                                    ┃   SESSION   ┃
-                                                    ┗━━━━━━━━━━━━━┛
-                                                          │
-                                        ┌─────────────────┼──────────────┐
-                                        ▼                 ▼              ▼
-                                   Exercise list       Notes        Finish ─▶ Summary
+ ┌─────────┬───────────┬──────────┬──────────┐
+ │  Train  │ Exercises │ Progress │ Settings │
+ └─────────┴───────────┴──────────┴──────────┘
+      │          │           │          │
+      │          │           │          ├─▶ Units · Rest (in place)
+      │          │           │          ├─▶ Export ─▶ [share] · Import ─▶ [picker]
+      │          │           │          └─▶ About
+      │          │           │
+      │          │           ├─▶ Session log ─▶ Trend ─▶ Exercise detail
+      │          │           └─▶ [share] CSV
+      │          │
+      │          ├─▶ ♥ filter (in place)
+      │          ├─▶ Exercise detail ─▶ Trend · Session log · Workout detail
+      │          └─▶ New exercise (sheet)
+      │
+      ├─▶ Workout detail ─┬─▶ Add exercises ─▶ New exercise (sheet)
+      │                   └─▶ Edit line (in place)
+      │
+      └─▶ ▶ Start / Resume ═════▶ ┏━━━━━━━━━━━━━┓
+                                  ┃   SESSION   ┃
+                                  ┗━━━━━━━━━━━━━┛
+                                        │
+                       ┌────────────────┼───────────────┐
+                       ▼                ▼               ▼
+                   ≡ Jump to     Keypad (sheet)   Finish ─▶ Summary
 
  [brackets] = OS-owned surface    ═══ = full-screen cover, tabs hidden
 ```
@@ -60,13 +65,13 @@ in the same drawing file.
 Log a set. It happens fifty times a workout and it is one tap:
 
 ```
-   set in progress            tap [[ LOG SET ]]          resting
+   set in progress            tap [[ ✓ Log set ]]        resting
  ┌──────────────────┐       ┌──────────────────┐     ┌──────────────────┐
- │   10      50.0   │       │   written to the │     │   10      50.0   │
- │  REPS      LB    │  ──▶  │   log as-is, the │ ──▶ │  REPS      LB    │
- │ [−][+]  [−][+]   │       │   plan untouched │     │ [−][+]  [−][+]   │
- │                  │       └──────────────────┘     │ RESTING 00:00:58 │
- │ [[ LOG SET 2/3 ]]│                                │ [[ LOG SET 3/3 ]]│
+ │ ●○○ Set 2 of 3   │       │   written to the │     │ ●●○ Set 3 of 3   │
+ │ (−)   10    (+)  │  ──▶  │   log as-is, the │ ──▶ │ (−)   10    (+)  │
+ │ (−)  50.0   (+)  │       │   plan untouched │     │ (−)  50.0   (+)  │
+ │                  │       └──────────────────┘     │ ◷ Rest 00:00:58  │
+ │ [[ ✓ Log set ]]  │                                │ [[ ✓ Log set ]]  │
  └──────────────────┘                                └──────────────────┘
                                                       ↑ still tappable
 ```
@@ -80,9 +85,10 @@ Finishing an exercise, and finishing the workout:
 ```
   last set of exercise ──▶ rest starts ──▶ next exercise loaded
                                             with ITS targets
-  last set of last one ──▶ Summary sheet ──▶ ( Discard ) [[ Save ]]
+  last set of last one ──▶ Summary sheet ──▶ ( Discard )! [[ Save ]]
                                                   │
-                                            ⌐ Nothing saved ¬
+                                         "Discard this workout?"
+                                          asked once more
 ```
 
 ## Cross-screen states
@@ -90,9 +96,9 @@ Finishing an exercise, and finishing the workout:
 Drawn per screen; these are the rules behind them.
 
 ```
-empty      no workouts     → "Build one" invitation, not a blank list
-           no logs yet     → Logs shows what a graph will look like, greyed
-           no favourites   → points at the library, doesn't scold
+empty      no workouts     → "Build a workout" invitation, not a blank list
+           no logs yet     → Progress says what will appear, → Train
+           no favourites   → "Show all exercises", doesn't scold
 loading    none            → everything is a local SQLite read; a spinner
                              would be a lie
 error      db unreadable   → one screen, "restore from a backup", never a
@@ -111,7 +117,8 @@ offline    always          → the word never appears; there is no network
 - Weights carry their unit every time they appear. A bare `50` in a log read six
   months later is worthless.
 - A skipped exercise says **`skipped`**, never "failed" or "missed".
-- Rest and elapsed share one format (`00:00:28`) so they read as a pair.
+- Rest and elapsed share one format (`00:00:28`) so they read as a pair;
+  finished durations drop to `42:18`.
 
 Full strings live per screen, under each drawing's `Copy` table.
 
@@ -120,6 +127,11 @@ Full strings live per screen, under each drawing's `Copy` table.
 - **60pt minimum tap target** for anything touched mid-set, against the usual
   44pt. The skill's figure assumes a dry finger and a steady hand; this app is
   used with neither. Everywhere outside the Session screen, 44pt stands.
+- **Four tabs, not the reference app's five.** The earlier plan kept five
+  (Exercises · Favourites · Workouts · Logs & Graphs · Settings) for muscle
+  memory. Favourites was the library with a filter, so it became a `♥` chip in
+  Exercises; Train moved first because starting a workout is why you open the
+  app. Fewer tabs, and each one a distinct job.
 - Otherwise none. Two of its mobile rules are load-bearing and cited where used:
   the **in-place unfolding picker** for the workout line editor
   ([`uiux/workouts.md`](uiux/workouts.md)) and **explanations behind an ⓘ** in

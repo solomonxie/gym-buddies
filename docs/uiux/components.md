@@ -2,38 +2,66 @@
 
 Anything drawn twice. Variants in one block so they can be compared.
 
+## Look
+
+```
+ accent     ember orange  #F0541C  (dark #FF6B2E)   ← the only colour, and
+ surfaces   system grouped greys, light + dark        it means "you can act
+ card       20pt continuous corners on the grouped    on this"
+            background; inner tiles 14pt
+ record     gold ★        done  green ✓
+ numbers    SF Rounded, tabular digits
+ labels     small caps eyebrow: LAST TIME, SETS, HISTORY
+```
+
+Everything that isn't tappable is greyscale, so the one thing that matters
+stands out. Gold and green mark facts (a record, a finished rest), not actions.
+
 ## Primary action
 
-The `[[ LOG SET ]]` button and its relatives. Full width, 60pt tall, bottom
-third of the screen.
+The one filled button on a screen. Full width, accent, 20pt corners; 64pt
+tall, 72pt on Session. Grey when disabled.
 
 ```
- normal    ╭──────────────────────────────╮
-           │       LOG SET  ·  2 of 3     │
+ log       ╭──────────────────────────────╮
+           │          ✓  Log set          │   72pt
            ╰──────────────────────────────╯
- final     │    LOG SET  ·  FINISH WORKOUT│
- start     │       ▶  START WORKOUT       │
- resume    │  ▶ RESUME — Fraiser 00:14:22 │
- disabled  │       ▶  START WORKOUT      ·│  ← annotate why on the right
- working   │            ⟳                 │
+ final     │      ✓  Log set & finish     │   72pt
+ finish    │        Finish workout        │   72pt, all done or skipped
+ hero      │           ▶  Start           │
+ detail    │       ▶  Start workout       │
+ resume    │          ↻  Resume           │
+ disabled  │       ▶  Start workout      ·│  ← grey; reason in a footnote
 ```
 
-## Number stepper
+## Soft button
 
-The only control most people touch mid-set.
+Quiet secondary: tinted text on a soft capsule, 44pt.
 
 ```
- loaded            10                50.0
-                  REPS                LB
-              [  −  ] [  +  ]   [  −  ] [  +  ]
+ accent    ( +30s )  ( Use 60 lb )  ( Create it )  ( Show 50 more )
+ grey      ( ▶| Skip )  ( Not today )
+ red       ( Discard )!
+```
 
- unloaded          12                          ← weight column removed,
-                  REPS                            not disabled
-              [  −  ] [  +  ]
+## Value tile
 
- at zero       [  −  ]·[  +  ]                 ← can't go below 0
+Session's reps and weight. The only control most people touch mid-set.
 
- props: value · unit · increment (from Equipment) · min
+```
+ loaded  ╭────────────────────────────────────────╮
+         │ ( − )            50.0            ( + ) │
+         │              LB  ± 10 lb               │
+         ╰────────────────────────────────────────╯
+ reps    │ ( − )             10             ( + ) │
+         │                  REPS                  │
+ timed   │ ( − )             60             ( + ) │
+         │                SECONDS                 │
+ unloaded  weight tile removed, not disabled
+
+ ( − ) ( + )  60pt circles at the thumb's edges; hold repeats,
+              faster every five steps; light haptic on press
+ number       54pt tabular, rolls on change; tap → keypad sheet
 ```
 
 Increment comes from the equipment, never from a constant:
@@ -48,42 +76,87 @@ Increment comes from the equipment, never from a constant:
  Band        —                          a band has a colour, not a weight
 ```
 
+## Line stepper
+
+The compact version, outside Session: workout line editor, log set editor.
+44pt, because nobody edits a plan mid-set.
+
+```
+ Weight                   [ − ]   50   [ + ]
+ lb, 10 lb a tap
+```
+
 ## Rest bar
 
 ```
- running   │ RESTING  00:00:28 [███░░░░░░] +30s × │
- nearly    │ RESTING  00:00:03 [█████████] +30s × │
- fired     │ REST OVER         [██████████]     × │
- absent    (nothing — no placeholder, no zero row)
+ running  ╭▒▒▒▒▒▒▒▒▒▒──────────────────────────────╮
+          │ ◷ Rest  00:00:28          ( +30s ) (×) │
+          ╰▒▒▒▒▒▒▒▒▒▒──────────────────────────────╯
+ fired    │ ◷ Rest over  (bell, green fill)    (×) │
+ absent   (nothing — no placeholder, no zero row)
 ```
 
-Never replaces the primary action; it sits above it.
+Background fills left to right in the accent (green once over). Never replaces
+the primary action; it sits above it.
+
+## Progress marks
+
+```
+ set dots        ● ● ○  Set 3 of 3 ⌄     accent = done
+ exercise strip  ━━━━ ━━━━ ▓▓▓▓ ░░░░ ░░░░   done · current · to go
+ week dots       (✓) ( ) (✓) (✓) ( ) (✓) ( )
+                  M   T   W   T   F   S   S
+```
+
+## Stat tile
+
+```
+ ╭───────────╮
+ │ 42:18     │   24pt tabular value,
+ │ TIME      │   eyebrow label under it
+ ╰───────────╯
+```
+
+Always in threes: summary (Time · Sets · Moved), Progress (Sessions · lb moved
+· Time).
+
+## Chip bar
+
+```
+ (♡) [ All ] ( Arms ) ( Back ) ( Chest ) …    scrolls horizontally
+ [♥] ( All ) [ Back ] ( Chest ) …             selected = inverted fill
+```
+
+The `♥` chip exists only where favourites matter (the library). Tapping a
+selected group clears it.
 
 ## Exercise row
 
-Used in the library, favourites, add-exercise, and up-next.
+Used in the library, favourites, and add-exercises.
 
 ```
- library    Lat Pull Downs           Machine    ›
- favourite  Barbell Deadlifts        Barbell ♥  ›
- selectable ✓ Dumbbell Hammer Curls  Arms · DB
- up next    Lat Pull Downs       3 × 10 · 50 lb ›
- in-session ● Seated Machine Rows    2 of 3 done
- done       ✓ Walking                1 × 5 · 3 lb
- skipped      Lat Pull Downs         skipped
- truncated  Seated Cable Row with W… Machine    ›
+ library    [▣] Lat Pull Downs                ♡  ›
+                Machine
+ favourite  [▣] Barbell Deadlifts             ♥  ›
+                Barbell
+ custom     [▣] Beep Test                     ♡  ›
+                Bodyweight · yours
+ selectable  ◉  Dumbbell Hammer Curls  Arms · Dumbbell
+ truncated  [▣] Seated Cable Row with W…      ♡  ›
 ```
+
+`[▣]` = equipment glyph on an accent-tinted rounded square.
 
 ## Set line
 
 One logged set, in a session log.
 
 ```
- normal      1  10 reps         50 lb
- under        3   8 reps         50 lb         ▼
- record       1  10 reps         60 lb      ★ PR
- unloaded     1  12 reps            —
- timed        1     60s              —
+ normal      1  10 reps                  50 lb
+ under       3   8 reps                  50 lb      ▼
+ record      1  10 reps                  60 lb   ★ PR
+ unloaded    1  12 reps                      —
+ timed       1  60s                          —
 ```
 
 ## Compact load format
@@ -93,7 +166,8 @@ The app's one number format, used on every card:
 ```
  3 × 10 · 50 lb        sets × reps · load
  1 × 5 · 3 lb
- 3 × 60s               timed, no load
+ 3 × 60s               held for seconds, no load
+ 1 × 20 min · 8% incline   minutes; a treadmill's load is its incline
  3 × 10 · 50 lb · rest 90s     only when the line overrides the default
 ```
 
@@ -102,9 +176,10 @@ Never "3 sets of 10 reps at 50 pounds" — read at arm's length, words are noise
 ## Chart
 
 ```
- populated  70 ┤                   ●
-            60 ┤         ●    ●
-            50 ┤  ●  ●
+ populated  60 lb  Thu 18 Sep           ← readout: last point, or the
+            70 ┤                   ●       one under the finger
+            60 ┤         ●────●
+            50 ┤  ●────●
                └──────────────────────
                 Jul     Aug     Sep
 
@@ -145,4 +220,10 @@ Never "3 sets of 10 reps at 50 pounds" — read at arm's length, words are noise
      A universal ±1 means 10 taps to move a
      machine stack one pin, and puts loads
      on the bar that no plate set can make.
+
+ ✗   A second colour for "Legs", another
+     for "PR", a gradient on the hero card
+
+     Colour stops meaning "tap here". One
+     accent, everything else grey.
 ```
