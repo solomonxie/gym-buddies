@@ -1,6 +1,6 @@
 # Session
 
-A workout being performed. Full-screen cover — the tab bar is gone, because
+A workout being performed. Full-screen cover — Train is gone, because
 nothing else is happening for the next hour.
 
 This is the screen the app exists for. Everything on it is sized by how often
@@ -168,7 +168,7 @@ every exercise done or skipped
  │ ( Leave )!          ( Keep going )   │
  └──────────────────────────────────────┘
 
- kept in background — above the tab bar on every tab
+ kept in background — at the bottom of every screen
  ╭────────────────────────────────────────╮
  │ Fraiser Heights            ⏱ 00:00:28 ⌃│  ← live clock: set, rest, or
  │ Seated Machine Rows · Set 2 of 3       │     elapsed; tap opens Session
@@ -224,7 +224,7 @@ every exercise done or skipped
 | `+30s` | tap | extends rest, keeping the time already rested |
 | `(×)` on rest | tap | dismiss, no penalty, no confirm |
 | `(×)` top-left | tap | exit dialog above |
-| `Keep in background` | tap | Session hides; mini bar above the tab bar |
+| `Keep in background` | tap | Session hides; mini bar at the bottom |
 | mini bar | tap | back to Session |
 
 ## Copy

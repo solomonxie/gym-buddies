@@ -1,6 +1,6 @@
 # Settings
 
-Fourth tab. Short on purpose — there is no account, no sync, and no ad
+Pushed from `⚙` on Train. Short on purpose — there is no account, no sync, and no ad
 preferences to bury anything under.
 
 ```
@@ -38,7 +38,7 @@ preferences to bury anything under.
   send it
 ```
 
-Reached from: tab bar
+Reached from: `⚙` at the top left of Train
 
 ## The ⓘ popovers
 
@@ -182,7 +182,7 @@ mid-session
 | `ⓘ` | tap | popover, not a pushed page |
 | `Export…` | tap | writes the SQLite file, then `[ share sheet ]` |
 | `Import…` | tap | `[ document picker ]` → confirm → reload |
-| `Exercises` / `Workouts` / `Sessions logged` | tap | the Exercises / Train / Progress tab |
+| `Exercises` / `Sessions logged` | tap | pushes Exercises / Progress; `Workouts` is a count only — Train is one back-swipe away |
 | `About` | tap | version, the not-a-coach note, illustrations, licences |
 
 ## Copy

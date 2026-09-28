@@ -16,7 +16,7 @@ struct GymBuddyApp: App {
                 if let error = model.loadError {
                     DatabaseErrorView(message: error)
                 } else {
-                    RootTabView()
+                    RootView()
                 }
             }
             .environment(model)

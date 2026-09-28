@@ -26,7 +26,7 @@ it is. Answers "where can I go right now?" before you put your shoes on.
   Counts travel time: open means open on arrival.
 ```
 
-Reached from: tab bar (between Exercises and Progress)
+Reached from: the Gyms tile on Train (it shows how many are open now)
 
 ## Gym editor
 

@@ -11,27 +11,25 @@ struct GymsView: View {
     private struct NewGym: Identifiable { let id: String }
 
     var body: some View {
-        TabStack(.gyms) {
-            TimelineView(.periodic(from: .now, by: 60)) { context in
-                list(leaving: picking ? picked : context.date)
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            list(leaving: picking ? picked : context.date)
+        }
+        .navigationTitle("Gyms")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { newGym = NewGym(id: model.createGym().id) } label: { Image(systemName: "plus") }
+                    .accessibilityLabel("New gym")
             }
-            .navigationTitle("Gyms")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { newGym = NewGym(id: model.createGym().id) } label: { Image(systemName: "plus") }
-                        .accessibilityLabel("New gym")
-                }
-            }
-            .sheet(item: $newGym) { gym in
-                NavigationStack {
-                    GymEditorView(gymID: gym.id)
-                        .withRoutes()
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") { newGym = nil }
-                            }
+        }
+        .sheet(item: $newGym) { gym in
+            NavigationStack {
+                GymEditorView(gymID: gym.id)
+                    .withRoutes()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { newGym = nil }
                         }
-                }
+                    }
             }
         }
     }

@@ -30,12 +30,9 @@ enum DemoData {
     @MainActor
     private static func route(_ model: AppModel) {
         switch screen {
-        case "exercises", "exercise": model.tab = .exercises
         case "favourites":
-            model.tab = .exercises
             model.favouritesOnly = true
-        case "logs", "log", "trend": model.tab = .progress
-        case "settings": model.tab = .settings
+            model.path = path
         case "treadmill":
             guard let workout = model.workouts.first(where: { $0.name == "Fraiser Heights" }) else { return }
             model.start(workout, at: .now.addingTimeInterval(-7 * 60))
@@ -53,7 +50,6 @@ enum DemoData {
             if screen == "background" {
                 model.completeSets(1, at: .now.addingTimeInterval(-32))
                 model.isSessionPresented = false
-                model.tab = .train
             }
             if screen == "summary" {
                 model.updateSession { s in
@@ -64,17 +60,21 @@ enum DemoData {
                 }
                 model.pendingSummary = model.session
             }
-        default: model.tab = .train
+        default: model.path = path
         }
     }
 
-    static func initialPath(for tab: AppTab) -> [Route] {
-        switch (tab, screen) {
-        case (.exercises, "exercise"): [.exercise("lat-pull-downs")]
-        case (.train, "workout"): [.workout("demo-fraiser")]
-        case (.train, "add"): [.workout("demo-fraiser"), .addExercises("demo-fraiser")]
-        case (.progress, "log"): [.log("demo-log-1")]
-        case (.progress, "trend"): [.trend("lat-pull-downs")]
+    private static var path: [Route] {
+        switch screen {
+        case "exercises", "favourites": [.exercises]
+        case "exercise": [.exercises, .exercise("lat-pull-downs")]
+        case "gyms": [.gyms]
+        case "settings": [.settings]
+        case "workout": [.workout("demo-fraiser")]
+        case "add": [.workout("demo-fraiser"), .addExercises("demo-fraiser")]
+        case "logs": [.progress]
+        case "log": [.progress, .log("demo-log-1")]
+        case "trend": [.progress, .trend("lat-pull-downs")]
         default: []
         }
     }

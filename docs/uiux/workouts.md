@@ -1,10 +1,11 @@
 # Train
 
 The workouts you've built, what's in each one, and how exercises get added.
-First tab — the one you open to start training.
+The app's only root — no tab bar. Progress, Exercises, Gyms and Settings
+are pushed from it instead of taking a tab each.
 
 ```
-  Train                                   +
+  ⚙       Gym Buddy                      ← title is the app name
  ╭────────────────────────────────────────╮
  │ UP NEXT                                │  ← least recently done: a
  │ Fraiser Heights                        │     rotation without asking
@@ -19,8 +20,20 @@ First tab — the one you open to start training.
  │ │              ▶  Start              │ │
  │ ╰────────────────────────────────────╯ │
  ╰────────────────────────────────────────╯
-  WORKOUTS
+ ╭───────────────────╮ ╭──────────────────╮
+ │ ▣                 │ │ ▦                │  ← looked up now and then:
+ │ Exercises         │ │ Gyms             │     a tile, not a tab
+ │ 180               │ │ 2 open now       │
+ ╰───────────────────╯ ╰──────────────────╯
  ╭────────────────────────────────────────╮
+ │ PROGRESS · LAST 30 DAYS              › │  ← hidden until a session is
+ │  (✓)  ( )  (✓)  (✓)  ( )  (✓)  ( )     │     logged; tap → Progress
+ │   M    T    W    T    F    S    S      │
+ │ 12          38k          8h 40m        │
+ │ sessions    lb moved     time          │
+ ╰────────────────────────────────────────╯
+  WORKOUTS                             +    ← new workout, next to the list
+ ╭────────────────────────────────────────╮     it adds to
  │ Fraiser Heights                   (▶)  │
  │ 6 exercises · ~45 min                  │
  │ Last done 6 days ago                   │
@@ -37,12 +50,14 @@ First tab — the one you open to start training.
  ╰────────────────────────────────────────╯
 ```
 
-Reached from: tab bar
+Reached from: launch — it's the root. `⚙` pushes Settings; the cards push
+Exercises, Gyms and Progress.
+Nothing built yet: the empty state, with the same two tiles under it.
 
 ## Workout detail
 
 ```
- ‹ Train      Fraiser Heights       ⋯   +
+ ‹ Gym Buddy  Fraiser Heights       ⋯   +
  ╭────────────────────────────────────────╮
  │           ▶  Start workout             │  ← the reason you're here,
  ╰────────────────────────────────────────╯     not a small icon in a bar

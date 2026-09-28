@@ -10,29 +10,27 @@ struct LogsView: View {
     private var range: TrendRange { TrendRange(rawValue: rangeRaw) ?? .days30 }
 
     var body: some View {
-        TabStack(.progress) {
-            Group {
-                if model.logs.isEmpty {
-                    EmptyState(
-                        title: "No sessions yet",
-                        message: "Finish a workout and it shows up here with the numbers filled in.",
-                        systemImage: "chart.bar.xaxis",
-                        action: ("Go to Train", { model.tab = .train })
-                    )
-                } else {
-                    content
-                }
+        Group {
+            if model.logs.isEmpty {
+                EmptyState(
+                    title: "No sessions yet",
+                    message: "Finish a workout and it shows up here with the numbers filled in.",
+                    systemImage: "chart.bar.xaxis",
+                    action: ("Back to Train", { model.path.removeAll() })
+                )
+            } else {
+                content
             }
-            .background(Theme.surface)
-            .navigationTitle("Progress")
-            .toolbar {
-                if !model.logs.isEmpty {
-                    ToolbarItem(placement: .primaryAction) {
-                        ShareLink(item: csvFile(), preview: SharePreview("Gym Buddy sessions.csv")) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        .accessibilityLabel("Export sessions as CSV")
+        }
+        .background(Theme.surface)
+        .navigationTitle("Progress")
+        .toolbar {
+            if !model.logs.isEmpty {
+                ToolbarItem(placement: .primaryAction) {
+                    ShareLink(item: csvFile(), preview: SharePreview("Gym Buddy sessions.csv")) {
+                        Image(systemName: "square.and.arrow.up")
                     }
+                    .accessibilityLabel("Export sessions as CSV")
                 }
             }
         }
@@ -54,8 +52,8 @@ struct LogsView: View {
 
                 HStack(spacing: 10) {
                     StatTile(value: "\(inRange.count)", label: "Sessions")
-                    StatTile(value: compact(Stats.volume(sets).value(in: model.unit)), label: "\(model.unit.abbreviation) moved")
-                    StatTile(value: hours(minutes), label: "Time")
+                    StatTile(value: StatFormat.compact(Stats.volume(sets).value(in: model.unit)), label: "\(model.unit.abbreviation) moved")
+                    StatTile(value: StatFormat.hours(minutes), label: "Time")
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -103,20 +101,6 @@ struct LogsView: View {
             .padding(.horizontal, Theme.Metrics.gutter)
             .padding(.bottom, 24)
         }
-    }
-
-    /// `82k`, `12.4k`, `940`.
-    private func compact(_ value: Double) -> String {
-        switch value {
-        case 1_000_000...: String(format: "%.1fM", value / 1_000_000)
-        case 10_000...: String(format: "%.0fk", value / 1000)
-        case 1000...: String(format: "%.1fk", value / 1000)
-        default: String(Int(value))
-        }
-    }
-
-    private func hours(_ minutes: Int) -> String {
-        minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
     }
 
     private func csvFile() -> URL {
@@ -188,5 +172,21 @@ struct HistoryRow: View {
             Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
         }
         .contentShape(Rectangle())
+    }
+}
+
+enum StatFormat {
+    /// `82k`, `12.4k`, `940`.
+    static func compact(_ value: Double) -> String {
+        switch value {
+        case 1_000_000...: String(format: "%.1fM", value / 1_000_000)
+        case 10_000...: String(format: "%.0fk", value / 1000)
+        case 1000...: String(format: "%.1fk", value / 1000)
+        default: String(Int(value))
+        }
+    }
+
+    static func hours(_ minutes: Int) -> String {
+        minutes >= 60 ? "\(minutes / 60)h \(minutes % 60)m" : "\(minutes)m"
     }
 }
