@@ -8,27 +8,31 @@ struct ExercisesView: View {
     }
 }
 
-/// The library. Favourites is this same list with a filter, not a second one.
+/// The library: favourites on top, then every muscle group, each folded to a
+/// few rows until tapped open. A search shows every match.
 struct ExerciseLibrary: View {
     @Environment(AppModel.self) private var model
-    private var favouritesOnly: Bool { model.favouritesOnly }
     @State private var query = ""
-    @State private var group: MuscleGroup?
+    @State private var expanded: Set<String> = []
     @State private var creating: String?
     @State private var addingToWorkout: Exercise?
 
+    private static let folded = 3
+    private static let favouritesKey = "favourites"
+
     private var filtered: [Exercise] {
         model.exercises.filter { e in
-            (!favouritesOnly || e.isFavourite)
-                && (group == nil || e.muscleGroup == group)
-                && (query.isEmpty || e.name.localizedCaseInsensitiveContains(query)
-                    || e.equipment.displayName.localizedCaseInsensitiveContains(query))
+            query.isEmpty || e.name.localizedCaseInsensitiveContains(query)
+                || e.equipment.displayName.localizedCaseInsensitiveContains(query)
         }
     }
 
-    private var sections: [(MuscleGroup, [Exercise])] {
-        let byGroup = Dictionary(grouping: filtered, by: \.muscleGroup)
-        return MuscleGroup.allCases.compactMap { g in byGroup[g].map { (g, $0) } }
+    private var sections: [(key: String, title: String, exercises: [Exercise])] {
+        let shown = filtered
+        let favourites = shown.filter(\.isFavourite)
+        let byGroup = Dictionary(grouping: shown, by: \.muscleGroup)
+        return (favourites.isEmpty ? [] : [(Self.favouritesKey, "Favourites", favourites)])
+            + MuscleGroup.allCases.compactMap { g in byGroup[g].map { (g.rawValue, g.displayName, $0) } }
     }
 
     var body: some View {
@@ -59,19 +63,13 @@ struct ExerciseLibrary: View {
 
     private var list: some View {
         List {
-            Section {
-                ChipBar(selection: $group, favourites: Binding(
-                    get: { model.favouritesOnly }, set: { model.favouritesOnly = $0 }
-                ))
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-            }
             if filtered.isEmpty {
                 noMatch
             }
-            ForEach(sections, id: \.0) { group, exercises in
+            ForEach(sections, id: \.key) { section in
+                let open = !query.isEmpty || expanded.contains(section.key)
                 Section {
-                    ForEach(exercises) { exercise in
+                    ForEach(open ? section.exercises : Array(section.exercises.prefix(Self.folded))) { exercise in
                         NavigationLink(value: Route.exercise(exercise.id)) {
                             ExerciseRow(exercise: exercise) { model.toggleFavourite(exercise) }
                         }
@@ -86,37 +84,35 @@ struct ExerciseLibrary: View {
                             .tint(Theme.accent)
                         }
                     }
+                    if query.isEmpty && section.exercises.count > Self.folded {
+                        Button(open ? "Show fewer" : "Show \(section.exercises.count - Self.folded) more") {
+                            if open { expanded.remove(section.key) } else { expanded.insert(section.key) }
+                        }
+                        .font(.subheadline.weight(.semibold))
+                    }
                 } header: {
                     HStack {
-                        Text(group.displayName)
+                        Text(section.title)
                         Spacer()
-                        Text("\(exercises.count)").monospacedDigit()
+                        Text("\(section.exercises.count)").monospacedDigit()
                     }
                     .eyebrow()
                 }
             }
         }
         .listStyle(.insetGrouped)
-        .searchable(text: $query, prompt: "Search \(model.exercises.count) exercises")
-        .animation(.snappy, value: group)
-        .animation(.snappy, value: favouritesOnly)
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search \(model.exercises.count) exercises")
+        .animation(.snappy, value: expanded)
     }
 
     @ViewBuilder
     private var noMatch: some View {
         Section {
             VStack(alignment: .leading, spacing: 12) {
-                if favouritesOnly && query.isEmpty {
-                    Text("Nothing starred yet").font(.headline)
-                    Text("Tap ♥ on an exercise to keep it here.").foregroundStyle(.secondary)
-                    Button("Show all exercises") { model.favouritesOnly = false }
-                        .buttonStyle(SoftButtonStyle())
-                } else {
-                    Text(query.isEmpty ? "Nothing in this group yet." : "No exercise called “\(query)”.")
-                        .foregroundStyle(.secondary)
-                    Button("Create it") { creating = query }
-                        .buttonStyle(SoftButtonStyle())
-                }
+                Text(query.isEmpty ? "No exercises yet." : "No exercise called “\(query)”.")
+                    .foregroundStyle(.secondary)
+                Button("Create it") { creating = query }
+                    .buttonStyle(SoftButtonStyle())
             }
             .padding(.vertical, 8)
         }

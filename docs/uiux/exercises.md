@@ -1,14 +1,23 @@
 # Exercises
 
-The library, pushed from its tile on Train. Favourites are the same list behind the `♥` chip.
+The library, pushed from its tile on Train. Favourites head the same list.
 
 ```
   Exercises                               +
   ┌──────────────────────────────────────┐
-  │ 🔍 Search 180 exercises              │
-  └──────────────────────────────────────┘
-  (♡) [ All ] ( Arms ) ( Back ) ( Chest ) …  ← ♡ first: favourites filter
-  BACK                                    4
+  │ 🔍 Search 180 exercises              │  ← always shown, not pulled
+  └──────────────────────────────────────┘     down
+  FAVOURITES                              5  ← only once something is ♥'d
+ ╭────────────────────────────────────────╮
+ │ [▣] Barbell Deadlifts            ♥   › │
+ │     Barbell                            │
+ │ [▣] Pull Ups                     ♥   › │
+ │     Bodyweight                         │
+ │ [▣] Barbell Bench Press          ♥   › │
+ │     Barbell                            │
+ │ Show 2 more                            │  ← 3 rows until opened
+ ╰────────────────────────────────────────╯
+  BACK                                   14
  ╭────────────────────────────────────────╮
  │ [▣] Barbell Deadlifts            ♥   › │
  │     Barbell                            │
@@ -16,39 +25,17 @@ The library, pushed from its tile on Train. Favourites are the same list behind 
  │     Machine                            │
  │ [▣] Pull Ups                     ♥   › │
  │     Bodyweight                         │
- │ [▣] Seated Machine Rows          ♡   › │
- │     Machine                            │
- ╰────────────────────────────────────────╯
-  CHEST                                   3
- ╭────────────────────────────────────────╮
- │ [▣] Barbell Bench Press          ♥   › │
- │     Barbell                            │
- │   ⋮                                    │
- ╰────────────────────────────────────────╯
+ │ Show 11 more                           │  ← opened: every row, then
+ ╰────────────────────────────────────────╯     "Show fewer"
+   ⋮
 ```
 
 Reached from: the Exercises tile on Train, or Settings → Your data. Detail also opens from a trend's `ⓘ`.
 
 Grouped by muscle group, because that is how people decide what to do next.
-Chips filter; the section headers stay for scanning. Search matches name or
-equipment.
-
-## Favourites — the ♥ chip
-
-```
-  [♥] ( All ) ( Arms ) ( Back ) ( Chest ) …  ← ♥ chip on, stacks with a
-  BACK                                    2     muscle-group chip
- ╭────────────────────────────────────────╮
- │ [▣] Barbell Deadlifts            ♥   › │
- │     Barbell                            │
- │ [▣] Pull Ups                     ♥   › │
- │     Bodyweight                         │
- ╰────────────────────────────────────────╯
-```
-
-Same rows, same detail screen, same `♥` to remove. It is the library with a
-filter, and building it as a second list — or a second tab — would be two
-things to keep in step.
+Each group shows 3 rows so every group fits a scroll or two; no chip row —
+the headers are the index. Search matches name or equipment and opens every
+group. Favourites are the same rows, repeated in a section on top.
 
 ## Exercise detail
 
@@ -113,12 +100,7 @@ things to keep in step.
 
 ```
 no favourites
-  [♥] ( All ) ( Arms ) …
- ╭────────────────────────────────────────╮
- │ Nothing starred yet                    │
- │ Tap ♥ on an exercise to keep it here.  │
- │ ( Show all exercises )                 │
- ╰────────────────────────────────────────╯
+  No FAVOURITES section at all — nothing to scold.
 
 never performed
   Your best                              —
@@ -157,8 +139,7 @@ group empty
 | row | tap | → exercise detail |
 | `♥` | tap | toggles favourite in place, no navigation |
 | row | swipe ← | `[ ♥ Favourite ]` `[ Add to workout… ]` |
-| `♥` chip | tap | favourites only; combines with a group chip |
-| group chip | tap | filter; tap again or `All` clears |
+| `Show N more` / `Show fewer` | tap | opens / folds that section in place |
 | metric segment | tap | redraws the chart; remembered, shared with Trend |
 | chart | drag | value and date readout follows the finger |
 | `Last done` | tap | → that session log ([`logs.md`](logs.md)) |
@@ -187,9 +168,8 @@ group empty
 | `editor.increment` | + adds {increment} a tap. |
 | `editor.noLoad` | No weight is tracked for this equipment. |
 | `editor.howTo.hint` | Optional. Three lines covering what people get wrong is plenty. |
-| `favourites.empty.title` | Nothing starred yet |
-| `favourites.empty` | Tap ♥ on an exercise to keep it here. |
-| `favourites.showAll` | Show all exercises |
+| `library.more` | Show {n} more |
+| `library.fewer` | Show fewer |
 
 ## Notes
 

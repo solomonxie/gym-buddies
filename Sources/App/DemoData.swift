@@ -30,9 +30,6 @@ enum DemoData {
     @MainActor
     private static func route(_ model: AppModel) {
         switch screen {
-        case "favourites":
-            model.favouritesOnly = true
-            model.path = path
         case "treadmill":
             guard let workout = model.workouts.first(where: { $0.name == "Fraiser Heights" }) else { return }
             model.start(workout, at: .now.addingTimeInterval(-7 * 60))

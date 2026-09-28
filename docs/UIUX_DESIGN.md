@@ -13,7 +13,7 @@ gestures, in-place pickers, and the ⓘ rule.
 |---|---|---|
 | **Session** (active workout) | full-screen cover | [`uiux/session.md`](uiux/session.md) |
 | Train · New workout / templates · Workout detail · Add exercises | root, sheet, pushed pages | [`uiux/workouts.md`](uiux/workouts.md) |
-| Exercises (♥ filter) · Exercise detail · Editor | pushed from Train, pushed page, sheet | [`uiux/exercises.md`](uiux/exercises.md) |
+| Exercises (♥ section) · Exercise detail · Editor | pushed from Train, pushed page, sheet | [`uiux/exercises.md`](uiux/exercises.md) |
 | Gyms · Gym editor | pushed from Train, pushed page | [`uiux/gyms.md`](uiux/gyms.md) |
 | Progress · Session log · Trend | pushed from Train, pushed pages | [`uiux/logs.md`](uiux/logs.md) |
 | Settings · About | pushed from Train's `⚙`, pushed page | [`uiux/settings.md`](uiux/settings.md) |
@@ -22,8 +22,8 @@ gestures, in-place pickers, and the ⓘ rule.
 No tabs. Train is the one root: start a workout, glance at progress, and
 reach Exercises, Gyms and Settings from cards and its `⚙` — each is looked
 up now and then, and five tabs read as five equal jobs.
-Favourites is a `♥` chip at the head of the Exercises filter row, not a tab —
-it's the library with a filter, so it lives in the same list and drawing.
+Favourites is a section at the top of Exercises, not a tab —
+the same rows repeated, so it lives in the same list and drawing.
 
 Look: neutral system surfaces, cards with 20pt corners, one accent (ember
 orange). Colour means "you can act on this"; everything else is grey.
@@ -47,7 +47,6 @@ orange). Colour means "you can act on this"; everything else is grey.
       │          │         │
       │          │         └─▶ Gym editor ─▶ Workout detail
       │          │
-      │          ├─▶ ♥ filter (in place)
       │          ├─▶ Exercise detail ─▶ Trend · Session log · Workout detail
       │          └─▶ New exercise (sheet)
       │
@@ -105,7 +104,7 @@ Drawn per screen; these are the rules behind them.
 ```
 empty      no workouts     → "Build a workout" invitation, not a blank list
            no logs yet     → Progress says what will appear, → Train
-           no favourites   → "Show all exercises", doesn't scold
+           no favourites   → no Favourites section, doesn't scold
 loading    none            → everything is a local SQLite read; a spinner
                              would be a lie
 error      db unreadable   → one screen, "restore from a backup", never a
@@ -135,7 +134,7 @@ Full strings live per screen, under each drawing's `Copy` table.
   44pt. The skill's figure assumes a dry finger and a steady hand; this app is
   used with neither. Everywhere outside the Session screen, 44pt stands.
 - **No tabs, not the reference app's five.** Favourites was the library
-  with a filter, so it became a `♥` chip in Exercises. Five tabs were too
+  with a filter, so it became a section atop Exercises. Five tabs were too
   many to take in (user feedback, Sep 2026), so everything else became a
   card or button on Train that pushes its screen.
 - Otherwise none. Two of its mobile rules are load-bearing and cited where used:
