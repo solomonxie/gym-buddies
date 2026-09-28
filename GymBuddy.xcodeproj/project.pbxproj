@@ -27,6 +27,7 @@
 		BDCE89AAFEC4ED90C70F4CE8 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06884A6A49EFA8C4FFAB991 /* LogsView.swift */; };
 		BE12610B6DA07F1CFF6B8617 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E9B1D3C3B686DBE601C5580 /* WorkoutsView.swift */; };
 		BFF62E84756A24EDEE3E7EFB /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE12FE481FD7FF198B12D12D /* RootTabView.swift */; };
+		C97D0843A8885D1380D9B13B /* MiniSessionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56758F8FA4B00252ABCBC559 /* MiniSessionBar.swift */; };
 		CC0057C8B0B52CC631501F3C /* TimerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B6DA5137D2F0CCFFA51B4D2 /* TimerBar.swift */; };
 		DBC42E0BD5463CD9435AAE76 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B21D2683FAF3EE84328CFB /* Theme.swift */; };
 		DEFFFC3209EBCD9FC620AED0 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87273A894518E6106FC54498 /* AppModel.swift */; };
@@ -48,6 +49,7 @@
 		4DCA31A53E6AC74DD7A52B90 /* RestAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestAlerts.swift; sourceTree = "<group>"; };
 		534F2B05E6AB5A755A7DA715 /* MuscleMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuscleMap.swift; sourceTree = "<group>"; };
 		560D14A1332E889BE9E8CC36 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Core; sourceTree = SOURCE_ROOT; };
+		56758F8FA4B00252ABCBC559 /* MiniSessionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniSessionBar.swift; sourceTree = "<group>"; };
 		572651888DEABE6D6BEFB234 /* SessionParts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParts.swift; sourceTree = "<group>"; };
 		5CB57F8B25318DF8E8D99000 /* GymBuddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymBuddyApp.swift; sourceTree = "<group>"; };
 		5D8373D1E291A839F49CA4DF /* TrendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendView.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 		52A64EADBBC71F20CF66D14D /* Session */ = {
 			isa = PBXGroup;
 			children = (
+				56758F8FA4B00252ABCBC559 /* MiniSessionBar.swift */,
 				572651888DEABE6D6BEFB234 /* SessionParts.swift */,
 				1746F0632E5C745A28336401 /* SessionView.swift */,
 				4B6DA5137D2F0CCFFA51B4D2 /* TimerBar.swift */,
@@ -331,6 +334,7 @@
 				3F5B062B74C6095F85B2E0E4 /* ExercisesView.swift in Sources */,
 				300CFCA8CF93E08523405870 /* GymBuddyApp.swift in Sources */,
 				BDCE89AAFEC4ED90C70F4CE8 /* LogsView.swift in Sources */,
+				C97D0843A8885D1380D9B13B /* MiniSessionBar.swift in Sources */,
 				1695EE55CC17F57FEA4172FD /* MuscleMap.swift in Sources */,
 				51FD2B630BBE5C4000014226 /* RestAlerts.swift in Sources */,
 				BFF62E84756A24EDEE3E7EFB /* RootTabView.swift in Sources */,
