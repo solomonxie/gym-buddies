@@ -1,6 +1,6 @@
 # Exercises
 
-The library. Second tab. Favourites are the same list behind the `♥` chip.
+The library, pushed from its tile on Train. Favourites are the same list behind the `♥` chip.
 
 ```
   Exercises                               +
@@ -27,7 +27,7 @@ The library. Second tab. Favourites are the same list behind the `♥` chip.
  ╰────────────────────────────────────────╯
 ```
 
-Reached from: tab bar. Detail also opens from a trend's `ⓘ`.
+Reached from: the Exercises tile on Train, or Settings → Your data. Detail also opens from a trend's `ⓘ`.
 
 Grouped by muscle group, because that is how people decide what to do next.
 Chips filter; the section headers stay for scanning. Search matches name or
@@ -181,7 +181,7 @@ group empty
 | `exercise.howTo` | HOW TO |
 | `exercise.inWorkouts` | IN {n} WORKOUTS |
 | `exercise.addTo` | Add {exercise} to… |
-| `exercise.addTo.none` | Build a workout first, on the Train tab. |
+| `exercise.addTo.none` | Build a workout first, on Train. |
 | `exercise.reset` | {n} logged sets are removed. The sessions they were in are kept. |
 | `exercise.delete` | It's removed from your workouts. Sets already logged stay in your history. |
 | `editor.increment` | + adds {increment} a tap. |

@@ -1,39 +1,23 @@
 import GymBuddyCore
 import SwiftUI
 
-struct RootTabView: View {
+/// One stack, Train at the root: every other screen is pushed from it.
+struct RootView: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
         @Bindable var model = model
-        TabView(selection: $model.tab) {
-            WorkoutsView()
-                .miniSessionBar()
-                .tabItem { Label("Train", systemImage: "figure.strengthtraining.traditional") }
-                .tag(AppTab.train)
-            ExercisesView()
-                .miniSessionBar()
-                .tabItem { Label("Exercises", systemImage: "dumbbell") }
-                .tag(AppTab.exercises)
-            GymsView()
-                .miniSessionBar()
-                .tabItem { Label("Gyms", systemImage: "building.2") }
-                .tag(AppTab.gyms)
-            LogsView()
-                .miniSessionBar()
-                .tabItem { Label("Progress", systemImage: "chart.bar.xaxis") }
-                .tag(AppTab.progress)
-            SettingsView()
-                .miniSessionBar()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
-                .tag(AppTab.settings)
+        NavigationStack(path: $model.path) {
+            WorkoutsView().withRoutes()
         }
+        .miniSessionBar()
         .tint(Theme.accent)
         .fullScreenCover(isPresented: $model.isSessionPresented) {
             SessionView()
         }
     }
 }
+
 /// The database couldn't be opened. One screen, one way out — never a
 /// silent empty list pretending you have no history.
 struct DatabaseErrorView: View {

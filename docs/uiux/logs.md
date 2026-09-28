@@ -1,6 +1,6 @@
 # Progress
 
-What you've actually done. Third tab.
+What you've actually done. The Progress card on Train is its summary.
 
 ```
   Progress                                ⇪  ← CSV of every session
@@ -34,7 +34,7 @@ What you've actually done. Third tab.
    ⋮
 ```
 
-Reached from: tab bar · `Last done` on an exercise opens a session log
+Reached from: the Progress card on Train · Settings → Sessions logged · `Last done` on an exercise opens a session log
 
 `★` marks a session that set a personal record. It's the only decoration on the
 screen and it means something specific.

@@ -175,8 +175,8 @@ plays nothing as abuse. The notification costs nothing between sets.
   you" and lets double progression take it from there. Not medical advice.
 - **Travel time is typed in.** Measuring it needs location and a maps
   service — a network call this app doesn't make.
-- **Five tabs again.** Gyms took the slot Favourites gave up; "where can I go
-  right now?" is its own question.
+- **No tabs.** Train is the one root; Progress, Exercises, Gyms and Settings
+  are pushed from it — five tabs was too many (user feedback, Sep 2026).
 - Open: does the workout builder need supersets in v1? Currently no — a
   superset is two lines with rest 0 on the first, which covers most of it
   without a new concept.

@@ -1,7 +1,8 @@
 import SwiftUI
 import GymBuddyCore
 
-/// Train: the workout that's up next, big, then everything else.
+/// Train: the workout that's up next, big, then everything else. The app's
+/// only root — progress, the library, gyms and settings are pushed from it.
 struct WorkoutsView: View {
     @Environment(AppModel.self) private var model
     @State private var creating = false
@@ -14,30 +15,33 @@ struct WorkoutsView: View {
     }
 
     var body: some View {
-        TabStack(.train) {
-            Group {
-                if model.workouts.isEmpty {
+        Group {
+            if model.workouts.isEmpty {
+                VStack {
                     EmptyState(
                         title: "Nothing built yet",
                         message: "A workout is a list of exercises in the order you'll do them.",
                         systemImage: "dumbbell",
                         action: ("Build a workout", { creating = true })
                     )
-                } else {
-                    content
+                    PlacesRow()
+                        .padding(.horizontal, Theme.Metrics.gutter)
+                        .padding(.bottom, 24)
                 }
+            } else {
+                content
             }
-            .background(Theme.surface)
-            .navigationTitle("Train")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button { creating = true } label: { Image(systemName: "plus") }
-                        .accessibilityLabel("New workout")
-                }
+        }
+        .background(Theme.surface)
+        .navigationTitle("Gym Buddy")
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                NavigationLink(value: Route.settings) { Image(systemName: "gearshape") }
+                    .accessibilityLabel("Settings")
             }
-            .sheet(isPresented: $creating) {
-                NewWorkoutSheet()
-            }
+        }
+        .sheet(isPresented: $creating) {
+            NewWorkoutSheet()
         }
     }
 
@@ -49,10 +53,22 @@ struct WorkoutsView: View {
                 } else if let next = upNext {
                     HeroCard(workout: next)
                 }
-                Text("Workouts")
-                    .eyebrow()
-                    .padding(.top, 12)
-                    .padding(.leading, 4)
+                PlacesRow()
+                if !model.logs.isEmpty {
+                    ProgressSummary()
+                }
+                HStack {
+                    Text("Workouts").eyebrow()
+                    Spacer()
+                    Button { creating = true } label: {
+                        Image(systemName: "plus")
+                            .font(.body.weight(.semibold))
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel("New workout")
+                }
+                .padding(.top, 4)
+                .padding(.leading, 4)
                 ForEach(model.workouts) { workout in
                     WorkoutCard(workout: workout)
                 }
@@ -67,6 +83,89 @@ extension AppModel {
     func minutes(for workout: Workout) -> Int {
         Stats.estimatedMinutes(workoutID: workout.id, logs: logs)
             ?? Stats.plannedMinutes(workout, defaultRest: settings.restBetweenSets, exercises: exercisesByID)
+    }
+}
+
+/// The last 30 days at a glance; the rest is one tap away.
+private struct ProgressSummary: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        let recent = Stats.logs(model.logs, since: TrendRange.days30.start)
+        let minutes = Int(recent.reduce(0) { $0 + $1.duration } / 60)
+        NavigationLink(value: Route.progress) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text("Progress · last 30 days").eyebrow()
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                WeekDots(days: Stats.weekDots(model.logs, asOf: .now))
+                HStack(alignment: .firstTextBaseline) {
+                    figure("\(recent.count)", "sessions")
+                    figure(StatFormat.compact(Stats.volume(recent.flatMap(\.sets)).value(in: model.unit)), "\(model.unit.abbreviation) moved")
+                    figure(StatFormat.hours(minutes), "time")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .card(padding: 16)
+    }
+
+    private func figure(_ value: String, _ label: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(value).font(.tabular(20, weight: .bold)).foregroundStyle(.primary)
+            Text(label).font(.footnote).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// Exercises and Gyms: looked up now and then, so a tile each, not a tab.
+private struct PlacesRow: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        HStack(spacing: 12) {
+            PlaceTile(title: "Exercises", systemImage: "dumbbell", route: .exercises) {
+                Text("\(model.exercises.count)")
+            }
+            PlaceTile(title: "Gyms", systemImage: "building.2", route: .gyms) {
+                TimelineView(.periodic(from: .now, by: 60)) { context in
+                    let open = Gym.sorted(model.gyms, leaving: context.date).filter(\.availability.isOpen).count
+                    Text(model.gyms.isEmpty ? "none yet" : "\(open) open now")
+                }
+            }
+        }
+    }
+}
+
+private struct PlaceTile<Detail: View>: View {
+    let title: String
+    let systemImage: String
+    let route: Route
+    @ViewBuilder var detail: () -> Detail
+
+    var body: some View {
+        NavigationLink(value: route) {
+            VStack(alignment: .leading, spacing: 6) {
+                Image(systemName: systemImage)
+                    .font(.title3)
+                    .foregroundStyle(Theme.accent)
+                Text(title).font(.headline).foregroundStyle(.primary)
+                detail()
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .card(padding: 16)
     }
 }
 

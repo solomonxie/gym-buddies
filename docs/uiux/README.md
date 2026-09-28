@@ -4,11 +4,13 @@ Drawings for every surface. Overview, flows, and cross-screen rules are one
 level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 
 ```
- ┌───────┬───────────┬──────┬──────────┬──────────┐
- │ Train │ Exercises │ Gyms │ Progress │ Settings │
- └───────┴───────────┴──────┴──────────┴──────────┘
+   TRAIN  (the only root, no tab bar)
       │
-      ▶ Start ═════▶  SESSION  (full screen, tabs hidden)
+      ├─ ⚙ ──────────▶ Settings
+      ├─ [Exercises] ▶ Exercises
+      ├─ [Gyms] ─────▶ Gyms
+      ├─ [Progress] ─▶ Progress
+      ▶ Start ═════▶  SESSION  (full screen)
 ```
 
 | File | Surface |

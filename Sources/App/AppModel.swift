@@ -3,10 +3,6 @@ import GymBuddyCore
 import Observation
 import UIKit
 
-enum AppTab: Hashable {
-    case train, exercises, gyms, progress, settings
-}
-
 /// One place the screens read from and send events to. Holds no rules of its
 /// own: every number comes from `GymBuddyCore`.
 @MainActor
@@ -36,7 +32,8 @@ final class AppModel {
     private var autoBackup: AutoBackup?
     private(set) var iCloudUnavailable = false
 
-    var tab: AppTab = .train
+    /// The one navigation stack; Train is its root.
+    var path: [Route] = []
     /// The library's ♥ chip — Favourites is a filter, not a second list.
     var favouritesOnly = false
     /// Present while a workout is being performed; persisted on every change

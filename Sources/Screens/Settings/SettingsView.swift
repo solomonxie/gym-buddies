@@ -17,26 +17,24 @@ struct SettingsView: View {
 
     var body: some View {
         @Bindable var model = model
-        TabStack(.settings) {
-            Form {
-                units
-                rest
-                Section("During a workout") {
-                    Toggle("Keep the screen awake", isOn: $model.settings.keepScreenAwake)
-                    Toggle("Suggest heavier weights", isOn: $model.settings.suggestHeavier)
-                    Toggle("Count down the last 3 seconds", isOn: $model.settings.countdownLastSeconds)
-                        .disabled(!model.settings.vibrate)
-                }
-                backups
-                data
-                Section {
-                    NavigationLink("About") { AboutView() }
-                } footer: {
-                    Text("Gym Buddy \(Bundle.main.version) · no ads, no account, nothing leaves this phone unless you send it")
-                }
+        Form {
+            units
+            rest
+            Section("During a workout") {
+                Toggle("Keep the screen awake", isOn: $model.settings.keepScreenAwake)
+                Toggle("Suggest heavier weights", isOn: $model.settings.suggestHeavier)
+                Toggle("Count down the last 3 seconds", isOn: $model.settings.countdownLastSeconds)
+                    .disabled(!model.settings.vibrate)
             }
-            .navigationTitle("Settings")
+            backups
+            data
+            Section {
+                NavigationLink("About") { AboutView() }
+            } footer: {
+                Text("Gym Buddy \(Bundle.main.version) · no ads, no account, nothing leaves this phone unless you send it")
+            }
         }
+        .navigationTitle("Settings")
         .task(id: scenePhase) { notificationsDenied = await RestAlerts.isDenied() }
         .confirmationDialog(
             "Show weights in \(pendingUnit == .kilograms ? "kilograms" : "pounds")?",
@@ -193,9 +191,13 @@ struct SettingsView: View {
 
     private var data: some View {
         Section {
-            countRow("Exercises", model.exercises.count) { model.tab = .exercises }
-            countRow("Workouts", model.workouts.count) { model.tab = .train }
-            countRow("Sessions logged", model.logs.count) { model.tab = .progress }
+            NavigationLink(value: Route.exercises) {
+                LabeledContent("Exercises") { Text("\(model.exercises.count)").monospacedDigit() }
+            }
+            LabeledContent("Workouts") { Text("\(model.workouts.count)").monospacedDigit() }
+            NavigationLink(value: Route.progress) {
+                LabeledContent("Sessions logged") { Text("\(model.logs.count)").monospacedDigit() }
+            }
             LabeledContent("Last export") {
                 if let date = model.settings.lastBackup {
                     Text("\(date.formatted(date: .abbreviated, time: .omitted)) · \(ByteCountFormatter.string(fromByteCount: Int64(model.settings.lastBackupBytes ?? 0), countStyle: .file))")
@@ -221,18 +223,6 @@ struct SettingsView: View {
                 Text("Your data")
                 InfoButton(text: "Everything is one SQLite file on this phone. There is no account and no server, so an iCloud backup or an exported file is the only copy that survives losing the device.")
             }
-        }
-    }
-
-    private func countRow(_ title: String, _ count: Int, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            LabeledContent(title) {
-                HStack(spacing: 6) {
-                    Text("\(count)").monospacedDigit()
-                    Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
-                }
-            }
-            .foregroundStyle(.primary)
         }
     }
 

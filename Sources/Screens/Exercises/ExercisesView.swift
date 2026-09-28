@@ -3,10 +3,8 @@ import GymBuddyCore
 
 struct ExercisesView: View {
     var body: some View {
-        TabStack(.exercises) {
-            ExerciseLibrary()
-                .navigationTitle("Exercises")
-        }
+        ExerciseLibrary()
+            .navigationTitle("Exercises")
     }
 }
 
@@ -55,7 +53,7 @@ struct ExerciseLibrary: View {
                 }
             }
         } message: {
-            if model.workouts.isEmpty { Text("Build a workout first, on the Train tab.") }
+            if model.workouts.isEmpty { Text("Build a workout first, on Train.") }
         }
     }
 
