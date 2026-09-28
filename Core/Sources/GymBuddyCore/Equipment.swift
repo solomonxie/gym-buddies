@@ -1,7 +1,7 @@
 import Foundation
 
 public enum Equipment: String, Codable, Sendable, CaseIterable {
-    case barbell, dumbbell, machine, cable, kettlebell, band, bodyweight, treadmill, none
+    case barbell, dumbbell, machine, cable, kettlebell, band, bodyweight, treadmill, pool, none
 
     public var displayName: String {
         switch self {
@@ -13,6 +13,7 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
         case .band: "Band"
         case .bodyweight: "Bodyweight"
         case .treadmill: "Treadmill"
+        case .pool: "Pool"
         case .none: "Other"
         }
     }
@@ -20,8 +21,12 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
     /// True when the load is a number worth tracking at all. A resistance band
     /// has a colour, not a weight; a treadmill has an incline instead.
     public var isLoadable: Bool {
-        self != .band && self != .none && self != .treadmill
+        ![.band, .none, .treadmill, .pool].contains(self)
     }
+
+    /// What a gym has to own for a movement on it. Your body and the
+    /// catch-all "Other" go everywhere.
+    public var needsAGym: Bool { self != .bodyweight && self != .none }
 
     /// The incline control's step, percent, for equipment that has one.
     public var inclineStep: Double? {
@@ -50,7 +55,7 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
             case .machine: Weight(kilograms: 5)
             case .kettlebell: Weight(kilograms: 4)
             case .bodyweight: Weight(kilograms: 1.25)
-            case .band, .treadmill, .none: Weight.zero
+            case .band, .treadmill, .pool, .none: Weight.zero
             }
         case .pounds:
             switch self {
@@ -59,7 +64,7 @@ public enum Equipment: String, Codable, Sendable, CaseIterable {
             case .machine: Weight(pounds: 10)
             case .kettlebell: Weight(pounds: 10)
             case .bodyweight: Weight(pounds: 2.5)
-            case .band, .treadmill, .none: Weight.zero
+            case .band, .treadmill, .pool, .none: Weight.zero
             }
         }
     }

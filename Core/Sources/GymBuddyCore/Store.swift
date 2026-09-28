@@ -9,6 +9,11 @@ public protocol Store: AnyObject, Sendable {
     func workouts() throws -> [Workout]
     func saveWorkout(_ workout: Workout) throws
     func deleteWorkout(id: String) throws
+    /// Always includes Home, first.
+    func gyms() throws -> [Gym]
+    func saveGym(_ gym: Gym) throws
+    /// A no-op for Home.
+    func deleteGym(id: String) throws
     func logs() throws -> [WorkoutLog]
     func saveLog(_ log: WorkoutLog) throws
     func deleteLog(id: String) throws
@@ -25,6 +30,7 @@ public protocol Store: AnyObject, Sendable {
 public final class MemoryStore: Store, @unchecked Sendable {
     private var exercisesByID: [String: Exercise]
     private var workoutsByID: [String: Workout]
+    private var gymsByID: [String: Gym] = [Gym.homeID: .home]
     private var logsByID: [String: WorkoutLog]
     private var session: WorkoutSession?
     private var storedSettings: Settings?
@@ -64,6 +70,19 @@ public final class MemoryStore: Store, @unchecked Sendable {
 
     public func deleteWorkout(id: String) throws {
         sync { workoutsByID[id] = nil }
+    }
+
+    public func gyms() throws -> [Gym] {
+        sync { gymsByID.values.sorted { ($0.isHome ? 0 : 1, $0.name) < ($1.isHome ? 0 : 1, $1.name) } }
+    }
+
+    public func saveGym(_ gym: Gym) throws {
+        sync { gymsByID[gym.id] = gym }
+    }
+
+    public func deleteGym(id: String) throws {
+        guard id != Gym.homeID else { return }
+        sync { gymsByID[id] = nil }
     }
 
     public func logs() throws -> [WorkoutLog] {

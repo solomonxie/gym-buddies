@@ -206,11 +206,20 @@ extension Stats {
     }
 
     /// Fallback before any real session: sets × (a set + its rest).
-    public static func plannedMinutes(_ workout: Workout, defaultRest: Int) -> Int {
-        let seconds = workout.exercises.reduce(0) {
-            $0 + $1.targetSets * (40 + ($1.restSeconds ?? defaultRest))
+    /// A set of reps is ~40 s; a timed set lasts its time; a lap takes
+    /// `PoolLength.plannedSecondsPerLap`.
+    public static func plannedMinutes(_ workout: Workout, defaultRest: Int, exercises: [String: Exercise] = [:]) -> Int {
+        let seconds = workout.exercises.reduce(0.0) { total, line in
+            let exercise = exercises[line.exerciseID]
+            let measure = exercise.map(line.measure(for:)) ?? line.measure ?? .reps
+            let work: Double = if measure == .laps {
+                Double(line.targetReps) * (exercise.flatMap(line.pool(for:)) ?? .default).plannedSecondsPerLap
+            } else {
+                measure.duration(line.targetReps) ?? 40
+            }
+            return total + Double(line.targetSets) * (work + Double(line.restSeconds ?? defaultRest))
         }
-        return max(1, Int((Double(seconds) / 60).rounded()))
+        return max(1, Int((seconds / 60).rounded()))
     }
 
     public static func workouts(using exerciseID: String, in workouts: [Workout]) -> [Workout] {
@@ -273,12 +282,14 @@ public enum LoadFormat {
 
     public static func line(
         sets: Int, reps: Int, weight: Weight, exercise: Exercise,
-        unit: WeightUnit, restOverride: Int? = nil, incline: Double? = nil, measure: Measure? = nil
+        unit: WeightUnit, restOverride: Int? = nil, incline: Double? = nil, measure: Measure? = nil,
+        pool: PoolLength? = nil
     ) -> String {
         var parts = ["\(sets) × \(self.reps(reps, measure: measure ?? exercise.measure))"]
         if let load = load(weight: weight, incline: incline, exercise: exercise, unit: unit) {
             parts.append(load)
         }
+        if let pool { parts.append("\(pool.displayName) pool") }
         if let restOverride { parts.append("rest \(restOverride)s") }
         return parts.joined(separator: " · ")
     }
@@ -286,7 +297,7 @@ public enum LoadFormat {
     public static func line(_ plan: WorkoutExercise, exercise: Exercise, unit: WeightUnit) -> String {
         line(sets: plan.targetSets, reps: plan.targetReps, weight: plan.targetWeight,
              exercise: exercise, unit: unit, restOverride: plan.restSeconds, incline: plan.targetIncline,
-             measure: plan.measure)
+             measure: plan.measure, pool: plan.pool(for: exercise))
     }
 
     /// Summary of what a session did for one exercise: `3 × 10 · 60 lb`, or
@@ -300,7 +311,15 @@ public enum LoadFormat {
         if let load = load(weight: top, incline: incline, exercise: exercise, unit: unit) {
             text += " · " + load
         }
+        if let distance = distance(sets) { text += " · " + distance }
         return text
+    }
+
+    /// Total swum across laps sets, `900 m`; nil when none were counted in laps.
+    public static func distance(_ sets: [SetLog]) -> String? {
+        let swum = sets.filter { $0.distance != nil }
+        guard let unit = swum.first?.poolLength?.unit else { return nil }
+        return PoolLength.format(swum.compactMap(\.distance).reduce(0, +), unit: unit)
     }
 
     /// Big volumes with grouping: `12,400 lb`.

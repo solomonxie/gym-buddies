@@ -241,7 +241,8 @@ public struct WorkoutSession: Codable, Sendable {
                 targetReps: entry.plan.targetReps,
                 incline: entry.exercise.equipment.inclineStep == nil ? nil : (workingIncline ?? 0),
                 startedAt: setStartedAt,
-                measure: entry.measure
+                measure: entry.measure,
+                poolLength: entry.plan.pool(for: entry.exercise)
             )
         )
         setStartedAt = nil

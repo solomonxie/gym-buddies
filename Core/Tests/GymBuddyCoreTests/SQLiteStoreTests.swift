@@ -133,3 +133,49 @@ final class SQLiteStoreTests: XCTestCase {
         XCTAssertEqual(try s.logs().first?.sets.map(\.exerciseID), [Fixtures.rows.id])
     }
 }
+
+final class GymStoreTests: XCTestCase {
+    func testHomeIsSeededAndCannotBeDeleted() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
+        defer { try? FileManager.default.removeItem(at: url) }
+        var s = try SQLiteStore(url: url, catalogue: Array(Fixtures.catalogue.values))
+        XCTAssertEqual(try s.gyms().map(\.id), [Gym.homeID])
+        try s.deleteGym(id: Gym.homeID)
+        XCTAssertEqual(try s.gyms().map(\.id), [Gym.homeID])
+
+        let gym = Gym(id: "g", name: "Anytime", equipment: [.barbell, .pool],
+                      price: Price(cents: 4500, period: .month),
+                      hours: .daily(open: 6 * 60, close: 22 * 60), travelMinutes: 15, notes: "Bring a lock")
+        try s.saveGym(gym)
+        var w = Fixtures.workout
+        w.gymIDs = ["home", "g"]
+        w.exercises[0].poolLength = .yd25
+        try s.saveWorkout(w)
+
+        s = try SQLiteStore(url: url, catalogue: Array(Fixtures.catalogue.values))
+        XCTAssertEqual(try s.gyms(), [.home, gym])
+        let loaded = try XCTUnwrap(try s.workouts().first)
+        XCTAssertEqual(loaded.gymIDs, ["home", "g"])
+        XCTAssertEqual(loaded.exercises[0].poolLength, .yd25)
+
+        try s.deleteGym(id: "g")
+        XCTAssertEqual(try s.gyms().map(\.id), [Gym.homeID])
+    }
+
+    func testSetsKeepTheirPool() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
+        defer { try? FileManager.default.removeItem(at: url) }
+        let s = try SQLiteStore(url: url, catalogue: [])
+        let set = SetLog(id: "x", sessionID: "l", exerciseID: "freestyle-swim", setNumber: 1, reps: 4,
+                         weight: .zero, completedAt: Fixtures.t0, measure: .laps, poolLength: .m50)
+        try s.saveLog(WorkoutLog(id: "l", workoutID: "w", workoutName: "Swim",
+                                 startedAt: Fixtures.t0, finishedAt: Fixtures.t0, sets: [set]))
+        XCTAssertEqual(try s.logs().first?.sets.first?.poolLength, .m50)
+    }
+
+    func testOldSessionsWithoutGymsStillDecode() throws {
+        let json = #"{"id":"w","name":"Old","exercises":[]}"#
+        let w = try JSONDecoder().decode(Workout.self, from: Data(json.utf8))
+        XCTAssertEqual(w.gymIDs, [])
+    }
+}
