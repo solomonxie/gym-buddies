@@ -35,27 +35,21 @@ struct GymEditorView: View {
                             canDecrement: gym.wrappedValue.travelMinutes > 0)
             }
             PriceSection(price: gym.price)
-            HoursSection(hours: gym.hours)
             Section {
-                ForEach(Equipment.allCases.filter(\.needsAGym), id: \.self) { item in
-                    let has = gym.wrappedValue.equipment.contains(item)
-                    Button {
-                        if has { gym.wrappedValue.equipment.remove(item) } else { gym.wrappedValue.equipment.insert(item) }
-                    } label: {
-                        HStack(spacing: 12) {
-                            GlyphTile(equipment: item, size: 30)
-                            Text(item.displayName).foregroundStyle(.primary)
-                            Spacer()
-                            if has { Image(systemName: "checkmark").foregroundStyle(Theme.accent) }
-                        }
+                NavigationLink {
+                    GymKitView(gym: gym)
+                } label: {
+                    LabeledContent("Exercises you can do") {
+                        Text("\(gym.wrappedValue.exerciseIDs.count) of \(Gym.pickable(model.exercises).reduce(0) { $0 + $1.exercises.count })")
+                            .monospacedDigit()
                     }
-                    .accessibilityAddTraits(has ? .isSelected : [])
                 }
             } header: {
                 Text("Equipment")
             } footer: {
-                Text("Bodyweight moves count everywhere.")
+                Text("Pick every exercise this place has the kit for. Bodyweight moves count everywhere.")
             }
+            HoursSection(hours: gym.hours)
             Section("Notes") {
                 TextField("Locker code, parking, busy hours…", text: gym.notes, axis: .vertical)
                     .lineLimit(2...6)

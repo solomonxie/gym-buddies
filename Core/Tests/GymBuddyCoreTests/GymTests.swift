@@ -70,14 +70,27 @@ final class GymTests: XCTestCase {
         XCTAssertEqual(order, ["near", "far", "shut"])
     }
 
-    func testMissingEquipmentIgnoresBodyweight() {
+    func testMissingExercisesIgnoresBodyweight() {
         let exercises = SeedLibrary.byID
         let workout = TemplateLibrary.all.first { $0.id == "lunch-break" }!.workout()
-        XCTAssertEqual(Gym.home.missingEquipment(for: workout, exercises: exercises), [.machine, .dumbbell])
-        let full = Gym(id: "g", name: "Gym", equipment: [.machine, .dumbbell])
-        XCTAssertEqual(full.missingEquipment(for: workout, exercises: exercises), [])
+        let needed = workout.exercises.compactMap { exercises[$0.exerciseID] }.filter(\.equipment.needsAGym)
+        XCTAssertFalse(needed.isEmpty)
+        XCTAssertEqual(Gym.home.missingExercises(for: workout, exercises: exercises).map(\.id), needed.map(\.id))
+        var partial = Gym(id: "g", name: "Gym", exerciseIDs: Set(needed.dropFirst().map(\.id)))
+        XCTAssertEqual(partial.missingExercises(for: workout, exercises: exercises).map(\.id), [needed[0].id])
+        partial.exerciseIDs.insert(needed[0].id)
+        XCTAssertEqual(partial.missingExercises(for: workout, exercises: exercises), [])
         let preWork = TemplateLibrary.all.first { $0.id == "pre-work" }!.workout()
-        XCTAssertEqual(Gym.home.missingEquipment(for: preWork, exercises: exercises), [])
+        XCTAssertEqual(Gym.home.missingExercises(for: preWork, exercises: exercises), [])
+    }
+
+    func testPickableGroupsByKitSearchesAndSkipsBodyweight() {
+        let all = Gym.pickable(SeedLibrary.exercises)
+        XCTAssertFalse(all.contains { $0.equipment == .bodyweight || $0.equipment == .none })
+        XCTAssertEqual(all.map(\.equipment), Equipment.allCases.filter { kit in all.contains { $0.equipment == kit } })
+        let curls = Gym.pickable(SeedLibrary.exercises, matching: "curl")
+        XCTAssertFalse(curls.isEmpty)
+        XCTAssertTrue(curls.flatMap(\.exercises).allSatisfy { $0.name.localizedCaseInsensitiveContains("curl") })
     }
 
     func testPriceFormatsInCents() {

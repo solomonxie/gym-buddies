@@ -49,7 +49,7 @@ Reached from: tab bar
   GYMS
  ╭────────────────────────────────────────╮
  │ ✓ Home                                 │  ← tap to toggle; none ticked
- │   No barbell, machine                  │     means anywhere
+ │   Can't do Leg Press, Lat Pull Downs   │     means anywhere
  │ ✓ Anytime Fitness                      │
  │ ○ City Pool                            │
  ╰────────────────────────────────────────╯
@@ -262,7 +262,7 @@ long name
 | `workout.line` | {group} · {sets} × {reps} · {weight} |
 | `workout.lineWithRest` | {group} · {sets} × {reps} · {weight} · rest {n}s |
 | `workout.gyms` | GYMS |
-| `workout.missing` | No {equipment list} |
+| `workout.missing` | Can't do {exercise list} |
 | `template.caveat` | Starting loads — adjust to you. |
 | `template.add` | Add workout |
 | `workout.hint` | Tap to edit · hold and drag ☰ to reorder |

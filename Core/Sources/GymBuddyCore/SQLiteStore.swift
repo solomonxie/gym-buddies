@@ -107,6 +107,14 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             travel_minutes INTEGER NOT NULL DEFAULT 0, notes TEXT NOT NULL DEFAULT ''
         );
         """,
+        // A gym lists the exercises it has kit for, not kinds of kit.
+        """
+        ALTER TABLE gyms ADD COLUMN exercise_ids TEXT NOT NULL DEFAULT '';
+        UPDATE gyms SET exercise_ids = COALESCE((
+            SELECT group_concat(e.id, ',') FROM exercises e
+            WHERE instr(',' || gyms.equipment || ',', ',' || e.equipment || ',') > 0
+        ), '');
+        """,
     ]
 
     private func migrate() throws {
@@ -278,12 +286,12 @@ public final class SQLiteStore: Store, @unchecked Sendable {
 
     /// Home first, then by name.
     public func gyms() throws -> [Gym] {
-        try query("SELECT id, name, equipment, price_cents, price_period, hours, travel_minutes, notes FROM gyms ORDER BY id != 'home', name COLLATE NOCASE") { row in
+        try query("SELECT id, name, exercise_ids, price_cents, price_period, hours, travel_minutes, notes FROM gyms ORDER BY id != 'home', name COLLATE NOCASE") { row in
             let period = row.optionalText(4).flatMap(Price.Period.init(rawValue:))
             let price: Price? = if let cents = row.optionalInt(3), let period { Price(cents: cents, period: period) } else { nil }
             return Gym(
                 id: row.text(0), name: row.text(1),
-                equipment: Set(row.text(2).split(separator: ",").compactMap { Equipment(rawValue: String($0)) }),
+                exerciseIDs: Set(row.text(2).split(separator: ",").map(String.init)),
                 price: price,
                 hours: (try? JSONDecoder().decode(OpeningHours.self, from: Data(row.text(5).utf8))) ?? .always,
                 travelMinutes: row.int(6), notes: row.text(7)
@@ -292,9 +300,12 @@ public final class SQLiteStore: Store, @unchecked Sendable {
     }
 
     public func saveGym(_ gym: Gym) throws {
-        try run("INSERT OR REPLACE INTO gyms VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+        try run("""
+            INSERT OR REPLACE INTO gyms (id, name, exercise_ids, price_cents, price_period, hours, travel_minutes, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, [
             .text(gym.id), .text(gym.name),
-            .text(gym.equipment.map(\.rawValue).sorted().joined(separator: ",")),
+            .text(gym.exerciseIDs.sorted().joined(separator: ",")),
             .optionalInt(gym.price?.cents), .optionalText(gym.price?.period.rawValue),
             .text(try Self.json(gym.hours)), .int(gym.travelMinutes), .text(gym.notes),
         ])

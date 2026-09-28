@@ -130,11 +130,12 @@ struct WorkoutDetailView: View {
                             .font(.title3)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(gym.name).foregroundStyle(.primary)
-                            let missing = gym.missingEquipment(for: workout, exercises: model.exercisesByID)
+                            let missing = gym.missingExercises(for: workout, exercises: model.exercisesByID)
                             if !missing.isEmpty {
-                                Text("No " + missing.map { $0.displayName.lowercased() }.joined(separator: ", "))
+                                Text("Can't do " + missing.map(\.name).joined(separator: ", "))
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
+                                    .lineLimit(2)
                             }
                         }
                     }

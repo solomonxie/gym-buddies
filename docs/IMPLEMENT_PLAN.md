@@ -62,6 +62,7 @@ by construction.
 - [x] T3.9 Settings and its children, ⓘ popovers, unit switch guarded mid-session (drawing: `uiux/settings.md`) — see `Sources/Screens/Settings` — depends: T3.2
 - [x] T3.10 New-workout sheet — blank or from a template, preview with reasons and pool picker (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/NewWorkoutSheet.swift` — depends: T2.10, T3.6
 - [x] T3.11 Gyms tab and editor — open now / at a picked time, hours, price, equipment, travel; gyms ticked on workout detail with missing equipment named (drawing: `uiux/gyms.md`) — see `Sources/Screens/Gyms` — depends: T2.11, T3.6
+- [ ] T3.13 Gym equipment per exercise — searchable picker with All/None per kind, old kinds migrated, workout detail names the exercises a gym can't do (drawing: `uiux/gyms.md`) — see `Sources/Screens/Gyms/GymKitView.swift` — depends: T3.11
 
 ## Phase 4: Run a workout
 
