@@ -56,7 +56,7 @@ struct AddExercisesView: View {
                 }
             }
         }
-        .searchable(text: $query, prompt: "Search")
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
         .navigationTitle("Add to \(model.workout(id: workoutID)?.name ?? "workout")")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {

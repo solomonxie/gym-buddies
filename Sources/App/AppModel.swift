@@ -34,8 +34,6 @@ final class AppModel {
 
     /// The one navigation stack; Train is its root.
     var path: [Route] = []
-    /// The library's ♥ chip — Favourites is a filter, not a second list.
-    var favouritesOnly = false
     /// Present while a workout is being performed; persisted on every change
     /// so a killed app resumes where it was.
     private(set) var session: WorkoutSession? {

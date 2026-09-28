@@ -17,7 +17,7 @@ level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 |---|---|
 | [`session.md`](session.md) | the active workout — the screen the app is for |
 | [`workouts.md`](workouts.md) | Train: up next, workouts, templates, workout detail, add exercises |
-| [`exercises.md`](exercises.md) | library, ♥ favourites filter, exercise detail, editor |
+| [`exercises.md`](exercises.md) | library, favourites section, exercise detail, editor |
 | [`gyms.md`](gyms.md) | Gyms: open now or at a time, gym editor |
 | [`logs.md`](logs.md) | Progress: stats, history, session log, per-exercise trend |
 | [`settings.md`](settings.md) | settings and its children |

@@ -260,18 +260,10 @@ struct BarRow: View {
 
 struct ChipBar: View {
     @Binding var selection: MuscleGroup?
-    /// When bound, a ♥ chip filters to favourites — the Favourites view.
-    var favourites: Binding<Bool>?
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                if let favourites {
-                    chip(nil, systemImage: favourites.wrappedValue ? "heart.fill" : "heart", selected: favourites.wrappedValue) {
-                        favourites.wrappedValue.toggle()
-                    }
-                    .accessibilityLabel("Favourites only")
-                }
                 chip("All", selected: selection == nil) { selection = nil }
                 ForEach(MuscleGroup.allCases) { group in
                     chip(group.displayName, selected: selection == group) {
@@ -285,12 +277,9 @@ struct ChipBar: View {
         .sensoryFeedback(.selection, trigger: selection)
     }
 
-    private func chip(_ title: String?, systemImage: String? = nil, selected: Bool, action: @escaping () -> Void) -> some View {
+    private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 4) {
-                if let systemImage { Image(systemName: systemImage) }
-                if let title { Text(title) }
-            }
+            Text(title)
             .font(.subheadline.weight(.semibold))
             .padding(.horizontal, 14)
             .frame(minHeight: 36)
