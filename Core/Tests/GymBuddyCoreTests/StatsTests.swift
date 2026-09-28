@@ -96,4 +96,16 @@ final class StatsTests: XCTestCase {
         let today = Fixtures.t0 + 5 * 86_400
         XCTAssertEqual(Stats.streak([log("a", day: 0, sets: [])], asOf: today), 0)
     }
+
+    func testHistoryFollowsARenameButKeepsTheNameOfADeletedWorkout() {
+        let log = WorkoutLog(id: "l", workoutID: Fixtures.workout.id, workoutName: "Old name",
+                             startedAt: Fixtures.t0, finishedAt: Fixtures.t0,
+                             sets: [SetLog(id: "s", sessionID: "l", exerciseID: Fixtures.rows.id, setNumber: 1,
+                                           reps: 10, weight: .zero, completedAt: Fixtures.t0)])
+        var renamed = Fixtures.workout
+        renamed.name = "New name"
+        XCTAssertEqual(log.name(in: [renamed]), "New name")
+        XCTAssertEqual(log.name(in: []), "Old name")
+        XCTAssertTrue(CSVExport.sessions([log], exercises: [:], workouts: [renamed], unit: .pounds).contains("New name"))
+    }
 }

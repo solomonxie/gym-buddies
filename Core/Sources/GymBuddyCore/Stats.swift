@@ -344,6 +344,7 @@ public enum CSVExport {
     public static func sessions(
         _ logs: [WorkoutLog],
         exercises: [String: Exercise],
+        workouts: [Workout] = [],
         unit: WeightUnit
     ) -> String {
         let iso = ISO8601DateFormatter()
@@ -353,7 +354,7 @@ public enum CSVExport {
                 let exercise = exercises[set.exerciseID]
                 rows.append([
                     iso.string(from: log.startedAt),
-                    escape(log.workoutName),
+                    escape(log.name(in: workouts)),
                     escape(exercise?.name ?? set.exerciseID),
                     exercise?.muscleGroup.displayName ?? "",
                     String(set.setNumber),
