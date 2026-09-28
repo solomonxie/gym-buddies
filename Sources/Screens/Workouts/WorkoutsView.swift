@@ -138,7 +138,7 @@ struct ResumeCard: View {
                 Text(session.workoutName)
                     .font(.system(size: 30, weight: .bold, design: .rounded))
                 TimelineView(.periodic(from: .now, by: 1)) { context in
-                    Text("\(session.logs.count) sets logged · \(RestTimer.format(session.elapsed(at: context.date)))")
+                    Text("\(session.logs.count) set\(session.logs.count == 1 ? "" : "s") logged · \(RestTimer.format(session.elapsed(at: context.date)))")
                         .font(.subheadline.monospacedDigit())
                         .foregroundStyle(.secondary)
                 }
