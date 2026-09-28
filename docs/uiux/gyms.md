@@ -39,22 +39,47 @@ Pushed from a row, or `+` for a new one. Saves as you go, like a workout line.
   Travel time        [−] 15 min [+]        ← 5 min a tap
   PRICE
   [ 45.00 ]                  ( month ⌄ )    ← visit / month / year; blank = free
+  EQUIPMENT
+  Exercises you can do       142 of 260  ›  ← bodyweight always counts
   HOURS                   ( Same every day )
   Open 24 hours                       ( )
   Mon   06:00 – 22:00                 (●)   ← toggle off = closed that day
   Tue   06:00 – 22:00                 (●)
   ⋮
   Sun   Closed                        ( )
-  EQUIPMENT
-  ✓ Barbell   ✓ Dumbbell   ✓ Machine        ← tap to toggle; bodyweight
-  ✓ Cable     ○ Kettlebell ✓ Band              always counts
-  ✓ Treadmill ✓ Pool
   NOTES
   [ Bring a lock                      ]
   WORKOUTS HERE
   Muscle Building · Upper              ›
   Delete gym!                              ← absent on Home
 ```
+
+## Equipment
+
+Pushed from the editor. Every exercise that needs kit, by kind — a gym has a
+leg press or it doesn't; "machine" says too little.
+
+```
+ ‹ Anytime Fitness      Equipment
+  ┌──────────────────────────────────────┐
+  │ 🔍 Search                            │
+  └──────────────────────────────────────┘
+  [▣] BARBELL  6/6                  None   ← whole kind in one tap
+ ╭────────────────────────────────────────╮
+ │ Barbell Back Squat                 (●) │
+ │ Barbell Bench Press                (●) │
+ │   ⋮                                    │
+ ╰────────────────────────────────────────╯
+  [▣] MACHINE  18/31                 All
+ ╭────────────────────────────────────────╮
+ │ Hack Squat                         ( ) │
+ │ Leg Press                          (●) │
+ │   ⋮                                    │
+ ╰────────────────────────────────────────╯
+```
+
+`All` / `None` act on what the search shows. Gyms saved before this list
+existed get every exercise of each kind they had ticked.
 
 Close before open (22:00 – 02:00) runs past midnight and belongs to the day it
 opens.
@@ -64,7 +89,7 @@ opens.
 ```
 home
  │ Home                           Home  › │  ← badge; no Delete in editor
-  Home starts open all day with no equipment; tick what you own.
+  Home starts open all day with no exercises ticked; tick what you own.
 
 nothing open
   OPEN WHEN YOU GET THERE

@@ -4,7 +4,8 @@ import Foundation
 public struct Gym: Identifiable, Hashable, Codable, Sendable {
     public var id: String
     public var name: String
-    public var equipment: Set<Equipment>
+    /// Exercises this place has the kit for. Ones that need no gym aren't listed.
+    public var exerciseIDs: Set<String>
     public var price: Price?
     public var hours: OpeningHours
     public var travelMinutes: Int
@@ -23,7 +24,7 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
     public init(
         id: String,
         name: String,
-        equipment: Set<Equipment> = [],
+        exerciseIDs: Set<String> = [],
         price: Price? = nil,
         hours: OpeningHours = .always,
         travelMinutes: Int = 0,
@@ -31,22 +32,38 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
     ) {
         self.id = id
         self.name = name
-        self.equipment = equipment
+        self.exerciseIDs = exerciseIDs
         self.price = price
         self.hours = hours
         self.travelMinutes = travelMinutes
         self.notes = notes
     }
 
+    public func has(_ exercise: Exercise) -> Bool {
+        !exercise.equipment.needsAGym || exerciseIDs.contains(exercise.id)
+    }
+
     /// What the workout needs that this gym doesn't have, in plan order.
-    public func missingEquipment(for workout: Workout, exercises: [String: Exercise]) -> [Equipment] {
-        var missing: [Equipment] = []
+    public func missingExercises(for workout: Workout, exercises: [String: Exercise]) -> [Exercise] {
+        var missing: [Exercise] = []
         for line in workout.exercises {
-            guard let needed = exercises[line.exerciseID]?.equipment, needed.needsAGym,
-                  !equipment.contains(needed), !missing.contains(needed) else { continue }
-            missing.append(needed)
+            guard let exercise = exercises[line.exerciseID], !has(exercise),
+                  !missing.contains(where: { $0.id == exercise.id }) else { continue }
+            missing.append(exercise)
         }
         return missing
+    }
+
+    /// The exercises a gym can be set up with, grouped by kit, filtered by name.
+    public static func pickable(_ exercises: [Exercise], matching query: String = "") -> [(equipment: Equipment, exercises: [Exercise])] {
+        let q = query.trimmingCharacters(in: .whitespaces)
+        let shown = exercises.filter {
+            $0.equipment.needsAGym && (q.isEmpty || $0.name.localizedCaseInsensitiveContains(q))
+        }
+        let byKit = Dictionary(grouping: shown, by: \.equipment)
+        return Equipment.allCases.compactMap { kit in
+            byKit[kit].map { (kit, $0.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }) }
+        }
     }
 
     /// Whether it's open when you'd get there if you left at `leaving`.
