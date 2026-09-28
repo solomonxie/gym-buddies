@@ -15,6 +15,10 @@ struct RootTabView: View {
                 .miniSessionBar()
                 .tabItem { Label("Exercises", systemImage: "dumbbell") }
                 .tag(AppTab.exercises)
+            GymsView()
+                .miniSessionBar()
+                .tabItem { Label("Gyms", systemImage: "building.2") }
+                .tag(AppTab.gyms)
             LogsView()
                 .miniSessionBar()
                 .tabItem { Label("Progress", systemImage: "chart.bar.xaxis") }

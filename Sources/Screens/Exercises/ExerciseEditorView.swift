@@ -28,11 +28,17 @@ struct ExerciseEditorView: View {
                         ForEach(Equipment.allCases, id: \.self) { Text($0.displayName).tag($0) }
                     }
                     Picker("Counted in", selection: $measure) {
-                        ForEach(Measure.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                        ForEach(Measure.options(for: equipment), id: \.self) { Text($0.displayName).tag($0) }
+                    }
+                    .onChange(of: equipment) { _, new in
+                        let options = Measure.options(for: new)
+                        if !options.contains(measure) { measure = options[0] }
                     }
                 } footer: {
                     if equipment.isLoadable {
                         Text("+ adds \(LoadFormat.weight(equipment.increment(in: model.unit), model.unit)) a tap.")
+                    } else if equipment == .pool {
+                        Text("Counts lengths; each workout line sets its pool.")
                     } else if let step = equipment.inclineStep {
                         Text("Tracks incline instead of weight, \(LoadFormat.incline(step)) a tap.")
                     } else {

@@ -4,9 +4,9 @@ Drawings for every surface. Overview, flows, and cross-screen rules are one
 level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 
 ```
- ┌─────────┬───────────┬──────────┬──────────┐
- │  Train  │ Exercises │ Progress │ Settings │
- └─────────┴───────────┴──────────┴──────────┘
+ ┌───────┬───────────┬──────┬──────────┬──────────┐
+ │ Train │ Exercises │ Gyms │ Progress │ Settings │
+ └───────┴───────────┴──────┴──────────┴──────────┘
       │
       ▶ Start ═════▶  SESSION  (full screen, tabs hidden)
 ```
@@ -14,8 +14,9 @@ level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 | File | Surface |
 |---|---|
 | [`session.md`](session.md) | the active workout — the screen the app is for |
-| [`workouts.md`](workouts.md) | Train: up next, workouts, workout detail, add exercises |
+| [`workouts.md`](workouts.md) | Train: up next, workouts, templates, workout detail, add exercises |
 | [`exercises.md`](exercises.md) | library, ♥ favourites filter, exercise detail, editor |
+| [`gyms.md`](gyms.md) | Gyms: open now or at a time, gym editor |
 | [`logs.md`](logs.md) | Progress: stats, history, session log, per-exercise trend |
 | [`settings.md`](settings.md) | settings and its children |
 | [`components.md`](components.md) | reused parts, all variants |

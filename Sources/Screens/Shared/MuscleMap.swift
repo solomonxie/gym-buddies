@@ -34,6 +34,7 @@ enum EquipmentGlyph {
         case .band: "figure.flexibility"
         case .bodyweight: "figure.core.training"
         case .treadmill: "figure.run.treadmill"
+        case .pool: "figure.pool.swim"
         case .none: "figure.mixed.cardio"
         }
     }

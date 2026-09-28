@@ -123,7 +123,8 @@ struct JumpSheet: View {
         if done > 0 || isCurrent { return "\(done) of \(entry.plan.targetSets) done" }
         return LoadFormat.line(sets: entry.plan.targetSets, reps: entry.plan.targetReps,
                                weight: entry.plan.targetWeight, exercise: entry.exercise, unit: model.unit,
-                               incline: entry.plan.targetIncline, measure: entry.plan.measure)
+                               incline: entry.plan.targetIncline, measure: entry.plan.measure,
+                               pool: entry.plan.pool(for: entry.exercise))
     }
 }
 

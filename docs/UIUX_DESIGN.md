@@ -12,13 +12,14 @@ gestures, in-place pickers, and the ⓘ rule.
 | Surface | Kind | Drawing |
 |---|---|---|
 | **Session** (active workout) | full-screen cover | [`uiux/session.md`](uiux/session.md) |
-| Train · Workout detail · Add exercises | tab, pushed pages | [`uiux/workouts.md`](uiux/workouts.md) |
+| Train · New workout / templates · Workout detail · Add exercises | tab, sheet, pushed pages | [`uiux/workouts.md`](uiux/workouts.md) |
 | Exercises (♥ filter) · Exercise detail · Editor | tab, pushed page, sheet | [`uiux/exercises.md`](uiux/exercises.md) |
+| Gyms · Gym editor | tab, pushed page | [`uiux/gyms.md`](uiux/gyms.md) |
 | Progress · Session log · Trend | tab, pushed pages | [`uiux/logs.md`](uiux/logs.md) |
 | Settings · About | tab, pushed page | [`uiux/settings.md`](uiux/settings.md) |
 | Components | reused parts | [`uiux/components.md`](uiux/components.md) |
 
-Four tabs, Train first: the tab you open is the one that starts a workout.
+Five tabs, Train first: the tab you open is the one that starts a workout.
 Favourites is a `♥` chip at the head of the Exercises filter row, not a tab —
 it's the library with a filter, so it lives in the same list and drawing.
 
@@ -31,22 +32,26 @@ orange). Colour means "you can act on this"; everything else is grey.
       Launch
         │
         ▼
- ┌─────────┬───────────┬──────────┬──────────┐
- │  Train  │ Exercises │ Progress │ Settings │
- └─────────┴───────────┴──────────┴──────────┘
-      │          │           │          │
-      │          │           │          ├─▶ Units · Rest (in place)
-      │          │           │          ├─▶ Export ─▶ [share] · Import ─▶ [picker]
-      │          │           │          └─▶ About
-      │          │           │
-      │          │           ├─▶ Session log ─▶ Trend ─▶ Exercise detail
-      │          │           └─▶ [share] CSV
+ ┌─────────┬───────────┬──────┬──────────┬──────────┐
+ │  Train  │ Exercises │ Gyms │ Progress │ Settings │
+ └─────────┴───────────┴──────┴──────────┴──────────┘
+      │          │         │         │          │
+      │          │         │         │          ├─▶ Units · Rest (in place)
+      │          │         │         │          ├─▶ Export ─▶ [share] · Import ─▶ [picker]
+      │          │         │         │          └─▶ About
+      │          │         │         │
+      │          │         │         ├─▶ Session log ─▶ Trend ─▶ Exercise detail
+      │          │         │         └─▶ [share] CSV
+      │          │         │
+      │          │         └─▶ Gym editor ─▶ Workout detail
       │          │
       │          ├─▶ ♥ filter (in place)
       │          ├─▶ Exercise detail ─▶ Trend · Session log · Workout detail
       │          └─▶ New exercise (sheet)
       │
+      ├─▶ New workout (sheet) ─▶ Template preview
       ├─▶ Workout detail ─┬─▶ Add exercises ─▶ New exercise (sheet)
+      │                   ├─▶ Gyms (tick in place)
       │                   └─▶ Edit line (in place)
       │
       └─▶ ▶ Start / Resume ═════▶ ┏━━━━━━━━━━━━━┓
@@ -127,11 +132,10 @@ Full strings live per screen, under each drawing's `Copy` table.
 - **60pt minimum tap target** for anything touched mid-set, against the usual
   44pt. The skill's figure assumes a dry finger and a steady hand; this app is
   used with neither. Everywhere outside the Session screen, 44pt stands.
-- **Four tabs, not the reference app's five.** The earlier plan kept five
-  (Exercises · Favourites · Workouts · Logs & Graphs · Settings) for muscle
-  memory. Favourites was the library with a filter, so it became a `♥` chip in
-  Exercises; Train moved first because starting a workout is why you open the
-  app. Fewer tabs, and each one a distinct job.
+- **Five tabs, but not the reference app's five.** Favourites was the library
+  with a filter, so it became a `♥` chip in Exercises; Train moved first
+  because starting a workout is why you open the app. Gyms took the freed
+  slot: "where can I go now?" is its own job, asked before training.
 - Otherwise none. Two of its mobile rules are load-bearing and cited where used:
   the **in-place unfolding picker** for the workout line editor
   ([`uiux/workouts.md`](uiux/workouts.md)) and **explanations behind an ⓘ** in

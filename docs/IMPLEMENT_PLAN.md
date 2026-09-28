@@ -40,6 +40,9 @@ session actually consumes instead of guessed.
 - [x] T2.6 Backup — export the SQLite file through the share sheet, import it back with a replace confirm (drawing: `uiux/settings.md`) — see `Core/Sources/GymBuddyCore` — depends: T2.3
 - [x] T2.7 Automatic backups — local snapshot per change (20/day, 7 days) and optional daily iCloud Drive file (30 days); rotation rules in `Core/Sources/GymBuddyCore/BackupRotation.swift`, restore list in Settings (drawing: `uiux/settings.md`) — depends: T2.6
 - [x] T2.8 Measure and incline — reps / seconds / minutes per exercise; treadmill steps incline, never weight; SQLite migration 2 — see `Core/Sources/GymBuddyCore/Models.swift` — depends: T2.3
+- [x] T2.9 Swim — `Equipment.pool`, `Measure.laps`, `PoolLength`, stroke-by-stroke catalogue entries; each set keeps its pool so laps stay a distance; SQLite migration 4 — see `Core/Sources/GymBuddyCore/PoolLength.swift` — depends: T2.8
+- [x] T2.10 Workout templates — 13 ready-made workouts (gym, strength, workday, sport, swim, pregnancy) with sets, reps, starting kg and rest; loads on the equipment grid, time-boxed ones fit their slot — see `Core/Sources/GymBuddyCore/WorkoutTemplates.swift` — depends: T2.9
+- [x] T2.11 Gyms — equipment, price in cents, weekly hours with past-midnight and 24 h, travel time, open-on-arrival status; Home always exists; workouts point at gyms — see `Core/Sources/GymBuddyCore/Gym.swift` — depends: T2.3
 
 ## Phase 3: Browse and build
 
@@ -57,6 +60,8 @@ by construction.
 - [x] T3.7 Add exercise — multi-select, chip filter, last-used weight prefill (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts` — depends: T3.3
 - [x] T3.8 Custom exercises — create and edit your own, the escape hatch when search finds nothing (drawing: `uiux/exercises.md`) — see `Sources/Screens/Exercises` — depends: T3.3
 - [x] T3.9 Settings and its children, ⓘ popovers, unit switch guarded mid-session (drawing: `uiux/settings.md`) — see `Sources/Screens/Settings` — depends: T3.2
+- [x] T3.10 New-workout sheet — blank or from a template, preview with reasons and pool picker (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/NewWorkoutSheet.swift` — depends: T2.10, T3.6
+- [x] T3.11 Gyms tab and editor — open now / at a picked time, hours, price, equipment, travel; gyms ticked on workout detail with missing equipment named (drawing: `uiux/gyms.md`) — see `Sources/Screens/Gyms` — depends: T2.11, T3.6
 
 ## Phase 4: Run a workout
 

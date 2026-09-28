@@ -46,6 +46,13 @@ Reached from: tab bar
  ╭────────────────────────────────────────╮
  │           ▶  Start workout             │  ← the reason you're here,
  ╰────────────────────────────────────────╯     not a small icon in a bar
+  GYMS
+ ╭────────────────────────────────────────╮
+ │ ✓ Home                                 │  ← tap to toggle; none ticked
+ │   No barbell, machine                  │     means anywhere
+ │ ✓ Anytime Fitness                      │
+ │ ○ City Pool                            │
+ ╰────────────────────────────────────────╯
   6 EXERCISES · ~45 MIN · 18 SETS
  ╭────────────────────────────────────────╮
  │ [▣] Walking                         ☰  │
@@ -84,12 +91,67 @@ below moves down. Nothing gets covered, so there's nothing to dismiss.
  │ Legs · 3 × 10 · 50 lb  │   ││ Reps     [−] 10  [+] ││     in minutes here, reps
  └────────────────────────┘   ││ Weight   [−] 50  [+] ││     elsewhere; switching
                               ││  lb, 10 lb a tap     ││     resets the target
-                              ││ Rest   Default (60s)⌄││  ← menu: default, 30–180s
+                              ││ Pool          25 m ⌄ ││  ← swim lines only: 15/20/
+                              ││ Rest   Default (60s)⌄││     25 m, 25 yd, 33⅓/50 m
                               ││ Remove!              ││
                               │└──────────────────────┘│
                               │ Seated Leg Curls     ☰ │
                               └────────────────────────┘
 ```
+
+Swim lines count in laps or minutes (never reps), and read
+`8 × 2 laps · 25 m pool`.
+
+## New workout — blank or from a template
+
+`+` on Train, or Build a workout, opens this sheet.
+
+```
+  Cancel        New workout
+  [ Name                    ] [[ Create ]]  ← blank, as before
+  GYM BASICS
+  Light Gym · 30 min                     ›
+  STRENGTH
+  Muscle Building · Upper                ›
+  Muscle Building · Lower                ›
+  Core Strength                          ›
+  AROUND THE WORKDAY
+  Pre-Work Wake-Up · 15 min              ›
+  Lunch Break · 30 min                   ›
+  After Work · Desk Reset                ›
+  Leisure · Easy Movement                ›
+  SPORT
+  Baseball · Off-Season                  ›
+  SWIM
+  Swim · Freestyle Endurance             ›
+  Swim · Four Strokes                    ›
+  PREGNANCY
+  Pregnancy · Gentle Strength            ›
+  Pregnancy · Pool                       ›
+```
+
+Each row: name, then the one-line summary and `~{n} min` under it.
+
+```
+ ‹ New workout   Lunch Break · 30 min
+  Dumbbell full body that fits a lunch
+  hour, moderate enough to skip the long
+  shower.
+  · Moderate effort keeps the sweat down…   ← the template's reasons
+  · One rack of dumbbells covers all of it
+  6 EXERCISES · ~28 MIN
+  Stationary Bike         1 × 5 min · rest 30s
+  Goblet Squats     3 × 10 · 16 kg · rest 60s
+  ⋮
+  Pool                            25 m ⌄   ← swim templates only
+  Starting loads — adjust to you.
+ ╭────────────────────────────────────────╮
+ │            [[ Add workout ]]           │
+ ╰────────────────────────────────────────╯
+```
+
+Add creates an ordinary workout: every number editable, nothing linked back
+to the template.
 
 ## Add exercises
 
@@ -124,12 +186,6 @@ no workouts
  │        [[ Build a workout ]]           │
  └────────────────────────────────────────┘
 
-new workout (+ or Build a workout)
- ┌──────────────────────────────────────┐
- │ New workout                          │
- │ [ Name                             ] │
- │ ( Cancel )           [[ Create ]]    │
- └──────────────────────────────────────┘
 
 empty workout
  │           ▶  Start workout·            │  ← disabled
@@ -175,7 +231,9 @@ long name
 |---|---|---|
 | `Start` / card `(▶)` | tap | straight into [`session.md`](session.md), no detail stop |
 | card or hero body | tap | → workout detail |
-| `+` on Train | tap | new-workout name alert |
+| `+` on Train | tap | new-workout sheet: blank or a template |
+| template row | tap | → preview; `Add workout` creates it and closes |
+| gym row in detail | tap | ticks / unticks that gym |
 | `☰` | hold & drag | reorder; saved on drop, no Done button |
 | row | tap | unfolds the editor in place |
 | row | swipe ← | `[ Delete ]`! |
@@ -203,6 +261,10 @@ long name
 | `workout.header` | {n} exercises · ~{minutes} min · {sets} sets |
 | `workout.line` | {group} · {sets} × {reps} · {weight} |
 | `workout.lineWithRest` | {group} · {sets} × {reps} · {weight} · rest {n}s |
+| `workout.gyms` | GYMS |
+| `workout.missing` | No {equipment list} |
+| `template.caveat` | Starting loads — adjust to you. |
+| `template.add` | Add workout |
 | `workout.hint` | Tap to edit · hold and drag ☰ to reorder |
 | `workout.cantStart.empty` | Add an exercise to start. |
 | `workout.cantStart.busy` | "{name}" is still running. |

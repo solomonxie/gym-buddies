@@ -25,6 +25,7 @@ struct WorkoutDetailView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
             }
+            gymsSection(workout)
             Section {
                 ForEach(workout.exercises) { line in
                     if let exercise = model.exercisesByID[line.exerciseID] {
@@ -119,10 +120,38 @@ struct WorkoutDetailView: View {
         }
     }
 
+    private func gymsSection(_ workout: Workout) -> some View {
+        Section {
+            ForEach(model.gyms) { gym in
+                Button { model.toggle(gymID: gym.id, for: workout.id) } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: workout.gymIDs.contains(gym.id) ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(workout.gymIDs.contains(gym.id) ? Theme.accent : Color.secondary)
+                            .font(.title3)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(gym.name).foregroundStyle(.primary)
+                            let missing = gym.missingEquipment(for: workout, exercises: model.exercisesByID)
+                            if !missing.isEmpty {
+                                Text("No " + missing.map { $0.displayName.lowercased() }.joined(separator: ", "))
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(workout.gymIDs.contains(gym.id) ? .isSelected : [])
+            }
+        } header: {
+            Text("Gyms").eyebrow()
+        }
+    }
+
     private func summary(_ w: Workout) -> String {
         let sets = w.exercises.reduce(0) { $0 + $1.targetSets }
-        let minutes = Stats.estimatedMinutes(workoutID: w.id, logs: model.logs)
-            ?? Stats.plannedMinutes(w, defaultRest: model.settings.restBetweenSets)
+        let minutes = model.minutes(for: w)
         return "\(w.exercises.count) exercise\(w.exercises.count == 1 ? "" : "s") · ~\(minutes) min · \(sets) sets"
     }
 
@@ -185,7 +214,7 @@ private struct LineRow: View {
                     get: { measure },
                     set: { value in update { $0.count(in: value, for: exercise) } }
                 )) {
-                    ForEach(Measure.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                    ForEach(Measure.options(for: exercise.equipment), id: \.self) { Text($0.displayName).tag($0) }
                 }
                 .pickerStyle(.menu)
             }
@@ -207,6 +236,19 @@ private struct LineRow: View {
                             decrement: { update { $0.targetIncline = exercise.equipment.stepped(incline: $0.targetIncline ?? 0, by: -1) } },
                             increment: { update { $0.targetIncline = exercise.equipment.stepped(incline: $0.targetIncline ?? 0, by: 1) } },
                             canDecrement: (line.targetIncline ?? 0) > 0)
+            }
+            if let pool = line.pool(for: exercise) {
+                HStack {
+                    Text("Pool")
+                    Spacer()
+                    Picker("Pool", selection: Binding(
+                        get: { pool },
+                        set: { value in update { $0.poolLength = value } }
+                    )) {
+                        ForEach(PoolLength.allCases) { Text($0.displayName).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                }
             }
             HStack {
                 Text("Rest")
