@@ -30,4 +30,7 @@ shot 05-trend trend
 shot 06-exercise exercise
 shot 07-summary summary
 shot 08-library exercises
+shot 09-set-running set
+shot 10-treadmill treadmill
+shot 11-background background
 echo "Now: scripts/store-screenshots.sh $OUT"
