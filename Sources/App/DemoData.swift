@@ -36,7 +36,11 @@ enum DemoData {
             model.favouritesOnly = true
         case "logs", "log", "trend": model.tab = .progress
         case "settings": model.tab = .settings
-        case "session", "resting", "summary", "jump", "progression":
+        case "treadmill":
+            guard let workout = model.workouts.first(where: { $0.name == "Fraiser Heights" }) else { return }
+            model.start(workout, at: .now.addingTimeInterval(-7 * 60))
+            model.startSet(at: .now.addingTimeInterval(-6 * 60 - 38))
+        case "session", "resting", "summary", "jump", "progression", "set", "background":
             guard let workout = model.workouts.first(where: { $0.name == "Fraiser Heights" }) else { return }
             model.start(workout, at: .now.addingTimeInterval(-14 * 60 - 22))
             model.updateSession { $0.skipExercise() }
@@ -44,6 +48,12 @@ enum DemoData {
             model.updateSession { $0.markProgressionOffered(for: $0.currentEntry?.id ?? "") }
             if screen == "resting" || screen == "jump" {
                 model.completeSets(1, at: .now.addingTimeInterval(-32))
+            }
+            if screen == "set" { model.startSet(at: .now.addingTimeInterval(-41)) }
+            if screen == "background" {
+                model.completeSets(1, at: .now.addingTimeInterval(-32))
+                model.isSessionPresented = false
+                model.tab = .train
             }
             if screen == "summary" {
                 model.updateSession { s in

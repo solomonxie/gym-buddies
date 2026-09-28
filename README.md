@@ -102,3 +102,42 @@ compile check.
 Exercise instructions describe how a movement is performed. They are not
 medical, physiotherapy, or coaching advice, and the app will not write your
 training programme.
+
+## Screenshots
+
+Captured from an iPhone 14 with the `-demo` data (`make capture`).
+
+<table>
+<tr>
+<th>Session</th><th>Resting</th><th>Set running</th>
+</tr>
+<tr>
+<td><img src="docs/screenshots/01-session.png" width="240"></td>
+<td><img src="docs/screenshots/02-resting.png" width="240"></td>
+<td><img src="docs/screenshots/09-set-running.png" width="240"></td>
+</tr>
+<tr>
+<th>Treadmill countdown</th><th>Train</th><th>Kept in background</th>
+</tr>
+<tr>
+<td><img src="docs/screenshots/10-treadmill.png" width="240"></td>
+<td><img src="docs/screenshots/03-train.png" width="240"></td>
+<td><img src="docs/screenshots/11-background.png" width="240"></td>
+</tr>
+<tr>
+<th>Progress</th><th>Trend</th><th>Exercise</th>
+</tr>
+<tr>
+<td><img src="docs/screenshots/04-progress.png" width="240"></td>
+<td><img src="docs/screenshots/05-trend.png" width="240"></td>
+<td><img src="docs/screenshots/06-exercise.png" width="240"></td>
+</tr>
+<tr>
+<th>Summary</th><th>Exercise library</th><th></th>
+</tr>
+<tr>
+<td><img src="docs/screenshots/07-summary.png" width="240"></td>
+<td><img src="docs/screenshots/08-library.png" width="240"></td>
+<td></td>
+</tr>
+</table>
