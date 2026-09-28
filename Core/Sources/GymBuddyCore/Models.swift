@@ -338,6 +338,12 @@ public struct WorkoutLog: Identifiable, Hashable, Codable, Sendable {
         self.notes = notes
     }
 
+    /// The workout's current name, so a rename reaches its history; the name
+    /// saved with the session once the workout is gone.
+    public func name(in workouts: [Workout]) -> String {
+        workouts.first { $0.id == workoutID }?.name ?? workoutName
+    }
+
     /// Exercise IDs in the order they were first logged.
     public var exerciseOrder: [String] {
         var seen = Set<String>()

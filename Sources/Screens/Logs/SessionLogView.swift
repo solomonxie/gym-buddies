@@ -65,7 +65,7 @@ struct SessionLogView: View {
                 }
             }
         }
-        .navigationTitle(log.workoutName)
+        .navigationTitle(log.name(in: model.workouts))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if editing {
@@ -73,7 +73,7 @@ struct SessionLogView: View {
             } else {
                 Menu {
                     Button("Edit sets", systemImage: "pencil") { editing = true }
-                    ShareLink(item: csv(log), preview: SharePreview("\(log.workoutName).csv")) {
+                    ShareLink(item: csv(log), preview: SharePreview("\(log.name(in: model.workouts)).csv")) {
                         Label("Export CSV…", systemImage: "tablecells")
                     }
                     Divider()
@@ -129,8 +129,8 @@ struct SessionLogView: View {
     }
 
     private func csv(_ log: WorkoutLog) -> URL {
-        let url = FileManager.default.temporaryDirectory.appending(path: "\(log.workoutName) \(log.startedAt.formatted(.iso8601.year().month().day())).csv")
-        try? CSVExport.sessions([log], exercises: model.exercisesByID, unit: model.unit)
+        let url = FileManager.default.temporaryDirectory.appending(path: "\(log.name(in: model.workouts)) \(log.startedAt.formatted(.iso8601.year().month().day())).csv")
+        try? CSVExport.sessions([log], exercises: model.exercisesByID, workouts: model.workouts, unit: model.unit)
             .write(to: url, atomically: true, encoding: .utf8)
         return url
     }

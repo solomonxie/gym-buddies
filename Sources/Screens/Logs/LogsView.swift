@@ -121,7 +121,7 @@ struct LogsView: View {
 
     private func csvFile() -> URL {
         let url = FileManager.default.temporaryDirectory.appending(path: "Gym Buddy sessions.csv")
-        try? CSVExport.sessions(model.logs, exercises: model.exercisesByID, unit: model.unit)
+        try? CSVExport.sessions(model.logs, exercises: model.exercisesByID, workouts: model.workouts, unit: model.unit)
             .write(to: url, atomically: true, encoding: .utf8)
         return url
     }
@@ -172,7 +172,7 @@ struct HistoryRow: View {
             .frame(width: 44)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-                    Text(log.workoutName).font(.headline).lineLimit(1)
+                    Text(log.name(in: model.workouts)).font(.headline).lineLimit(1)
                     if hasRecord {
                         Image(systemName: "star.fill")
                             .font(.caption)
