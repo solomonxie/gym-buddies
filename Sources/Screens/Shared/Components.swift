@@ -201,7 +201,7 @@ struct SetLine: View {
                 .font(.tabular(15, weight: .medium))
                 .foregroundStyle(.secondary)
                 .frame(width: 24, alignment: .leading)
-            Text(exercise?.measure == .reps || exercise == nil ? "\(set.reps) reps" : LoadFormat.reps(set.reps, measure: exercise!.measure))
+            Text(set.measure(for: exercise) == .reps ? "\(set.reps) reps" : LoadFormat.reps(set.reps, measure: set.measure(for: exercise)))
                 .font(.tabular(16, weight: .regular))
             Spacer()
             Text(loadText)

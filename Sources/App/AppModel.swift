@@ -221,8 +221,29 @@ final class AppModel {
     /// Every change to the session goes through here so it is persisted.
     func updateSession(_ change: (inout WorkoutSession) -> Void) {
         guard var current = session else { return }
+        let wasTiming = current.isSetRunning
         change(&current)
         session = current
+        if current.isSetRunning { scheduleSetAlert() }
+        else if wasTiming { RestAlerts.cancel() }
+    }
+
+    /// Start ends any rest: the next set is underway.
+    func startSet(at now: Date = .now) {
+        dismissRest()
+        updateSession { $0.startSet(at: now) }
+        if settings.vibrate { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
+    }
+
+    func cancelSet() {
+        updateSession { $0.cancelSet() }
+    }
+
+    /// A treadmill in the cup holder still needs to say when the time is up.
+    private func scheduleSetAlert(at now: Date = .now) {
+        guard settings.alertWhenRestOver, let current = session, let entry = current.currentEntry,
+              let remaining = current.setRemaining(at: now) else { return }
+        RestAlerts.schedule(after: remaining, body: "Time's up · \(entry.exercise.name) \(current.currentSetNumber) of \(entry.plan.targetSets)")
     }
 
     /// Logs the set, then starts the rest the outcome asked for — the timer is
@@ -278,6 +299,11 @@ final class AppModel {
         updateSession { $0.skipExercise() }
         dismissRest()
         if session?.isFinished == true { pendingSummary = session }
+    }
+
+    func goBack() {
+        updateSession { $0.goBack() }
+        dismissRest()
     }
 
     func changeTargetSets(to count: Int) {

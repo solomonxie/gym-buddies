@@ -84,6 +84,12 @@ public final class SQLiteStore: Store, @unchecked Sendable {
         ALTER TABLE workout_lines ADD COLUMN target_incline REAL;
         ALTER TABLE sets ADD COLUMN incline REAL;
         """,
+        // Set timing, and a line counting differently from its exercise.
+        """
+        ALTER TABLE sets ADD COLUMN started_at REAL;
+        ALTER TABLE sets ADD COLUMN measure TEXT;
+        ALTER TABLE workout_lines ADD COLUMN measure TEXT;
+        """,
     ]
 
     private func migrate() throws {
@@ -149,12 +155,13 @@ public final class SQLiteStore: Store, @unchecked Sendable {
     // MARK: - Workouts
 
     public func workouts() throws -> [Workout] {
-        let lines = try query("SELECT id, workout_id, exercise_id, target_sets, target_reps, target_weight_kg, rest_seconds, target_incline FROM workout_lines ORDER BY position") { row in
+        let lines = try query("SELECT id, workout_id, exercise_id, target_sets, target_reps, target_weight_kg, rest_seconds, target_incline, measure FROM workout_lines ORDER BY position") { row in
             (row.text(1), WorkoutExercise(
                 id: row.text(0), exerciseID: row.text(2),
                 targetSets: row.int(3), targetReps: row.int(4),
                 targetWeight: Weight(kilograms: row.double(5)), restSeconds: row.optionalInt(6),
-                targetIncline: row.optionalDouble(7)
+                targetIncline: row.optionalDouble(7),
+                measure: row.optionalText(8).flatMap(Measure.init(rawValue:))
             ))
         }
         let byWorkout = Dictionary(grouping: lines, by: \.0).mapValues { $0.map(\.1) }
@@ -173,12 +180,13 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             for (position, line) in w.exercises.enumerated() {
                 try run("""
                     INSERT INTO workout_lines (id, workout_id, position, exercise_id, target_sets,
-                        target_reps, target_weight_kg, rest_seconds, target_incline)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        target_reps, target_weight_kg, rest_seconds, target_incline, measure)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, [
                     .text(line.id), .text(w.id), .int(position), .text(line.exerciseID),
                     .int(line.targetSets), .int(line.targetReps), .double(line.targetWeight.kilograms),
                     .optionalInt(line.restSeconds), .optionalDouble(line.targetIncline),
+                    .optionalText(line.measure?.rawValue),
                 ])
             }
         }
@@ -191,12 +199,14 @@ public final class SQLiteStore: Store, @unchecked Sendable {
     // MARK: - Logs
 
     public func logs() throws -> [WorkoutLog] {
-        let sets = try query("SELECT id, log_id, exercise_id, set_number, reps, weight_kg, completed_at, plan_line_id, target_reps, incline FROM sets ORDER BY position") { row in
+        let sets = try query("SELECT id, log_id, exercise_id, set_number, reps, weight_kg, completed_at, plan_line_id, target_reps, incline, started_at, measure FROM sets ORDER BY position") { row in
             SetLog(id: row.text(0), sessionID: row.text(1), exerciseID: row.text(2),
                    setNumber: row.int(3), reps: row.int(4), weight: Weight(kilograms: row.double(5)),
                    completedAt: Date(timeIntervalSince1970: row.double(6)),
                    planLineID: row.optionalText(7), targetReps: row.optionalInt(8),
-                   incline: row.optionalDouble(9))
+                   incline: row.optionalDouble(9),
+                   startedAt: row.optionalDouble(10).map(Date.init(timeIntervalSince1970:)),
+                   measure: row.optionalText(11).flatMap(Measure.init(rawValue:)))
         }
         let byLog = Dictionary(grouping: sets, by: \.sessionID)
         return try query("SELECT id, workout_id, workout_name, started_at, finished_at, skipped, notes FROM logs ORDER BY started_at DESC") { row in
@@ -221,13 +231,14 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             for (position, set) in log.sets.enumerated() {
                 try run("""
                     INSERT INTO sets (id, log_id, position, exercise_id, set_number, reps, weight_kg,
-                        completed_at, plan_line_id, target_reps, incline)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        completed_at, plan_line_id, target_reps, incline, started_at, measure)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, [
                     .text(set.id), .text(log.id), .int(position), .text(set.exerciseID),
                     .int(set.setNumber), .int(set.reps), .double(set.weight.kilograms),
                     .double(set.completedAt.timeIntervalSince1970),
                     .optionalText(set.planLineID), .optionalInt(set.targetReps), .optionalDouble(set.incline),
+                    .optionalDouble(set.startedAt?.timeIntervalSince1970), .optionalText(set.measure?.rawValue),
                 ])
             }
         }

@@ -1,7 +1,8 @@
 import UserNotifications
 
-/// The half of the rest timer that reaches a locked phone: one scheduled
-/// local notification, replaced on extend and removed on dismiss.
+/// The half of the rest and set timers that reaches a locked phone: one
+/// scheduled local notification, replaced on extend and removed on dismiss.
+/// Rest and a running set never overlap, so they share it.
 enum RestAlerts {
     private static let id = "rest-over"
 

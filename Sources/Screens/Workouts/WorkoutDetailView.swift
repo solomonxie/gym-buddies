@@ -177,9 +177,21 @@ private struct LineRow: View {
                         decrement: { update { $0.targetSets = max(1, $0.targetSets - 1) } },
                         increment: { update { $0.targetSets += 1 } },
                         canDecrement: line.targetSets > 1)
-            LineStepper(title: exercise.measure.displayName, value: "\(line.targetReps)",
-                        decrement: { update { $0.targetReps = max(1, $0.targetReps - exercise.repStep) } },
-                        increment: { update { $0.targetReps += exercise.repStep } },
+            let measure = line.measure(for: exercise)
+            HStack {
+                Text("Counted in")
+                Spacer()
+                Picker("Counted in", selection: Binding(
+                    get: { measure },
+                    set: { value in update { $0.count(in: value, for: exercise) } }
+                )) {
+                    ForEach(Measure.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                }
+                .pickerStyle(.menu)
+            }
+            LineStepper(title: measure.displayName, value: "\(line.targetReps)",
+                        decrement: { update { $0.targetReps = max(1, $0.targetReps - measure.step) } },
+                        increment: { update { $0.targetReps += measure.step } },
                         canDecrement: line.targetReps > 1)
             if exercise.equipment.isLoadable {
                 let step = exercise.equipment.increment(in: model.unit)

@@ -80,9 +80,10 @@ below moves down. Nothing gets covered, so there's nothing to dismiss.
  │ Lat Pull Downs       ☰ │   │ Lat Pull Downs       ☰ │
  │ Back · 3 × 10 · 50 lb  │   │┌──────────────────────┐│
  ├────────────────────────┤ → ││ Sets     [−]  3  [+] ││
- │ Seated Leg Curls     ☰ │   ││ Reps     [−] 10  [+] ││
- │ Legs · 3 × 10 · 50 lb  │   ││ Weight   [−] 50  [+] ││
- └────────────────────────┘   ││  lb, 10 lb a tap     ││  ← what + will do
+ │ Seated Leg Curls     ☰ │   ││ Counted in    Reps ⌄ ││  ← this line only: Air Bike
+ │ Legs · 3 × 10 · 50 lb  │   ││ Reps     [−] 10  [+] ││     in minutes here, reps
+ └────────────────────────┘   ││ Weight   [−] 50  [+] ││     elsewhere; switching
+                              ││  lb, 10 lb a tap     ││     resets the target
                               ││ Rest   Default (60s)⌄││  ← menu: default, 30–180s
                               ││ Remove!              ││
                               │└──────────────────────┘│
