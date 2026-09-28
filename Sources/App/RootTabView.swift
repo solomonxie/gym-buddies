@@ -8,15 +8,19 @@ struct RootTabView: View {
         @Bindable var model = model
         TabView(selection: $model.tab) {
             WorkoutsView()
+                .miniSessionBar()
                 .tabItem { Label("Train", systemImage: "figure.strengthtraining.traditional") }
                 .tag(AppTab.train)
             ExercisesView()
+                .miniSessionBar()
                 .tabItem { Label("Exercises", systemImage: "dumbbell") }
                 .tag(AppTab.exercises)
             LogsView()
+                .miniSessionBar()
                 .tabItem { Label("Progress", systemImage: "chart.bar.xaxis") }
                 .tag(AppTab.progress)
             SettingsView()
+                .miniSessionBar()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(AppTab.settings)
         }

@@ -153,7 +153,8 @@ every exercise done or skipped
  ┌──────────────────────────────────────┐
  │ Finish this workout?                 │
  │ 7 sets logged, 14 minutes.           │
- │ ( Save & exit )                      │
+ │ ( Keep in background )               │  ← hides the screen, keeps
+ │ ( Save & exit )                      │     the session and its clocks
  │ ( Discard )!                         │
  │ ( Keep going )                       │
  └──────────────────────────────────────┘
@@ -163,8 +164,16 @@ every exercise done or skipped
  │ Leave?                               │
  │ Nothing was logged, so nothing will  │
  │ be saved.                            │
+ │ ( Keep in background )               │
  │ ( Leave )!          ( Keep going )   │
  └──────────────────────────────────────┘
+
+ kept in background — above the tab bar on every tab
+ ╭────────────────────────────────────────╮
+ │ Fraiser Heights            ⏱ 00:00:28 ⌃│  ← live clock: set, rest, or
+ │ Seated Machine Rows · Set 2 of 3       │     elapsed; tap opens Session
+ ╰────────────────────────────────────────╯
+ [ Train ][ Exercises ][ Progress ][ Settings ]
 
  Summary, after the last set
  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
@@ -215,6 +224,8 @@ every exercise done or skipped
 | `+30s` | tap | extends rest, keeping the time already rested |
 | `(×)` on rest | tap | dismiss, no penalty, no confirm |
 | `(×)` top-left | tap | exit dialog above |
+| `Keep in background` | tap | Session hides; mini bar above the tab bar |
+| mini bar | tap | back to Session |
 
 ## Copy
 
@@ -246,6 +257,7 @@ every exercise done or skipped
 | `session.setsFloor` | {n} already logged, so fewer isn't offered. |
 | `session.multi` | For warm-ups: each at the reps and weight shown. |
 | `session.allDone` | Every exercise is done or skipped. |
+| `session.background` | Keep in background |
 | `session.exit.some` | {n} sets logged, {m} minutes. |
 | `session.exit.none` | Nothing was logged, so nothing will be saved. |
 | `session.summary.stats` | TIME · SETS · MOVED |

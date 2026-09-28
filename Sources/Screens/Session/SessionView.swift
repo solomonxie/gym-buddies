@@ -56,6 +56,7 @@ struct SessionView: View {
             session.hasLoggedAnything ? "Finish this workout?" : "Leave?",
             isPresented: $showingExit, titleVisibility: .visible
         ) {
+            Button("Keep in background") { model.isSessionPresented = false }
             if session.hasLoggedAnything {
                 Button("Save & exit") {
                     if session.driftedLineIDs.isEmpty { model.saveSession(updatingPlan: false) }
