@@ -8,6 +8,7 @@ enum Route: Hashable {
     case addExercises(String)
     case log(String)
     case trend(String)
+    case gym(String)
 }
 
 extension View {
@@ -19,6 +20,7 @@ extension View {
             case .addExercises(let id): AddExercisesView(workoutID: id)
             case .log(let id): SessionLogView(logID: id)
             case .trend(let id): TrendView(exerciseID: id)
+            case .gym(let id): GymEditorView(gymID: id)
             }
         }
     }

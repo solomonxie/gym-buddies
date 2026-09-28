@@ -4,7 +4,7 @@ import Observation
 import UIKit
 
 enum AppTab: Hashable {
-    case train, exercises, progress, settings
+    case train, exercises, gyms, progress, settings
 }
 
 /// One place the screens read from and send events to. Holds no rules of its
@@ -20,6 +20,7 @@ final class AppModel {
     private(set) var exercises: [Exercise] = []
     private(set) var workouts: [Workout] = []
     private(set) var logs: [WorkoutLog] = []
+    private(set) var gyms: [Gym] = []
     private(set) var exercisesByID: [String: Exercise] = [:]
 
     var settings = Settings() {
@@ -104,6 +105,7 @@ final class AppModel {
         exercises = (try? store.exercises()) ?? []
         workouts = (try? store.workouts()) ?? []
         logs = (try? store.logs()) ?? []
+        gyms = (try? store.gyms()) ?? [.home]
         exercisesByID = Dictionary(uniqueKeysWithValues: exercises.map { ($0.id, $0) })
     }
 
@@ -153,6 +155,13 @@ final class AppModel {
         return workout
     }
 
+    @discardableResult
+    func createWorkout(from template: WorkoutTemplate, pool: PoolLength) -> Workout {
+        let workout = template.workout(pool: pool, catalogue: exercisesByID)
+        saveWorkout(workout)
+        return workout
+    }
+
     func deleteWorkout(_ workout: Workout) {
         try? store.deleteWorkout(id: workout.id)
         reload()
@@ -187,6 +196,49 @@ final class AppModel {
                 targetWeight: last?.weight ?? .zero,
                 targetIncline: exercise?.equipment.inclineStep == nil ? nil : (last?.incline ?? 0)
             ))
+        }
+        saveWorkout(workout)
+    }
+
+    // MARK: - Gyms
+
+    func gym(id: String) -> Gym? {
+        gyms.first { $0.id == id }
+    }
+
+    func saveGym(_ gym: Gym) {
+        try? store.saveGym(gym)
+        reload()
+    }
+
+    @discardableResult
+    func createGym() -> Gym {
+        let gym = Gym(id: UUID().uuidString, name: "New gym", hours: .daily(open: 6 * 60, close: 22 * 60))
+        saveGym(gym)
+        return gym
+    }
+
+    /// Workouts that pointed at it stop pointing; Home is never deleted.
+    func deleteGym(_ gym: Gym) {
+        guard !gym.isHome else { return }
+        for var workout in workouts where workout.gymIDs.contains(gym.id) {
+            workout.gymIDs.removeAll { $0 == gym.id }
+            try? store.saveWorkout(workout)
+        }
+        try? store.deleteGym(id: gym.id)
+        reload()
+    }
+
+    func workouts(at gymID: String) -> [Workout] {
+        workouts.filter { $0.gymIDs.contains(gymID) }
+    }
+
+    func toggle(gymID: String, for workoutID: String) {
+        guard var workout = workout(id: workoutID) else { return }
+        if workout.gymIDs.contains(gymID) {
+            workout.gymIDs.removeAll { $0 == gymID }
+        } else {
+            workout.gymIDs.append(gymID)
         }
         saveWorkout(workout)
     }

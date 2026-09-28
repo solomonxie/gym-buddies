@@ -4,8 +4,7 @@ import GymBuddyCore
 /// Train: the workout that's up next, big, then everything else.
 struct WorkoutsView: View {
     @Environment(AppModel.self) private var model
-    @State private var naming = false
-    @State private var newName = ""
+    @State private var creating = false
 
     /// Least recently done goes next — a rotation without asking for one.
     private var upNext: Workout? {
@@ -22,7 +21,7 @@ struct WorkoutsView: View {
                         title: "Nothing built yet",
                         message: "A workout is a list of exercises in the order you'll do them.",
                         systemImage: "dumbbell",
-                        action: ("Build a workout", { naming = true })
+                        action: ("Build a workout", { creating = true })
                     )
                 } else {
                     content
@@ -32,18 +31,12 @@ struct WorkoutsView: View {
             .navigationTitle("Train")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { naming = true } label: { Image(systemName: "plus") }
+                    Button { creating = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("New workout")
                 }
             }
-            .alert("New workout", isPresented: $naming) {
-                TextField("Name", text: $newName)
-                Button("Cancel", role: .cancel) { newName = "" }
-                Button("Create") {
-                    let name = newName.trimmingCharacters(in: .whitespaces)
-                    model.createWorkout(named: name.isEmpty ? "Workout" : name)
-                    newName = ""
-                }
+            .sheet(isPresented: $creating) {
+                NewWorkoutSheet()
             }
         }
     }
@@ -73,7 +66,7 @@ struct WorkoutsView: View {
 extension AppModel {
     func minutes(for workout: Workout) -> Int {
         Stats.estimatedMinutes(workoutID: workout.id, logs: logs)
-            ?? Stats.plannedMinutes(workout, defaultRest: settings.restBetweenSets)
+            ?? Stats.plannedMinutes(workout, defaultRest: settings.restBetweenSets, exercises: exercisesByID)
     }
 }
 

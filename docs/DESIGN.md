@@ -94,17 +94,30 @@ a simulator, which is where testing stops happening.
   legitimately appear twice in one workout; a shared counter strands sets.
 - **Rest is derived from completing a set**, never started by a screen, so the
   timer can't drift out of step with the session.
+- **Swims count laps, the pool makes them distance.** Pool length is a short
+  list (15/20/25 m, 25 yd, 33⅓/50 m), not a free number, and each set keeps
+  the pool it was swum in so 20 laps in a 50 m pool never reads as 500 m.
+- **Templates are copied, not referenced.** Adding one makes an ordinary
+  workout; editing it can't change the template and vice versa.
+- **Opening hours belong to the day they open.** 22:00–02:00 on Friday is still
+  Friday at 1 a.m.; back-to-back all-day periods merge so "open till" is real.
+  "Open" always means open on arrival, travel time included.
 
 ## Data & integrations
 
 ```
 MuscleGroup       arms · back · chest · shoulders · legs · core · cardio · full body
 Equipment         barbell · dumbbell · machine · cable · kettlebell · band · bodyweight
+                  · treadmill · pool · other
 Exercise          name, group, equipment, illustration, instructions, favourite
-Workout           name, ordered [WorkoutExercise]
-WorkoutExercise   exercise, target sets/reps/weight, optional rest override
+Workout           name, ordered [WorkoutExercise], gyms it's for
+WorkoutExercise   exercise, target sets/reps/weight, optional rest override,
+                  incline (treadmill), pool length (swim)
+WorkoutTemplate   read-only content; copied into a Workout, never linked
+Gym               name, equipment, price, weekly hours, travel minutes;
+                  Home always exists
 WorkoutSession    a Workout being performed now — cursor, working values, logs
-SetLog            exercise, set number, reps, weight, completed at
+SetLog            exercise, set number, reps, weight, completed at, pool length
 WorkoutLog        one finished session: started, finished, [SetLog]
 ```
 
@@ -155,9 +168,15 @@ plays nothing as abuse. The notification costs nothing between sets.
 - **Not a coach.** Progression suggestions are double progression and nothing
   cleverer — anything smarter needs RPE or bar speed, which this app doesn't
   ask for and shouldn't pretend to know.
-- **Five tabs became four.** Favourites was always "the library with a
-  filter"; as a ♥ chip in the library it stops being a second place to look.
-  Train · Exercises · Progress · Settings.
+- **Template numbers are starting points, not prescriptions.** Loads assume
+  someone new to the movement, sets and rests follow ACSM strength and
+  hypertrophy guidance, the pregnancy ones ACOG's (no supine work past the
+  first trimester, talk test, stop signs listed). The app says "adjust to
+  you" and lets double progression take it from there. Not medical advice.
+- **Travel time is typed in.** Measuring it needs location and a maps
+  service — a network call this app doesn't make.
+- **Five tabs again.** Gyms took the slot Favourites gave up; "where can I go
+  right now?" is its own question.
 - Open: does the workout builder need supersets in v1? Currently no — a
   superset is two lines with rest 0 on the first, which covers most of it
   without a new concept.
