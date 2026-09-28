@@ -5,7 +5,7 @@ import Foundation
 /// describe without guessing.
 public enum SeedLibrary {
     public static let exercises: [Exercise] =
-        arms + back + chest + shoulders + legs + core + cardio + fullBody
+        arms + back + chest + shoulders + legs + core + cardio + fullBody + swim + mobility
 
     public static var byID: [String: Exercise] {
         Dictionary(uniqueKeysWithValues: exercises.map { ($0.id, $0) })
@@ -32,6 +32,7 @@ public enum SeedLibrary {
         _ muscles: [Muscle],
         timed: Bool = false,
         minutes: Bool = false,
+        laps: Bool = false,
         how: [String] = []
     ) -> Exercise {
         Exercise(
@@ -41,7 +42,7 @@ public enum SeedLibrary {
             equipment: equipment,
             muscles: muscles,
             instructions: how.isEmpty ? nil : how.joined(separator: "\n"),
-            measure: minutes ? .minutes : timed ? .seconds : .reps
+            measure: laps ? .laps : minutes ? .minutes : timed ? .seconds : .reps
         )
     }
 
@@ -1173,7 +1174,7 @@ public enum SeedLibrary {
         e("Tuck Jumps", .cardio, .bodyweight, [.quads, .abs]),
         e("Shadow Boxing", .cardio, .none, [.frontDelts, .obliques], timed: true),
         e("Battle Ropes", .cardio, .none, [.frontDelts, .forearms, .abs], timed: true),
-        e("Swimming", .cardio, .none, [.lats, .frontDelts], minutes: true),
+        e("Swimming", .cardio, .pool, [.lats, .frontDelts], minutes: true),
         e("Hiking", .cardio, .none, [.quads, .glutes, .calves], minutes: true),
         e("Rucking", .cardio, .none, [.quads, .traps], minutes: true),
     ]
@@ -1265,5 +1266,121 @@ public enum SeedLibrary {
             "Walk feet back toward hands",
         ]),
         e("Muscle Ups", .fullBody, .bodyweight, [.lats, .triceps, .chest]),
+    ]
+
+    // MARK: - Swim
+
+    /// One per stroke, counted in lengths so the pool turns them into distance.
+    private static let swim: [Exercise] = [
+        e("Freestyle Swim", .cardio, .pool, [.lats, .frontDelts, .triceps], laps: true, how: [
+            "Breathe by rolling your body to the side, not by lifting your head",
+            "Reach long, then pull under your body all the way to your hip",
+            "Kick from the hips with loose ankles, not from the knees",
+        ]),
+        e("Backstroke Swim", .cardio, .pool, [.lats, .frontDelts, .abs], laps: true, how: [
+            "Keep your head still with your ears in the water",
+            "Enter little finger first, straight above your shoulder",
+            "Count strokes from the flags to the wall so you never hit it",
+        ]),
+        e("Breaststroke Swim", .cardio, .pool, [.quads, .adductors, .chest], laps: true, how: [
+            "Pull, breathe, kick, glide, in that order",
+            "Keep your hands in front of your shoulders on the pull",
+            "Glide with arms straight before starting the next stroke",
+        ]),
+        e("Butterfly Swim", .cardio, .pool, [.chest, .lats, .abs], laps: true, how: [
+            "Drive the wave from your chest, not your knees",
+            "Two kicks a stroke: one as the hands enter, one as they push out",
+            "Breathe low and forward, chin skimming the water",
+        ]),
+        e("Individual Medley", .cardio, .pool, [.lats, .chest, .quads], laps: true, how: [
+            "Butterfly, backstroke, breaststroke, freestyle, in that order",
+            "Each stroke covers a quarter of the distance",
+            "Hold back on the butterfly; it costs the most",
+        ]),
+        e("Kickboard Kicks", .cardio, .pool, [.quads, .glutes, .hamstrings], laps: true, how: [
+            "Hold the far end of the board with straight arms",
+            "Kick from the hips with pointed toes",
+            "Keep kicks small and quick, just under the surface",
+        ]),
+        e("Pull Buoy Swim", .cardio, .pool, [.lats, .triceps, .frontDelts], laps: true, how: [
+            "Squeeze the buoy between your thighs and don't kick",
+            "Keep your core tight so your hips stay high",
+            "Make every pull long, all the way to the hip",
+        ]),
+        e("Water Walking", .cardio, .pool, [.quads, .glutes], minutes: true, how: [
+            "Walk in chest-deep water, heel then toe",
+            "Swing your arms as you would on land",
+            "Stand tall rather than leaning into the water",
+        ]),
+    ]
+
+    // MARK: - Mobility and warm-ups
+
+    private static let mobility: [Exercise] = [
+        e("Cat Cow", .back, .bodyweight, [.lowerBack, .abs], how: [
+            "On hands and knees, hands under shoulders, knees under hips",
+            "Round your back up as you breathe out, then let it sag gently as you breathe in",
+            "Move slowly through the whole spine",
+        ]),
+        e("Childs Pose", .back, .bodyweight, [.lats, .lowerBack], timed: true, how: [
+            "Kneel with knees apart and sit back onto your heels",
+            "Walk your hands forward and rest your forehead down",
+            "Breathe slowly into your back",
+        ]),
+        e("Thoracic Open Books", .back, .bodyweight, [.obliques, .chest], how: [
+            "Lie on your side, knees bent to a right angle, arms straight in front",
+            "Sweep the top arm over to the other side, following it with your eyes",
+            "Keep your knees together and on the floor",
+        ]),
+        e("Chin Tucks", .back, .bodyweight, [.traps], how: [
+            "Sit or stand tall with your eyes level",
+            "Slide your chin straight back into a double chin",
+            "Hold two seconds; don't tip your head down",
+        ]),
+        e("Doorway Chest Stretch", .chest, .bodyweight, [.chest, .frontDelts], timed: true, how: [
+            "Forearms on the door frame, elbows at shoulder height",
+            "Step one foot through until the chest opens",
+            "Keep your ribs down rather than arching your lower back",
+        ]),
+        e("Arm Circles", .shoulders, .bodyweight, [.sideDelts, .frontDelts], timed: true, how: [
+            "Arms straight out to the sides",
+            "Start with small circles and let them grow",
+            "Switch direction halfway",
+        ]),
+        e("Worlds Greatest Stretch", .legs, .bodyweight, [.glutes, .hamstrings, .obliques], how: [
+            "Step into a deep lunge with both hands inside the front foot",
+            "Drop the inside elbow toward the front ankle",
+            "Rotate that arm up to the ceiling, eyes following it",
+        ]),
+        e("Hip Flexor Stretch", .legs, .bodyweight, [.quads], timed: true, how: [
+            "Kneel on one knee with the other foot flat in front",
+            "Squeeze the back glute and tuck your pelvis under",
+            "Shift forward only until the front of the back hip stretches",
+        ]),
+        e("Leg Swings", .legs, .bodyweight, [.hamstrings, .adductors], how: [
+            "Hold a wall or rail for balance",
+            "Swing one leg forward and back, then side to side",
+            "Let the range grow gradually rather than kicking",
+        ]),
+        e("Side Lying Leg Raises", .legs, .bodyweight, [.glutes], how: [
+            "Lie on your side with the bottom knee bent for balance",
+            "Lift the top leg with toes pointing forward, not up",
+            "Lower slowly without rolling your hips back",
+        ]),
+        e("Lateral Bounds", .legs, .bodyweight, [.glutes, .quads, .adductors], how: [
+            "Push off one leg sideways as far as you can",
+            "Land softly on the other leg and hold for a second",
+            "Keep the landing knee in line with the toes",
+        ]),
+        e("Pelvic Floor Contractions", .core, .bodyweight, [.abs], how: [
+            "Squeeze and lift as if stopping the flow of urine",
+            "Hold 3 to 5 seconds while breathing normally, glutes relaxed",
+            "Relax fully for as long as you held",
+        ]),
+        e("Medicine Ball Rotational Throws", .core, .none, [.obliques, .abs, .glutes], how: [
+            "Stand side-on to a wall with the ball at your back hip",
+            "Turn from the back foot and hips first, arms last",
+            "Throw hard into the wall and catch the rebound",
+        ]),
     ]
 }

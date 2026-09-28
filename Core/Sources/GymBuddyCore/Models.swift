@@ -1,15 +1,22 @@
 import Foundation
 
 /// What the count on a set means. A plank is held in seconds, a treadmill
-/// is walked in minutes; calling either "reps" puts the wrong number on screen.
+/// is walked in minutes, a pool is swum in lengths; calling any of them
+/// "reps" puts the wrong number on screen.
 public enum Measure: String, Codable, Sendable, CaseIterable {
-    case reps, seconds, minutes
+    case reps, seconds, minutes, laps
+
+    /// What a line on this equipment can count in. Laps need a pool to be a distance.
+    public static func options(for equipment: Equipment) -> [Measure] {
+        equipment == .pool ? [.laps, .minutes] : [.reps, .seconds, .minutes]
+    }
 
     public var displayName: String {
         switch self {
         case .reps: "Reps"
         case .seconds: "Seconds"
         case .minutes: "Minutes"
+        case .laps: "Laps"
         }
     }
 
@@ -22,13 +29,14 @@ public enum Measure: String, Codable, Sendable, CaseIterable {
         case .reps: 10
         case .seconds: 30
         case .minutes: 20
+        case .laps: 4
         }
     }
 
     /// How long a set of `count` lasts; nil when the count is reps.
     public func duration(_ count: Int) -> TimeInterval? {
         switch self {
-        case .reps: nil
+        case .reps, .laps: nil
         case .seconds: TimeInterval(count)
         case .minutes: TimeInterval(count * 60)
         }
@@ -40,6 +48,7 @@ public enum Measure: String, Codable, Sendable, CaseIterable {
         case .reps: "\(count)"
         case .seconds: "\(count)s"
         case .minutes: "\(count) min"
+        case .laps: count == 1 ? "1 lap" : "\(count) laps"
         }
     }
 }
@@ -139,6 +148,8 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
     /// Overrides the exercise's measure — an air bike in minutes in one
     /// workout, in reps in another. Nil means the exercise's own.
     public var measure: Measure?
+    /// One length of the pool. Nil for anything that isn't swum.
+    public var poolLength: PoolLength?
 
     public init(
         id: String,
@@ -148,9 +159,11 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
         targetWeight: Weight,
         restSeconds: Int? = nil,
         targetIncline: Double? = nil,
-        measure: Measure? = nil
+        measure: Measure? = nil,
+        poolLength: PoolLength? = nil
     ) {
         self.measure = measure
+        self.poolLength = poolLength
         self.id = id
         self.exerciseID = exerciseID
         self.targetIncline = targetIncline
@@ -166,17 +179,35 @@ public struct Workout: Identifiable, Hashable, Codable, Sendable {
     public var name: String
     public var exercises: [WorkoutExercise]
     public var lastPerformed: Date?
+    /// Where it's meant to be done. Empty means anywhere.
+    public var gymIDs: [String]
 
     public init(
         id: String,
         name: String,
         exercises: [WorkoutExercise] = [],
-        lastPerformed: Date? = nil
+        lastPerformed: Date? = nil,
+        gymIDs: [String] = []
     ) {
         self.id = id
         self.name = name
         self.exercises = exercises
         self.lastPerformed = lastPerformed
+        self.gymIDs = gymIDs
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, exercises, lastPerformed, gymIDs
+    }
+
+    /// Reads sessions saved before workouts had gyms.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        exercises = try c.decode([WorkoutExercise].self, forKey: .exercises)
+        lastPerformed = try c.decodeIfPresent(Date.self, forKey: .lastPerformed)
+        gymIDs = try c.decodeIfPresent([String].self, forKey: .gymIDs) ?? []
     }
 }
 
@@ -191,6 +222,11 @@ extension WorkoutExercise {
         guard newMeasure != measure(for: exercise) else { return }
         measure = newMeasure == exercise.measure ? nil : newMeasure
         targetReps = newMeasure.defaultTarget
+    }
+
+    /// The pool this line is swum in; nil when the exercise isn't swum.
+    public func pool(for exercise: Exercise) -> PoolLength? {
+        exercise.equipment == .pool ? (poolLength ?? .default) : nil
     }
 }
 
@@ -215,6 +251,8 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
     public var startedAt: Date?
     /// What `reps` counted. Nil on sets logged before lines could override it.
     public var measure: Measure?
+    /// The pool the laps were swum in, so they stay a distance.
+    public var poolLength: PoolLength?
 
     public init(
         id: String,
@@ -228,9 +266,11 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
         targetReps: Int? = nil,
         incline: Double? = nil,
         startedAt: Date? = nil,
-        measure: Measure? = nil
+        measure: Measure? = nil,
+        poolLength: PoolLength? = nil
     ) {
         self.measure = measure
+        self.poolLength = poolLength
         self.incline = incline
         self.startedAt = startedAt
         self.id = id
@@ -254,6 +294,12 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
 
     public func measure(for exercise: Exercise?) -> Measure {
         measure ?? exercise?.measure ?? .reps
+    }
+
+    /// Laps times the pool; nil for anything not counted in laps.
+    public var distance: Double? {
+        guard measure == .laps, let poolLength else { return nil }
+        return Double(reps) * poolLength.length
     }
 
     public var duration: TimeInterval? {

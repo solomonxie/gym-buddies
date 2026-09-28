@@ -39,6 +39,12 @@ public final class SQLiteStore: Store, @unchecked Sendable {
         try exec("PRAGMA foreign_keys = ON")
         try migrate()
         try seedCatalogue()
+        try run("INSERT OR IGNORE INTO gyms (id, name, hours) VALUES (?, ?, ?)",
+                [.text(Gym.home.id), .text(Gym.home.name), .text(try Self.json(Gym.home.hours))])
+    }
+
+    private static func json<T: Encodable>(_ value: T) throws -> String {
+        String(decoding: try JSONEncoder().encode(value), as: UTF8.self)
     }
 
     // MARK: - Schema
@@ -89,6 +95,17 @@ public final class SQLiteStore: Store, @unchecked Sendable {
         ALTER TABLE sets ADD COLUMN started_at REAL;
         ALTER TABLE sets ADD COLUMN measure TEXT;
         ALTER TABLE workout_lines ADD COLUMN measure TEXT;
+        """,
+        // Pools, gyms, and which gyms a workout is for.
+        """
+        ALTER TABLE workout_lines ADD COLUMN pool_length TEXT;
+        ALTER TABLE sets ADD COLUMN pool_length TEXT;
+        ALTER TABLE workouts ADD COLUMN gym_ids TEXT NOT NULL DEFAULT '';
+        CREATE TABLE gyms (
+            id TEXT PRIMARY KEY, name TEXT NOT NULL, equipment TEXT NOT NULL DEFAULT '',
+            price_cents INTEGER, price_period TEXT, hours TEXT NOT NULL,
+            travel_minutes INTEGER NOT NULL DEFAULT 0, notes TEXT NOT NULL DEFAULT ''
+        );
         """,
     ]
 
@@ -155,38 +172,41 @@ public final class SQLiteStore: Store, @unchecked Sendable {
     // MARK: - Workouts
 
     public func workouts() throws -> [Workout] {
-        let lines = try query("SELECT id, workout_id, exercise_id, target_sets, target_reps, target_weight_kg, rest_seconds, target_incline, measure FROM workout_lines ORDER BY position") { row in
+        let lines = try query("SELECT id, workout_id, exercise_id, target_sets, target_reps, target_weight_kg, rest_seconds, target_incline, measure, pool_length FROM workout_lines ORDER BY position") { row in
             (row.text(1), WorkoutExercise(
                 id: row.text(0), exerciseID: row.text(2),
                 targetSets: row.int(3), targetReps: row.int(4),
                 targetWeight: Weight(kilograms: row.double(5)), restSeconds: row.optionalInt(6),
                 targetIncline: row.optionalDouble(7),
-                measure: row.optionalText(8).flatMap(Measure.init(rawValue:))
+                measure: row.optionalText(8).flatMap(Measure.init(rawValue:)),
+                poolLength: row.optionalText(9).flatMap(PoolLength.init(rawValue:))
             ))
         }
         let byWorkout = Dictionary(grouping: lines, by: \.0).mapValues { $0.map(\.1) }
-        return try query("SELECT id, name, last_performed FROM workouts ORDER BY name COLLATE NOCASE") { row in
+        return try query("SELECT id, name, last_performed, gym_ids FROM workouts ORDER BY name COLLATE NOCASE") { row in
             Workout(id: row.text(0), name: row.text(1),
                     exercises: byWorkout[row.text(0)] ?? [],
-                    lastPerformed: row.optionalDouble(2).map(Date.init(timeIntervalSince1970:)))
+                    lastPerformed: row.optionalDouble(2).map(Date.init(timeIntervalSince1970:)),
+                    gymIDs: row.text(3).split(separator: ",").map(String.init))
         }
     }
 
     public func saveWorkout(_ w: Workout) throws {
         try transaction {
-            try run("INSERT OR REPLACE INTO workouts (id, name, last_performed) VALUES (?, ?, ?)",
-                    [.text(w.id), .text(w.name), .optionalDouble(w.lastPerformed?.timeIntervalSince1970)])
+            try run("INSERT OR REPLACE INTO workouts (id, name, last_performed, gym_ids) VALUES (?, ?, ?, ?)",
+                    [.text(w.id), .text(w.name), .optionalDouble(w.lastPerformed?.timeIntervalSince1970),
+                     .text(w.gymIDs.joined(separator: ","))])
             try run("DELETE FROM workout_lines WHERE workout_id = ?", [.text(w.id)])
             for (position, line) in w.exercises.enumerated() {
                 try run("""
                     INSERT INTO workout_lines (id, workout_id, position, exercise_id, target_sets,
-                        target_reps, target_weight_kg, rest_seconds, target_incline, measure)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        target_reps, target_weight_kg, rest_seconds, target_incline, measure, pool_length)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, [
                     .text(line.id), .text(w.id), .int(position), .text(line.exerciseID),
                     .int(line.targetSets), .int(line.targetReps), .double(line.targetWeight.kilograms),
                     .optionalInt(line.restSeconds), .optionalDouble(line.targetIncline),
-                    .optionalText(line.measure?.rawValue),
+                    .optionalText(line.measure?.rawValue), .optionalText(line.poolLength?.rawValue),
                 ])
             }
         }
@@ -199,14 +219,15 @@ public final class SQLiteStore: Store, @unchecked Sendable {
     // MARK: - Logs
 
     public func logs() throws -> [WorkoutLog] {
-        let sets = try query("SELECT id, log_id, exercise_id, set_number, reps, weight_kg, completed_at, plan_line_id, target_reps, incline, started_at, measure FROM sets ORDER BY position") { row in
+        let sets = try query("SELECT id, log_id, exercise_id, set_number, reps, weight_kg, completed_at, plan_line_id, target_reps, incline, started_at, measure, pool_length FROM sets ORDER BY position") { row in
             SetLog(id: row.text(0), sessionID: row.text(1), exerciseID: row.text(2),
                    setNumber: row.int(3), reps: row.int(4), weight: Weight(kilograms: row.double(5)),
                    completedAt: Date(timeIntervalSince1970: row.double(6)),
                    planLineID: row.optionalText(7), targetReps: row.optionalInt(8),
                    incline: row.optionalDouble(9),
                    startedAt: row.optionalDouble(10).map(Date.init(timeIntervalSince1970:)),
-                   measure: row.optionalText(11).flatMap(Measure.init(rawValue:)))
+                   measure: row.optionalText(11).flatMap(Measure.init(rawValue:)),
+                   poolLength: row.optionalText(12).flatMap(PoolLength.init(rawValue:)))
         }
         let byLog = Dictionary(grouping: sets, by: \.sessionID)
         return try query("SELECT id, workout_id, workout_name, started_at, finished_at, skipped, notes FROM logs ORDER BY started_at DESC") { row in
@@ -231,14 +252,15 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             for (position, set) in log.sets.enumerated() {
                 try run("""
                     INSERT INTO sets (id, log_id, position, exercise_id, set_number, reps, weight_kg,
-                        completed_at, plan_line_id, target_reps, incline, started_at, measure)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        completed_at, plan_line_id, target_reps, incline, started_at, measure, pool_length)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, [
                     .text(set.id), .text(log.id), .int(position), .text(set.exerciseID),
                     .int(set.setNumber), .int(set.reps), .double(set.weight.kilograms),
                     .double(set.completedAt.timeIntervalSince1970),
                     .optionalText(set.planLineID), .optionalInt(set.targetReps), .optionalDouble(set.incline),
                     .optionalDouble(set.startedAt?.timeIntervalSince1970), .optionalText(set.measure?.rawValue),
+                    .optionalText(set.poolLength?.rawValue),
                 ])
             }
         }
@@ -250,6 +272,38 @@ public final class SQLiteStore: Store, @unchecked Sendable {
 
     public func deleteSets(exerciseID: String) throws {
         try run("DELETE FROM sets WHERE exercise_id = ?", [.text(exerciseID)])
+    }
+
+    // MARK: - Gyms
+
+    /// Home first, then by name.
+    public func gyms() throws -> [Gym] {
+        try query("SELECT id, name, equipment, price_cents, price_period, hours, travel_minutes, notes FROM gyms ORDER BY id != 'home', name COLLATE NOCASE") { row in
+            let period = row.optionalText(4).flatMap(Price.Period.init(rawValue:))
+            let price: Price? = if let cents = row.optionalInt(3), let period { Price(cents: cents, period: period) } else { nil }
+            return Gym(
+                id: row.text(0), name: row.text(1),
+                equipment: Set(row.text(2).split(separator: ",").compactMap { Equipment(rawValue: String($0)) }),
+                price: price,
+                hours: (try? JSONDecoder().decode(OpeningHours.self, from: Data(row.text(5).utf8))) ?? .always,
+                travelMinutes: row.int(6), notes: row.text(7)
+            )
+        }
+    }
+
+    public func saveGym(_ gym: Gym) throws {
+        try run("INSERT OR REPLACE INTO gyms VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
+            .text(gym.id), .text(gym.name),
+            .text(gym.equipment.map(\.rawValue).sorted().joined(separator: ",")),
+            .optionalInt(gym.price?.cents), .optionalText(gym.price?.period.rawValue),
+            .text(try Self.json(gym.hours)), .int(gym.travelMinutes), .text(gym.notes),
+        ])
+    }
+
+    /// Home can't go: a workout always has somewhere to be done.
+    public func deleteGym(id: String) throws {
+        guard id != Gym.homeID else { return }
+        try run("DELETE FROM gyms WHERE id = ?", [.text(id)])
     }
 
     // MARK: - Session and settings, as JSON in meta
