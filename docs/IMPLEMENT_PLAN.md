@@ -73,6 +73,9 @@ drawing and wiring, not logic.
 - [x] T4.6 Exit and summary — both confirm variants, volume, PR line, and the offer to push changed weights back into the plan (drawing: `uiux/session.md`) — see `Sources/Screens/Session` — depends: T4.2, T1.8
 - [x] T4.7 Progression offer — once per exercise per session, a question and never an automatic change (drawing: `uiux/session.md`) — see `Sources/Screens/Session` — depends: T1.9, T4.2
 - [x] T4.8 Resume an interrupted session — the app gets killed mid-workout; the session is persisted on every logged set (drawing: `uiux/workouts.md` → resume) — see `Sources/Screens/Session` — depends: T2.3, T4.2
+- [x] T4.9 Set clock — the big button is Start set → Log set → Log set & next exercise; the rest bar doubles as the set clock, counts up for reps and down for timed sets (treadmill minutes, plank seconds), time's-up alert with the screen locked, start time kept on the log (drawing: `uiux/session.md`) — see `Sources/Screens/Session/TimerBar.swift` — depends: T4.2, T4.4
+- [x] T4.11 Counted in, per workout line — reps, seconds or minutes, overriding the exercise; the set log keeps what it counted and `LAST TIME` only compares like with like (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/WorkoutDetailView.swift` — depends: T4.9
+- [x] T4.12 Values beside the body — compact value cards next to the muscle map; tapping one opens a bottom adjust sheet with ± and typing. Back beside Skip returns to the last unfinished exercise left behind (drawing: `uiux/session.md`) — see `Sources/Screens/Session/ValuePanel.swift` — depends: T4.2, T4.5
 
 ## Phase 5: Logs and graphs
 

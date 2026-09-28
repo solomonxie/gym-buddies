@@ -12,7 +12,7 @@ preferences to bury anything under.
   REST  ⓘ
   Between sets                        60s ›
   Between exercises                   90s ›
-  Alert when rest is over               ─●
+  Alert when rest or time is up         ─●
   Vibrate                               ─●
  ──────────────────────────────────────────
   DURING A WORKOUT
@@ -149,7 +149,7 @@ notifications denied (and Alert on)
   ⚠ Alerts are off in iOS Settings, so
     rest will only show on screen.
   ( Open Settings )
-  Alert when rest is over               ─●
+  Alert when rest or time is up         ─●
 
 import, would replace
  ┌──────────────────────────────────────┐

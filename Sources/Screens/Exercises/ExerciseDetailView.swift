@@ -163,13 +163,13 @@ struct ExerciseDetailView: View {
     private func planText(_ w: Workout, _ e: Exercise) -> String {
         guard let plan = w.exercises.first(where: { $0.exerciseID == e.id }) else { return "" }
         return LoadFormat.line(sets: plan.targetSets, reps: plan.targetReps, weight: plan.targetWeight,
-                               exercise: e, unit: model.unit, incline: plan.targetIncline)
+                               exercise: e, unit: model.unit, incline: plan.targetIncline, measure: plan.measure)
     }
 }
 
 /// `60 lb × 10`, `20 min · 8% incline`, `12 reps`.
 func bestSetText(_ set: SetLog, _ e: Exercise?, unit: WeightUnit) -> String {
-    let measure = e?.measure ?? .reps
+    let measure = set.measure(for: e)
     let count = measure == .reps ? "\(set.reps)" : LoadFormat.reps(set.reps, measure: measure)
     guard let load = LoadFormat.load(weight: set.weight, incline: set.incline, exercise: e, unit: unit) else {
         return measure == .reps ? "\(set.reps) reps" : count

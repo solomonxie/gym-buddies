@@ -36,7 +36,7 @@ struct ProgressionOffer: View {
         let suggestion = Progression.suggest(
             for: entry.plan, equipment: entry.exercise.equipment, history: model.logs, unit: model.unit
         )
-        let plan = "\(entry.plan.targetSets) × \(LoadFormat.reps(entry.plan.targetReps, measure: entry.exercise.measure))"
+        let plan = "\(entry.plan.targetSets) × \(LoadFormat.reps(entry.plan.targetReps, measure: entry.measure))"
         switch suggestion {
         case .increase(let to, _) where to != session.workingWeight:
             return ("Hit all \(plan) last time. Try \(LoadFormat.weight(to, model.unit))?", to)
@@ -123,80 +123,7 @@ struct JumpSheet: View {
         if done > 0 || isCurrent { return "\(done) of \(entry.plan.targetSets) done" }
         return LoadFormat.line(sets: entry.plan.targetSets, reps: entry.plan.targetReps,
                                weight: entry.plan.targetWeight, exercise: entry.exercise, unit: model.unit,
-                               incline: entry.plan.targetIncline)
-    }
-}
-
-// MARK: - Keypad
-
-enum KeypadField: String, Identifiable {
-    case reps, weight, incline
-    var id: String { rawValue }
-}
-
-/// For when ± is the wrong tool: 50 → 135 is not a job for a stepper.
-struct KeypadSheet: View {
-    let field: KeypadField
-    @Environment(AppModel.self) private var model
-    @Environment(\.dismiss) private var dismiss
-    @State private var text = ""
-    @FocusState private var focused: Bool
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Text(title).font(.headline)
-            TextField("0", text: $text)
-                .keyboardType(field == .reps ? .numberPad : .decimalPad)
-                .accessibilityLabel(title)
-                .font(.tabular(56))
-                .multilineTextAlignment(.center)
-                .focused($focused)
-            HStack(spacing: 12) {
-                Button("Cancel") { dismiss() }
-                    .buttonStyle(.bordered)
-                    .frame(maxWidth: .infinity)
-                Button("Set") { commit() }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .disabled(parsed == nil)
-            }
-            .controlSize(.large)
-        }
-        .padding()
-        .onAppear {
-            guard let session = model.session else { return }
-            text = switch field {
-            case .reps: "\(session.workingReps)"
-            case .weight: LoadFormat.number(session.workingWeight.value(in: model.unit))
-            case .incline: LoadFormat.number(session.workingIncline ?? 0)
-            }
-            focused = true
-        }
-    }
-
-    private var title: String {
-        switch field {
-        case .reps: model.session?.currentEntry?.exercise.measure.displayName ?? "Reps"
-        case .weight: "Weight (\(model.unit.abbreviation))"
-        case .incline: "Incline (%)"
-        }
-    }
-
-    private var parsed: Double? {
-        let value = Double(text.replacingOccurrences(of: ",", with: "."))
-        guard let value, value >= 0, value < 10_000 else { return nil }
-        return value
-    }
-
-    private func commit() {
-        guard let value = parsed else { return }
-        model.updateSession {
-            switch field {
-            case .reps: $0.setWorkingValues(reps: Int(value))
-            case .weight: $0.setWorkingValues(weight: Weight(value, model.unit))
-            case .incline: $0.setWorkingValues(incline: value)
-            }
-        }
-        dismiss()
+                               incline: entry.plan.targetIncline, measure: entry.plan.measure)
     }
 }
 

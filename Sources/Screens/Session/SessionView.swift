@@ -9,7 +9,7 @@ struct SessionView: View {
     @State private var showingExit = false
     @State private var showingSets = false
     @State private var showingMulti = false
-    @State private var keypad: KeypadField?
+    @State private var editing: SessionField?
     @State private var logged = 0
     /// A long press opens the several-sets dialog; the release that follows
     /// must not also log one.
@@ -48,9 +48,9 @@ struct SessionView: View {
         .background(Theme.surface.ignoresSafeArea())
         .sensoryFeedback(.success, trigger: logged)
         .sheet(isPresented: $showingJump) { JumpSheet() }
-        .sheet(item: $keypad) { field in
-            KeypadSheet(field: field)
-                .presentationDetents([.height(300)])
+        .sheet(item: $editing) { field in
+            AdjustSheet(field: field)
+                .presentationDetents([.height(260)])
         }
         .confirmationDialog(
             session.hasLoggedAnything ? "Finish this workout?" : "Leave?",
@@ -123,49 +123,24 @@ struct SessionView: View {
                     setRow(session, entry)
                     if showingSets { changeSets(session, entry) }
                     ProgressionOffer(session: session, entry: entry)
-                    if !entry.exercise.muscles.isEmpty {
-                        MuscleMap(highlighted: entry.exercise.muscles)
-                            .frame(maxWidth: .infinity, maxHeight: 150)
-                            .opacity(0.8)
-                            .padding(.top, 8)
+                    HStack(alignment: .center, spacing: 12) {
+                        if !entry.exercise.muscles.isEmpty {
+                            MuscleMap(highlighted: entry.exercise.muscles)
+                                .frame(maxWidth: .infinity, maxHeight: 220)
+                                .opacity(0.8)
+                        }
+                        ValueColumn(editing: $editing)
+                            .frame(maxWidth: entry.exercise.muscles.isEmpty ? .infinity : 150)
                     }
+                    .padding(.top, 4)
                 }
                 .padding(.horizontal, Theme.Metrics.gutter)
             }
             .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: 10) {
-                ValueTile(
-                    value: "\(session.workingReps)",
-                    label: entry.exercise.measure.displayName.lowercased(),
-                    detail: nil,
-                    decrement: ("Fewer", { model.updateSession { $0.adjustReps(by: -entry.exercise.repStep) } }),
-                    increment: ("More", { model.updateSession { $0.adjustReps(by: entry.exercise.repStep) } }),
-                    onTapValue: { keypad = .reps }
-                )
-                if entry.exercise.equipment.isLoadable {
-                    let step = LoadFormat.weight(entry.exercise.equipment.increment(in: model.unit), model.unit)
-                    ValueTile(
-                        value: LoadFormat.readout(session.workingWeight, model.unit),
-                        label: model.unit.abbreviation,
-                        detail: "± \(step)",
-                        decrement: ("\(step) lighter", { model.updateSession { $0.adjustWeight(by: -1, in: model.unit) } }),
-                        increment: ("\(step) heavier", { model.updateSession { $0.adjustWeight(by: 1, in: model.unit) } }),
-                        onTapValue: { keypad = .weight }
-                    )
-                }
-                if let step = entry.exercise.equipment.inclineStep {
-                    ValueTile(
-                        value: LoadFormat.number(session.workingIncline ?? 0),
-                        label: "incline %",
-                        detail: "± \(LoadFormat.incline(step))",
-                        decrement: ("Less incline", { model.updateSession { $0.adjustIncline(by: -1) } }),
-                        increment: ("More incline", { model.updateSession { $0.adjustIncline(by: 1) } }),
-                        onTapValue: { keypad = .incline }
-                    )
-                }
-                RestBar()
-                logButton(session)
+                TimerBar(session: session)
+                primaryButton(session)
                 upNext(session)
             }
             .padding(.horizontal, Theme.Metrics.gutter)
@@ -173,6 +148,7 @@ struct SessionView: View {
         }
         .animation(.snappy, value: showingSets)
         .animation(.snappy, value: model.restTimer.isRunning)
+        .animation(.snappy, value: session.isSetRunning)
         .animation(.snappy, value: entry.id)
     }
 
@@ -183,11 +159,25 @@ struct SessionView: View {
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .lineLimit(2)
                     .minimumScaleFactor(0.7)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("\(entry.exercise.muscleGroup.displayName) · \(entry.exercise.equipment.displayName)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             Spacer()
+            if let back = model.session?.backEntry {
+                Button { model.goBack() } label: {
+                    Image(systemName: "backward.end.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 44, height: 44)
+                        .background(Circle().fill(Color.secondary.opacity(0.14)))
+                        .frame(width: Theme.tapTarget, height: Theme.tapTarget)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Back to \(back.exercise.name)")
+            }
             Button { model.skipExercise() } label: {
                 Label("Skip", systemImage: "forward.end.fill")
                     .labelStyle(.titleAndIcon)
@@ -230,9 +220,9 @@ struct SessionView: View {
     }
 
     private func lastTimeText(_ session: WorkoutSession, _ entry: WorkoutSession.Entry) -> String {
-        guard let last = Stats.lastTime(exerciseID: entry.exercise.id, setNumber: session.currentSetNumber, in: model.logs)
+        guard let last = Stats.lastTime(exerciseID: entry.exercise.id, setNumber: session.currentSetNumber, measure: entry.measure, in: model.logs)
         else { return "—" }
-        let reps = LoadFormat.reps(last.reps, measure: entry.exercise.measure)
+        let reps = LoadFormat.reps(last.reps, measure: last.measure(for: entry.exercise))
         guard let load = LoadFormat.load(weight: last.weight, incline: last.incline, exercise: entry.exercise, unit: model.unit)
         else { return reps }
         return entry.exercise.equipment.inclineStep == nil ? "\(reps) × \(load)" : "\(reps) · \(load)"
@@ -271,23 +261,30 @@ struct SessionView: View {
         .transition(.opacity.combined(with: .move(edge: .top)))
     }
 
-    // MARK: - Log set
+    // MARK: - Start / log set
 
-    private func logButton(_ session: WorkoutSession) -> some View {
-        let label = session.isOnFinalSet ? "Log set & finish" : "Log set"
+    /// One button, one thumb: Start set, then Log set once it's running.
+    private func primaryButton(_ session: WorkoutSession) -> some View {
+        let action = session.primaryAction
         let remaining = (session.currentEntry.map { $0.plan.targetSets - session.completedSets(for: $0.id) }) ?? 0
         return Button {
             if suppressTap {
                 suppressTap = false
                 return
             }
-            model.completeSets(1)
-            logged += 1
+            if case .start = action {
+                model.startSet()
+            } else {
+                model.completeSets(1)
+                logged += 1
+            }
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: "checkmark")
+                Image(systemName: Self.icon(action))
                     .font(.system(size: 20, weight: .heavy))
-                Text(label)
+                Text(Self.title(action))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             .font(.system(size: 21, weight: .bold, design: .rounded))
         }
@@ -297,7 +294,7 @@ struct SessionView: View {
             suppressTap = true
             showingMulti = true
         })
-        .accessibilityLabel(session.isOnFinalSet ? "Log set and finish workout" : "Log set \(session.currentSetNumber)")
+        .accessibilityLabel(Self.title(action))
         .accessibilityAction(named: "Log several sets") { if remaining > 1 { showingMulti = true } }
         .confirmationDialog("Log several identical sets", isPresented: $showingMulti, titleVisibility: .visible) {
             ForEach(2...max(2, remaining), id: \.self) { n in
@@ -310,6 +307,20 @@ struct SessionView: View {
         } message: {
             Text("For warm-ups: each at the reps and weight shown.")
         }
+    }
+
+    private static func title(_ action: WorkoutSession.PrimaryAction) -> String {
+        switch action {
+        case .start(let set): "Start set \(set)"
+        case .logSet: "Log set"
+        case .logAndNextExercise: "Log set & next exercise"
+        case .logAndFinish: "Log set & finish"
+        }
+    }
+
+    private static func icon(_ action: WorkoutSession.PrimaryAction) -> String {
+        if case .start = action { return "play.fill" }
+        return "checkmark"
     }
 
     // MARK: - Up next
@@ -354,46 +365,6 @@ struct SessionView: View {
                 .buttonStyle(PrimaryButtonStyle(height: 72))
                 .padding()
         }
-    }
-}
-
-/// One value, with its − and + at the thumb's edges. Tap the number to type it.
-struct ValueTile: View {
-    let value: String
-    let label: String
-    let detail: String?
-    let decrement: (label: String, run: () -> Void)
-    let increment: (label: String, run: () -> Void)
-    let onTapValue: () -> Void
-
-    var body: some View {
-        HStack(spacing: 0) {
-            RepeatButton(systemImage: "minus", label: decrement.label, action: decrement.run)
-            Button(action: onTapValue) {
-                VStack(spacing: 0) {
-                    Text(value)
-                        .font(.tabular(54, weight: .bold))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.5)
-                        .contentTransition(.numericText())
-                        .animation(.snappy(duration: 0.2), value: value)
-                    HStack(spacing: 6) {
-                        Text(label).eyebrow()
-                        if let detail {
-                            Text(detail).font(.caption2.monospacedDigit()).foregroundStyle(.tertiary)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("\(value) \(label)")
-            .accessibilityHint("Type a number")
-            RepeatButton(systemImage: "plus", label: increment.label, action: increment.run)
-        }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: Theme.Metrics.corner + 6, style: .continuous).fill(Theme.card))
     }
 }
 

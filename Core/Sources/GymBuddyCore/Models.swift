@@ -25,6 +25,15 @@ public enum Measure: String, Codable, Sendable, CaseIterable {
         }
     }
 
+    /// How long a set of `count` lasts; nil when the count is reps.
+    public func duration(_ count: Int) -> TimeInterval? {
+        switch self {
+        case .reps: nil
+        case .seconds: TimeInterval(count)
+        case .minutes: TimeInterval(count * 60)
+        }
+    }
+
     /// `10`, `60s`, `20 min`.
     public func format(_ count: Int) -> String {
         switch self {
@@ -127,6 +136,9 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
     public var restSeconds: Int?
     /// Treadmill incline, percent. Nil for equipment without one.
     public var targetIncline: Double?
+    /// Overrides the exercise's measure — an air bike in minutes in one
+    /// workout, in reps in another. Nil means the exercise's own.
+    public var measure: Measure?
 
     public init(
         id: String,
@@ -135,8 +147,10 @@ public struct WorkoutExercise: Identifiable, Hashable, Codable, Sendable {
         targetReps: Int,
         targetWeight: Weight,
         restSeconds: Int? = nil,
-        targetIncline: Double? = nil
+        targetIncline: Double? = nil,
+        measure: Measure? = nil
     ) {
+        self.measure = measure
         self.id = id
         self.exerciseID = exerciseID
         self.targetIncline = targetIncline
@@ -166,6 +180,20 @@ public struct Workout: Identifiable, Hashable, Codable, Sendable {
     }
 }
 
+extension WorkoutExercise {
+    public func measure(for exercise: Exercise) -> Measure {
+        measure ?? exercise.measure
+    }
+
+    /// Switching what the line counts restarts its target: 20 minutes
+    /// doesn't become 20 reps.
+    public mutating func count(in newMeasure: Measure, for exercise: Exercise) {
+        guard newMeasure != measure(for: exercise) else { return }
+        measure = newMeasure == exercise.measure ? nil : newMeasure
+        targetReps = newMeasure.defaultTarget
+    }
+}
+
 /// What actually happened, which is never assumed to match the plan.
 public struct SetLog: Identifiable, Hashable, Codable, Sendable {
     public var id: String
@@ -183,6 +211,10 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
     public var targetReps: Int?
     /// Treadmill incline, percent — a setting, not a load, so never a `Weight`.
     public var incline: Double?
+    /// When Start was tapped; nil if the set was logged without it.
+    public var startedAt: Date?
+    /// What `reps` counted. Nil on sets logged before lines could override it.
+    public var measure: Measure?
 
     public init(
         id: String,
@@ -194,9 +226,13 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
         completedAt: Date,
         planLineID: String? = nil,
         targetReps: Int? = nil,
-        incline: Double? = nil
+        incline: Double? = nil,
+        startedAt: Date? = nil,
+        measure: Measure? = nil
     ) {
+        self.measure = measure
         self.incline = incline
+        self.startedAt = startedAt
         self.id = id
         self.sessionID = sessionID
         self.exerciseID = exerciseID
@@ -215,6 +251,14 @@ public struct SetLog: Identifiable, Hashable, Codable, Sendable {
     /// Reps moved through the full load — the only volume number that survives
     /// comparing a 5×5 against a 3×10.
     public var volume: Weight { weight * reps }
+
+    public func measure(for exercise: Exercise?) -> Measure {
+        measure ?? exercise?.measure ?? .reps
+    }
+
+    public var duration: TimeInterval? {
+        startedAt.map { max(0, completedAt.timeIntervalSince($0)) }
+    }
 }
 
 public struct WorkoutLog: Identifiable, Hashable, Codable, Sendable {

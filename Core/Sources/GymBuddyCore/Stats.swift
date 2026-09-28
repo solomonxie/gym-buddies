@@ -102,13 +102,18 @@ extension Stats {
     public static func lastTime(
         exerciseID: String,
         setNumber: Int,
+        measure: Measure? = nil,
         in logs: [WorkoutLog]
     ) -> SetLog? {
+        // 20 minutes last time says nothing about 50 reps today.
+        let matches = { (set: SetLog) in
+            set.exerciseID == exerciseID && (measure == nil || set.measure == nil || set.measure == measure)
+        }
         guard let recent = logs
-            .filter({ $0.sets.contains { $0.exerciseID == exerciseID } })
+            .filter({ $0.sets.contains(where: matches) })
             .max(by: { $0.startedAt < $1.startedAt })
         else { return nil }
-        let sets = recent.sets.filter { $0.exerciseID == exerciseID }
+        let sets = recent.sets.filter(matches)
         return sets.first { $0.setNumber == setNumber } ?? sets.last
     }
 
@@ -268,9 +273,9 @@ public enum LoadFormat {
 
     public static func line(
         sets: Int, reps: Int, weight: Weight, exercise: Exercise,
-        unit: WeightUnit, restOverride: Int? = nil, incline: Double? = nil
+        unit: WeightUnit, restOverride: Int? = nil, incline: Double? = nil, measure: Measure? = nil
     ) -> String {
-        var parts = ["\(sets) × \(self.reps(reps, measure: exercise.measure))"]
+        var parts = ["\(sets) × \(self.reps(reps, measure: measure ?? exercise.measure))"]
         if let load = load(weight: weight, incline: incline, exercise: exercise, unit: unit) {
             parts.append(load)
         }
@@ -280,7 +285,8 @@ public enum LoadFormat {
 
     public static func line(_ plan: WorkoutExercise, exercise: Exercise, unit: WeightUnit) -> String {
         line(sets: plan.targetSets, reps: plan.targetReps, weight: plan.targetWeight,
-             exercise: exercise, unit: unit, restOverride: plan.restSeconds, incline: plan.targetIncline)
+             exercise: exercise, unit: unit, restOverride: plan.restSeconds, incline: plan.targetIncline,
+             measure: plan.measure)
     }
 
     /// Summary of what a session did for one exercise: `3 × 10 · 60 lb`, or
@@ -289,7 +295,7 @@ public enum LoadFormat {
         guard !sets.isEmpty else { return "" }
         let top = sets.map(\.weight).max() ?? .zero
         let reps = sets.map(\.reps).min() ?? 0
-        var text = "\(sets.count) × \(self.reps(reps, measure: exercise?.measure ?? .reps))"
+        var text = "\(sets.count) × \(self.reps(reps, measure: sets[0].measure(for: exercise)))"
         let incline = sets.compactMap(\.incline).max()
         if let load = load(weight: top, incline: incline, exercise: exercise, unit: unit) {
             text += " · " + load
@@ -336,7 +342,7 @@ public enum CSVExport {
                     LoadFormat.number(set.weight.value(in: unit)),
                     LoadFormat.number(set.volume.value(in: unit)),
                     iso.string(from: set.completedAt),
-                    exercise?.measure.rawValue ?? "reps",
+                    set.measure(for: exercise).rawValue,
                     set.incline.map(LoadFormat.number) ?? "",
                 ].joined(separator: ","))
             }

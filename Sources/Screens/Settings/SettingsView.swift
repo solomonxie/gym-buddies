@@ -112,7 +112,7 @@ struct SettingsView: View {
             }
             restRow("Between sets", kind: .sets, value: $model.settings.restBetweenSets)
             restRow("Between exercises", kind: .exercises, value: $model.settings.restBetweenExercises)
-            Toggle("Alert when rest is over", isOn: $model.settings.alertWhenRestOver)
+            Toggle("Alert when rest or time is up", isOn: $model.settings.alertWhenRestOver)
                 .onChange(of: model.settings.alertWhenRestOver) { _, on in
                     if on { RestAlerts.requestAuthorization() }
                 }

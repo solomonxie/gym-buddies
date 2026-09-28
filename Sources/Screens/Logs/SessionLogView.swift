@@ -145,9 +145,9 @@ private struct SetEditor: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            LineStepper(title: "Set \(set.setNumber) · \((exercise?.measure ?? .reps).displayName.lowercased())", value: "\(set.reps)",
-                        decrement: { update { $0.reps = max(0, $0.reps - (exercise?.repStep ?? 1)) } },
-                        increment: { update { $0.reps += exercise?.repStep ?? 1 } },
+            LineStepper(title: "Set \(set.setNumber) · \(set.measure(for: exercise).displayName.lowercased())", value: "\(set.reps)",
+                        decrement: { update { $0.reps = max(0, $0.reps - set.measure(for: exercise).step) } },
+                        increment: { update { $0.reps += set.measure(for: exercise).step } },
                         canDecrement: set.reps > 0)
             if let exercise, exercise.equipment.isLoadable {
                 LineStepper(title: "weight", value: LoadFormat.number(set.weight.value(in: model.unit)),

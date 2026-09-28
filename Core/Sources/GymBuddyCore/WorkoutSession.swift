@@ -13,6 +13,7 @@ public struct WorkoutSession: Codable, Sendable {
         public var isSkipped: Bool = false
 
         public var id: String { plan.id }
+        public var measure: Measure { plan.measure(for: exercise) }
 
         public init(exercise: Exercise, plan: WorkoutExercise, isSkipped: Bool = false) {
             self.exercise = exercise
@@ -46,6 +47,11 @@ public struct WorkoutSession: Codable, Sendable {
     public private(set) var workingWeight: Weight
     /// Treadmill incline for the set about to be logged; nil without one.
     public private(set) var workingIncline: Double?
+    /// Exercises left behind, most recent last, for Back. Optional so
+    /// sessions saved before it existed still decode.
+    private var cameFrom: [Int]?
+    /// When Start was tapped for the set about to be logged.
+    public private(set) var setStartedAt: Date?
     /// Plan lines whose progression offer has been shown — once per session.
     public private(set) var progressionOffered: Set<String> = []
 
@@ -118,6 +124,21 @@ public struct WorkoutSession: Codable, Sendable {
 
     public var hasLoggedAnything: Bool { !logs.isEmpty }
 
+    /// What the one big button does next: start the set, then log it.
+    public enum PrimaryAction: Equatable, Sendable {
+        case start(set: Int)
+        case logSet
+        case logAndNextExercise
+        case logAndFinish
+    }
+
+    public var primaryAction: PrimaryAction {
+        guard let entry = currentEntry else { return .logAndFinish }
+        guard isSetRunning else { return .start(set: currentSetNumber) }
+        if isOnFinalSet { return .logAndFinish }
+        return completedSets(for: entry.id) + 1 >= entry.plan.targetSets ? .logAndNextExercise : .logSet
+    }
+
     // MARK: - Nudging the set about to be logged
 
     public mutating func adjustReps(by delta: Int) {
@@ -164,6 +185,40 @@ public struct WorkoutSession: Codable, Sendable {
         progressionOffered.insert(planID)
     }
 
+    // MARK: - Timing the set
+
+    public var isSetRunning: Bool { setStartedAt != nil }
+
+    public mutating func startSet(at now: Date) {
+        guard currentEntry != nil else { return }
+        setStartedAt = now
+    }
+
+    public mutating func cancelSet() {
+        setStartedAt = nil
+    }
+
+    public func setElapsed(at now: Date) -> TimeInterval {
+        setStartedAt.map { max(0, now.timeIntervalSince($0)) } ?? 0
+    }
+
+    /// The working count as a duration: a treadmill's minutes, a plank's
+    /// seconds. Nil for reps, which count up instead.
+    public var setDuration: TimeInterval? {
+        currentEntry?.measure.duration(workingReps)
+    }
+
+    /// Countdown for a timed set; nil for reps or before Start.
+    public func setRemaining(at now: Date) -> TimeInterval? {
+        guard isSetRunning, let setDuration else { return nil }
+        return max(0, setDuration - setElapsed(at: now))
+    }
+
+    /// Past the countdown; how far past is `setElapsed - setDuration`.
+    public func isSetTimeUp(at now: Date) -> Bool {
+        setRemaining(at: now) == 0
+    }
+
     // MARK: - Moving through it
 
     @discardableResult
@@ -184,9 +239,12 @@ public struct WorkoutSession: Codable, Sendable {
                 completedAt: now,
                 planLineID: entry.id,
                 targetReps: entry.plan.targetReps,
-                incline: entry.exercise.equipment.inclineStep == nil ? nil : (workingIncline ?? 0)
+                incline: entry.exercise.equipment.inclineStep == nil ? nil : (workingIncline ?? 0),
+                startedAt: setStartedAt,
+                measure: entry.measure
             )
         )
+        setStartedAt = nil
 
         completedByPlan[entry.id, default: 0] += 1
 
@@ -221,9 +279,35 @@ public struct WorkoutSession: Codable, Sendable {
     /// when the rack you wanted is busy.
     public mutating func jump(toExerciseAt index: Int) {
         guard entries.indices.contains(index) else { return }
+        if index != exerciseIndex { leave() }
         entries[index].isSkipped = false
         exerciseIndex = index
         loadWorkingValues()
+    }
+
+    /// Where Back goes: the latest exercise left behind that still has
+    /// sets to do. A finished one is history, not somewhere to return to.
+    public var backEntry: Entry? {
+        backIndex.map { entries[$0] }
+    }
+
+    private var backIndex: Int? {
+        (cameFrom ?? []).last { entries.indices.contains($0) && $0 != exerciseIndex && !isComplete(entries[$0]) }
+    }
+
+    /// Undo a skip, or return to where the list jump came from.
+    public mutating func goBack() {
+        guard let target = backIndex else { return }
+        let position = cameFrom?.lastIndex(of: target) ?? 0
+        cameFrom = Array((cameFrom ?? []).prefix(position))
+        entries[target].isSkipped = false
+        exerciseIndex = target
+        loadWorkingValues()
+    }
+
+    private mutating func leave() {
+        guard entries.indices.contains(exerciseIndex) else { return }
+        cameFrom = (cameFrom ?? []) + [exerciseIndex]
     }
 
     /// Next line with sets still to do, looking forward first and then
@@ -234,6 +318,7 @@ public struct WorkoutSession: Codable, Sendable {
     }
 
     private mutating func advance(rest: Int) -> SetOutcome {
+        leave()
         exerciseIndex = nextOpenIndex(after: exerciseIndex) ?? entries.count
         loadWorkingValues()
         guard let next = currentEntry else { return .workoutComplete }
@@ -241,6 +326,7 @@ public struct WorkoutSession: Codable, Sendable {
     }
 
     private mutating func loadWorkingValues() {
+        setStartedAt = nil
         guard let entry = currentEntry else { return }
         workingReps = entry.plan.targetReps
         workingWeight = entry.plan.targetWeight
