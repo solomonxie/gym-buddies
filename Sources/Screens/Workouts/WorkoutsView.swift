@@ -178,14 +178,22 @@ private struct HeroCard: View {
         VStack(alignment: .leading, spacing: 16) {
             NavigationLink(value: Route.workout(workout.id)) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Up next").eyebrow()
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Up next").eyebrow()
+                        Spacer()
+                        Text(workout.lastPerformed.map { "Last \(Dates.ago($0))" } ?? "Never done")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
                     Text(workout.name)
                         .font(.system(size: 30, weight: .bold, design: .rounded))
                         .foregroundStyle(.primary)
                         .lineLimit(2)
-                    Text("\(workout.exercises.count) exercises · ~\(model.minutes(for: workout)) min · \(workout.lastPerformed.map { "last \(Dates.ago($0))" } ?? "never done")")
-                        .font(.subheadline)
+                    Text("\(workout.exercises.count) exercises · ~\(model.minutes(for: workout)) min")
+                        .font(.subheadline.monospacedDigit())
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
                     VStack(alignment: .leading, spacing: 4) {
                         ForEach(workout.exercises.prefix(4)) { line in
                             if let e = model.exercisesByID[line.exerciseID] {
@@ -194,6 +202,8 @@ private struct HeroCard: View {
                                     Spacer()
                                     Text(LoadFormat.line(line, exercise: e, unit: model.unit)).monospacedDigit()
                                         .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                        .layoutPriority(1)
                                 }
                                 .font(.subheadline)
                                 .foregroundStyle(.primary)

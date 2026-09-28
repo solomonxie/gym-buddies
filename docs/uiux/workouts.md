@@ -7,9 +7,9 @@ are pushed from it instead of taking a tab each.
 ```
   ⚙       Gym Buddy                      ← title is the app name
  ╭────────────────────────────────────────╮
- │ UP NEXT                                │  ← least recently done: a
+ │ UP NEXT                Last 6 days ago │  ← least recently done: a
  │ Fraiser Heights                        │     rotation without asking
- │ 6 exercises · ~45 min · last 6 days ago│     for one
+ │ 6 exercises · ~45 min                  │     for one; no line wraps
  │                                        │
  │ Walking                   1 × 5 · 3 lb │
  │ Seated Machine Rows     3 × 10 · 50 lb │
