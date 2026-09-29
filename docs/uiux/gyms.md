@@ -5,8 +5,6 @@ it is. Answers "where can I go right now?" before you put your shoes on.
 
 ```
   Gyms                                    +
-  ( Now )( Pick a time )                    ← segmented
-  [ Tue 29 Sep  19:30 ]                     ← only on "Pick a time"
   OPEN WHEN YOU GET THERE
  ╭────────────────────────────────────────╮
  │ Home                           Home  › │
@@ -18,7 +16,7 @@ it is. Answers "where can I go right now?" before you put your shoes on.
  │ City Pool                            › │
  │ Shuts 40 min after you arrive · 20 min │  ← under an hour: warn
  ╰────────────────────────────────────────╯
-  CLOSED THEN
+  CLOSED NOW
  ╭────────────────────────────────────────╮
  │ Uni Gym                              › │
  │ Opens Wed 06:00 · 25 min · $8/visit    │
@@ -93,7 +91,7 @@ home
 
 nothing open
   OPEN WHEN YOU GET THERE
-  Nothing's open then.
+  Nothing's open now.
 
 deleting
  ┌──────────────────────────────────────┐
@@ -108,7 +106,7 @@ deleting
 | Key | String |
 |---|---|
 | `gyms.open` | OPEN WHEN YOU GET THERE |
-| `gyms.closed` | CLOSED THEN |
+| `gyms.closed` | CLOSED NOW |
 | `gyms.allDay` | Open all day |
 | `gyms.until` | Open till {time} |
 | `gyms.closingSoon` | Shuts {n} min after you arrive |

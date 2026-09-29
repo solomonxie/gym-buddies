@@ -1,18 +1,16 @@
 import SwiftUI
 import GymBuddyCore
 
-/// Where can I go: open on arrival first, now or at a picked time.
+/// Where can I go right now: open on arrival first.
 struct GymsView: View {
     @Environment(AppModel.self) private var model
-    @State private var picking = false
-    @State private var picked = Date.now
     @State private var newGym: NewGym?
 
     private struct NewGym: Identifiable { let id: String }
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
-            list(leaving: picking ? picked : context.date)
+            list(leaving: context.date)
         }
         .navigationTitle("Gyms")
         .toolbar {
@@ -40,18 +38,8 @@ struct GymsView: View {
         let closed = rows.filter { !$0.availability.isOpen }
         return List {
             Section {
-                Picker("When", selection: $picking) {
-                    Text("Now").tag(false)
-                    Text("Pick a time").tag(true)
-                }
-                .pickerStyle(.segmented)
-                if picking {
-                    DatePicker("Leaving", selection: $picked)
-                }
-            }
-            Section {
                 if open.isEmpty {
-                    Text("Nothing's open then.").foregroundStyle(.secondary)
+                    Text("Nothing's open now.").foregroundStyle(.secondary)
                 }
                 ForEach(open, id: \.gym.id) { row in GymRow(gym: row.gym, availability: row.availability) }
             } header: {
@@ -63,7 +51,7 @@ struct GymsView: View {
                 Section {
                     ForEach(closed, id: \.gym.id) { row in GymRow(gym: row.gym, availability: row.availability) }
                 } header: {
-                    Text("Closed then").eyebrow()
+                    Text("Closed now").eyebrow()
                 }
             }
         }
