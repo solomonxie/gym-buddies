@@ -144,7 +144,7 @@ final class GymStoreTests: XCTestCase {
         try s.deleteGym(id: Gym.homeID)
         XCTAssertEqual(try s.gyms().map(\.id), [Gym.homeID])
 
-        let gym = Gym(id: "g", name: "Anytime", exerciseIDs: [Fixtures.rows.id, Fixtures.pullDowns.id],
+        let gym = Gym(id: "g", name: "Anytime", kitIDs: ["barbell", "machine-leg-press"],
                       price: Price(cents: 4500, period: .month),
                       hours: .daily(open: 6 * 60, close: 22 * 60), travelMinutes: 15, notes: "Bring a lock")
         try s.saveGym(gym)
@@ -174,7 +174,7 @@ final class GymStoreTests: XCTestCase {
         XCTAssertEqual(try s.logs().first?.sets.first?.poolLength, .m50)
     }
 
-    func testGymKitKindsBecomeTheirExercises() throws {
+    func testOldGymKindsBecomeTheMachinesTheirExercisesUse() throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".sqlite")
         defer { try? FileManager.default.removeItem(at: url) }
         _ = try SQLiteStore(url: url, catalogue: Array(Fixtures.catalogue.values))
@@ -182,17 +182,19 @@ final class GymStoreTests: XCTestCase {
         XCTAssertEqual(sqlite3_open(url.path, &db), SQLITE_OK)
         let kit = Fixtures.rows.equipment.rawValue
         let rewind = """
+            ALTER TABLE gyms DROP COLUMN kit;
             ALTER TABLE gyms DROP COLUMN exercise_ids;
             UPDATE gyms SET equipment = '\(kit),pool';
-            DELETE FROM migrations WHERE version = (SELECT MAX(version) FROM migrations);
+            DELETE FROM migrations WHERE version >= 5;
             """
         XCTAssertEqual(sqlite3_exec(db, rewind, nil, nil, nil), SQLITE_OK)
         sqlite3_close(db)
 
         let s = try SQLiteStore(url: url, catalogue: Array(Fixtures.catalogue.values))
-        let expected = Set(Fixtures.catalogue.values.filter { $0.equipment == Fixtures.rows.equipment }.map(\.id))
+        let expected = Set(Fixtures.catalogue.values.filter { $0.equipment == Fixtures.rows.equipment }
+            .compactMap(Kit.needed(by:)).map(\.id))
         XCTAssertFalse(expected.isEmpty)
-        XCTAssertEqual(try s.gyms().first?.exerciseIDs, expected)
+        XCTAssertEqual(try s.gyms().first?.kitIDs, expected)
     }
 
     func testOldSessionsWithoutGymsStillDecode() throws {

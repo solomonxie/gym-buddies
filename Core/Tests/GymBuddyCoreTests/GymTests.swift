@@ -76,21 +76,43 @@ final class GymTests: XCTestCase {
         let needed = workout.exercises.compactMap { exercises[$0.exerciseID] }.filter(\.equipment.needsAGym)
         XCTAssertFalse(needed.isEmpty)
         XCTAssertEqual(Gym.home.missingExercises(for: workout, exercises: exercises).map(\.id), needed.map(\.id))
-        var partial = Gym(id: "g", name: "Gym", exerciseIDs: Set(needed.dropFirst().map(\.id)))
-        XCTAssertEqual(partial.missingExercises(for: workout, exercises: exercises).map(\.id), [needed[0].id])
-        partial.exerciseIDs.insert(needed[0].id)
+        let kits = needed.compactMap(Kit.needed(by:))
+        var partial = Gym(id: "g", name: "Gym", kitIDs: Set(kits.dropFirst().map(\.id)).subtracting([kits[0].id]))
+        XCTAssertEqual(partial.missingExercises(for: workout, exercises: exercises).map(\.id),
+                       needed.filter { Kit.needed(by: $0) == kits[0] }.map(\.id))
+        partial.kitIDs.insert(kits[0].id)
         XCTAssertEqual(partial.missingExercises(for: workout, exercises: exercises), [])
         let preWork = TemplateLibrary.all.first { $0.id == "pre-work" }!.workout()
         XCTAssertEqual(Gym.home.missingExercises(for: preWork, exercises: exercises), [])
     }
 
-    func testPickableGroupsByKitSearchesAndSkipsBodyweight() {
-        let all = Gym.pickable(SeedLibrary.exercises)
-        XCTAssertFalse(all.contains { $0.equipment == .bodyweight || $0.equipment == .none })
-        XCTAssertEqual(all.map(\.equipment), Equipment.allCases.filter { kit in all.contains { $0.equipment == kit } })
-        let curls = Gym.pickable(SeedLibrary.exercises, matching: "curl")
-        XCTAssertFalse(curls.isEmpty)
-        XCTAssertTrue(curls.flatMap(\.exercises).allSatisfy { $0.name.localizedCaseInsensitiveContains("curl") })
+    func testEveryLibraryMachineHasANamedMachine() {
+        for e in SeedLibrary.exercises where e.equipment == .machine {
+            XCTAssertFalse(Kit.needed(by: e)!.id.hasPrefix("exercise-"), e.name)
+        }
+        XCTAssertEqual(Kit.machineByExerciseID.count, SeedLibrary.exercises.filter { $0.equipment == .machine }.count)
+    }
+
+    func testKitIsAFewDozenPiecesNotHundredsOfExercises() {
+        let kits = Kit.catalogue(for: SeedLibrary.exercises)
+        XCTAssertEqual(Set(kits.map(\.id)).count, kits.count)
+        XCTAssertLessThan(kits.count, 60)
+        XCTAssertNil(Kit.needed(by: SeedLibrary.byID["push-ups"]!))
+        XCTAssertEqual(Kit.needed(by: SeedLibrary.byID["leg-press-calf-raises"]!), Kit.needed(by: SeedLibrary.byID["leg-press"]!))
+    }
+
+    func testACustomMachineExerciseIsItsOwnMachine() {
+        let custom = Exercise(id: "my-sled", name: "Prowler Sled", muscleGroup: .legs, equipment: .machine, isCustom: true)
+        XCTAssertEqual(Kit.needed(by: custom)?.name, "Prowler Sled")
+        XCTAssertTrue(Kit.catalogue(for: [custom]).contains { $0.name == "Prowler Sled" })
+    }
+
+    func testPickableGroupsByKindAndSearches() {
+        let all = Kit.pickable(SeedLibrary.exercises)
+        XCTAssertEqual(all.map(\.kind), Kit.Kind.allCases)
+        let press = Kit.pickable(SeedLibrary.exercises, matching: "press")
+        XCTAssertTrue(press.flatMap(\.kits).allSatisfy { $0.name.localizedCaseInsensitiveContains("press") })
+        XCTAssertTrue(press.flatMap(\.kits).contains { $0.name == "Leg press" })
     }
 
     func testPriceFormatsInCents() {
