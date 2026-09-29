@@ -39,15 +39,16 @@ struct GymEditorView: View {
                 NavigationLink {
                     GymKitView(gym: gym)
                 } label: {
-                    LabeledContent("Exercises you can do") {
-                        Text("\(gym.wrappedValue.exerciseIDs.count) of \(Gym.pickable(model.exercises).reduce(0) { $0 + $1.exercises.count })")
+                    let all = Set(Kit.catalogue(for: model.exercises).map(\.id))
+                    LabeledContent("Machines & equipment") {
+                        Text("\(gym.wrappedValue.kitIDs.intersection(all).count) of \(all.count)")
                             .monospacedDigit()
                     }
                 }
             } header: {
                 Text("Equipment")
             } footer: {
-                Text("Pick every exercise this place has the kit for. Bodyweight moves count everywhere.")
+                Text("Tick what this place has. Bodyweight moves count everywhere.")
             }
             HoursSection(hours: gym.hours)
             Section("Notes") {

@@ -1,41 +1,59 @@
 import SwiftUI
 import GymBuddyCore
 
-/// Which exercises a gym has the kit for: search, tick, or take a whole kind.
+/// The machines and equipment a gym has. Each kind folds to a few rows until
+/// opened; a search shows every match.
 struct GymKitView: View {
     @Binding var gym: Gym
     @Environment(AppModel.self) private var model
     @State private var query = ""
+    @State private var expanded: Set<Kit.Kind> = []
+
+    private static let folded = 5
 
     var body: some View {
-        let groups = Gym.pickable(model.exercises, matching: query)
+        let groups = Kit.pickable(model.exercises, matching: query)
+        let uses = Dictionary(grouping: model.exercises.compactMap { Kit.needed(by: $0)?.id }, by: { $0 }).mapValues(\.count)
         List {
             if groups.isEmpty {
-                Text("No exercise called “\(query)”.").foregroundStyle(.secondary)
+                Text("Nothing called “\(query)”.").foregroundStyle(.secondary)
             }
-            ForEach(groups, id: \.equipment) { group in
+            ForEach(groups, id: \.kind) { group in
+                let open = !query.isEmpty || expanded.contains(group.kind)
                 Section {
-                    ForEach(group.exercises) { exercise in
-                        row(exercise)
+                    ForEach(open ? group.kits : Array(group.kits.prefix(Self.folded))) { kit in
+                        row(kit, uses: uses[kit.id] ?? 0)
+                    }
+                    if query.isEmpty && group.kits.count > Self.folded {
+                        Button(open ? "Show fewer" : "Show \(group.kits.count - Self.folded) more") {
+                            if open { expanded.remove(group.kind) } else { expanded.insert(group.kind) }
+                        }
+                        .font(.subheadline.weight(.semibold))
                     }
                 } header: {
-                    header(group.equipment, group.exercises)
+                    header(group.kind, group.kits)
                 }
             }
         }
         .listStyle(.insetGrouped)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
+        .animation(.snappy, value: expanded)
         .navigationTitle("Equipment")
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func row(_ exercise: Exercise) -> some View {
-        let has = gym.exerciseIDs.contains(exercise.id)
+    private func row(_ kit: Kit, uses: Int) -> some View {
+        let has = gym.kitIDs.contains(kit.id)
         return Button {
-            if has { gym.exerciseIDs.remove(exercise.id) } else { gym.exerciseIDs.insert(exercise.id) }
+            if has { gym.kitIDs.remove(kit.id) } else { gym.kitIDs.insert(kit.id) }
         } label: {
             HStack(spacing: 12) {
-                Text(exercise.name).foregroundStyle(.primary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(kit.name).foregroundStyle(.primary)
+                    Text("\(uses) exercise\(uses == 1 ? "" : "s")")
+                        .font(.footnote.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
                 Image(systemName: has ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
@@ -47,16 +65,15 @@ struct GymKitView: View {
         .accessibilityAddTraits(has ? .isSelected : [])
     }
 
-    private func header(_ kit: Equipment, _ exercises: [Exercise]) -> some View {
-        let ids = Set(exercises.map(\.id))
-        let all = ids.isSubset(of: gym.exerciseIDs)
+    private func header(_ kind: Kit.Kind, _ kits: [Kit]) -> some View {
+        let ids = Set(kits.map(\.id))
+        let all = ids.isSubset(of: gym.kitIDs)
         return HStack {
-            GlyphTile(equipment: kit, size: 22)
-            Text(kit.displayName).eyebrow()
-            Text("\(ids.intersection(gym.exerciseIDs).count)/\(ids.count)").eyebrow().monospacedDigit()
+            Text(kind.displayName).eyebrow()
+            Text("\(ids.intersection(gym.kitIDs).count)/\(ids.count)").eyebrow().monospacedDigit()
             Spacer()
             Button(all ? "None" : "All") {
-                if all { gym.exerciseIDs.subtract(ids) } else { gym.exerciseIDs.formUnion(ids) }
+                if all { gym.kitIDs.subtract(ids) } else { gym.kitIDs.formUnion(ids) }
             }
             .font(.subheadline.weight(.semibold))
             .textCase(nil)

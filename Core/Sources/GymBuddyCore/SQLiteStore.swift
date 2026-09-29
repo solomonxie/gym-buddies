@@ -115,7 +115,13 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             WHERE instr(',' || gyms.equipment || ',', ',' || e.equipment || ',') > 0
         ), '');
         """,
+        // …and then the machines and equipment, not the exercises: see `convertGymsToKit`.
+        """
+        ALTER TABLE gyms ADD COLUMN kit TEXT NOT NULL DEFAULT '';
+        """,
     ]
+
+    private static let kitMigration = 6
 
     private func migrate() throws {
         try exec("CREATE TABLE IF NOT EXISTS migrations (version INTEGER PRIMARY KEY, applied_at REAL NOT NULL)")
@@ -124,7 +130,21 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             try transaction {
                 try exec(sql)
                 try run("INSERT INTO migrations VALUES (?, ?)", [.int(index + 1), .double(Date().timeIntervalSince1970)])
+                if index + 1 == Self.kitMigration { try convertGymsToKit() }
             }
+        }
+    }
+
+    /// A gym that listed exercises gets the kit those exercises need.
+    private func convertGymsToKit() throws {
+        let exercises = Dictionary(uniqueKeysWithValues: try query("SELECT id, name, equipment FROM exercises") { row in
+            (row.text(0), Exercise(id: row.text(0), name: row.text(1), muscleGroup: .fullBody,
+                                   equipment: Equipment(rawValue: row.text(2)) ?? .none))
+        })
+        let gyms = try query("SELECT id, exercise_ids FROM gyms") { ($0.text(0), $0.text(1)) }
+        for (id, exerciseIDs) in gyms {
+            let kit = Set(exerciseIDs.split(separator: ",").compactMap { exercises[String($0)].flatMap(Kit.needed(by:))?.id })
+            try run("UPDATE gyms SET kit = ? WHERE id = ?", [.text(kit.sorted().joined(separator: ",")), .text(id)])
         }
     }
 
@@ -286,12 +306,12 @@ public final class SQLiteStore: Store, @unchecked Sendable {
 
     /// Home first, then by name.
     public func gyms() throws -> [Gym] {
-        try query("SELECT id, name, exercise_ids, price_cents, price_period, hours, travel_minutes, notes FROM gyms ORDER BY id != 'home', name COLLATE NOCASE") { row in
+        try query("SELECT id, name, kit, price_cents, price_period, hours, travel_minutes, notes FROM gyms ORDER BY id != 'home', name COLLATE NOCASE") { row in
             let period = row.optionalText(4).flatMap(Price.Period.init(rawValue:))
             let price: Price? = if let cents = row.optionalInt(3), let period { Price(cents: cents, period: period) } else { nil }
             return Gym(
                 id: row.text(0), name: row.text(1),
-                exerciseIDs: Set(row.text(2).split(separator: ",").map(String.init)),
+                kitIDs: Set(row.text(2).split(separator: ",").map(String.init)),
                 price: price,
                 hours: (try? JSONDecoder().decode(OpeningHours.self, from: Data(row.text(5).utf8))) ?? .always,
                 travelMinutes: row.int(6), notes: row.text(7)
@@ -301,11 +321,11 @@ public final class SQLiteStore: Store, @unchecked Sendable {
 
     public func saveGym(_ gym: Gym) throws {
         try run("""
-            INSERT OR REPLACE INTO gyms (id, name, exercise_ids, price_cents, price_period, hours, travel_minutes, notes)
+            INSERT OR REPLACE INTO gyms (id, name, kit, price_cents, price_period, hours, travel_minutes, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, [
             .text(gym.id), .text(gym.name),
-            .text(gym.exerciseIDs.sorted().joined(separator: ",")),
+            .text(gym.kitIDs.sorted().joined(separator: ",")),
             .optionalInt(gym.price?.cents), .optionalText(gym.price?.period.rawValue),
             .text(try Self.json(gym.hours)), .int(gym.travelMinutes), .text(gym.notes),
         ])

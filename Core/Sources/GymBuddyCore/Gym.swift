@@ -4,8 +4,8 @@ import Foundation
 public struct Gym: Identifiable, Hashable, Codable, Sendable {
     public var id: String
     public var name: String
-    /// Exercises this place has the kit for. Ones that need no gym aren't listed.
-    public var exerciseIDs: Set<String>
+    /// `Kit` IDs: the equipment and machines this place has.
+    public var kitIDs: Set<String>
     public var price: Price?
     public var hours: OpeningHours
     public var travelMinutes: Int
@@ -24,7 +24,7 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
     public init(
         id: String,
         name: String,
-        exerciseIDs: Set<String> = [],
+        kitIDs: Set<String> = [],
         price: Price? = nil,
         hours: OpeningHours = .always,
         travelMinutes: Int = 0,
@@ -32,7 +32,7 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
     ) {
         self.id = id
         self.name = name
-        self.exerciseIDs = exerciseIDs
+        self.kitIDs = kitIDs
         self.price = price
         self.hours = hours
         self.travelMinutes = travelMinutes
@@ -40,7 +40,7 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
     }
 
     public func has(_ exercise: Exercise) -> Bool {
-        !exercise.equipment.needsAGym || exerciseIDs.contains(exercise.id)
+        Kit.needed(by: exercise).map { kitIDs.contains($0.id) } ?? true
     }
 
     /// What the workout needs that this gym doesn't have, in plan order.
@@ -52,18 +52,6 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
             missing.append(exercise)
         }
         return missing
-    }
-
-    /// The exercises a gym can be set up with, grouped by kit, filtered by name.
-    public static func pickable(_ exercises: [Exercise], matching query: String = "") -> [(equipment: Equipment, exercises: [Exercise])] {
-        let q = query.trimmingCharacters(in: .whitespaces)
-        let shown = exercises.filter {
-            $0.equipment.needsAGym && (q.isEmpty || $0.name.localizedCaseInsensitiveContains(q))
-        }
-        let byKit = Dictionary(grouping: shown, by: \.equipment)
-        return Equipment.allCases.compactMap { kit in
-            byKit[kit].map { (kit, $0.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }) }
-        }
     }
 
     /// Whether it's open when you'd get there if you left at `leaving`.

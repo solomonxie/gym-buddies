@@ -38,7 +38,7 @@ Pushed from a row, or `+` for a new one. Saves as you go, like a workout line.
   PRICE
   [ 45.00 ]                  ( month ⌄ )    ← visit / month / year; blank = free
   EQUIPMENT
-  Exercises you can do       142 of 260  ›  ← bodyweight always counts
+  Machines & equipment         12 of 43  ›  ← bodyweight always counts
   HOURS                   ( Same every day )
   Open 24 hours                       ( )
   Mon   06:00 – 22:00                 (●)   ← toggle off = closed that day
@@ -54,7 +54,8 @@ Pushed from a row, or `+` for a new one. Saves as you go, like a workout line.
 
 ## Equipment
 
-Pushed from the editor. Every exercise that needs kit, by kind — a gym has a
+Pushed from the editor. The machines and equipment you'd look for on the
+floor — about forty, not the few hundred exercises they serve. A gym has a
 leg press or it doesn't; "machine" says too little.
 
 ```
@@ -62,22 +63,29 @@ leg press or it doesn't; "machine" says too little.
   ┌──────────────────────────────────────┐
   │ 🔍 Search                            │
   └──────────────────────────────────────┘
-  [▣] BARBELL  6/6                  None   ← whole kind in one tap
+  WEIGHTS & CABLES  4/5             All    ← whole kind in one tap
  ╭────────────────────────────────────────╮
- │ Barbell Back Squat                 (●) │
- │ Barbell Bench Press                (●) │
- │   ⋮                                    │
- ╰────────────────────────────────────────╯
-  [▣] MACHINE  18/31                 All
+ │ Barbell                            (●) │
+ │ 50 exercises                           │
+ │ Cable station                      (●) │
+ │ 31 exercises                           │
+ │   ⋮                                    │  ← 5 rows until opened;
+ ╰────────────────────────────────────────╯     then "Show fewer"
+  MACHINES  12/30                   All
  ╭────────────────────────────────────────╮
- │ Hack Squat                         ( ) │
- │ Leg Press                          (●) │
+ │ Ab crunch machine                  ( ) │
+ │ 1 exercise                             │
  │   ⋮                                    │
+ │ Show 25 more                           │
  ╰────────────────────────────────────────╯
+  CARDIO  3/8                       All
 ```
 
-`All` / `None` act on what the search shows. Gyms saved before this list
-existed get every exercise of each kind they had ticked.
+An exercise needs one piece: its free weight or the cable station, or its
+named machine (all five Smith machine moves need the Smith machine). A
+custom machine exercise is its own machine. `All` / `None` act on the whole
+kind, folded rows included, or on what the search shows. Gyms saved with the
+older lists get the kit those exercises used.
 
 Close before open (22:00 – 02:00) runs past midnight and belongs to the day it
 opens.
@@ -87,7 +95,7 @@ opens.
 ```
 home
  │ Home                           Home  › │  ← badge; no Delete in editor
-  Home starts open all day with no exercises ticked; tick what you own.
+  Home starts open all day with no equipment ticked; tick what you own.
 
 nothing open
   OPEN WHEN YOU GET THERE
