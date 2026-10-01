@@ -4,7 +4,8 @@ import Foundation
 /// their own timestamps, so the rules need nothing but a directory listing.
 ///
 /// - On the phone: a new file on every change, never overwritten. The newest
-///   `perDay` of each day are kept, for the last `days` days.
+///   `perDay` of today are kept, then the newest one of each earlier day,
+///   for the last `days` days.
 /// - In iCloud: one file per day, overwritten by each change that day; the
 ///   last `cloudDays` days are kept.
 public enum BackupRotation {
@@ -54,11 +55,12 @@ public enum BackupRotation {
         calendar: Calendar = .current
     ) -> [String] {
         let dated = names.compactMap { name in date(fromLocalName: name).map { (name, $0) } }
+        let today = calendar.startOfDay(for: now)
         let oldest = firstKeptDay(now: now, days: days, calendar: calendar)
         var expired: [String] = []
-        for (_, files) in Dictionary(grouping: dated, by: { calendar.startOfDay(for: $0.1) }) {
-            let newestFirst = files.sorted { $0.1 > $1.1 }
-            for (index, file) in newestFirst.enumerated() where file.1 < oldest || index >= perDay {
+        for (day, files) in Dictionary(grouping: dated, by: { calendar.startOfDay(for: $0.1) }) {
+            let keep = day >= today ? perDay : day >= oldest ? 1 : 0
+            for file in files.sorted(by: { $0.1 > $1.1 }).dropFirst(keep) {
                 expired.append(file.0)
             }
         }
