@@ -1,7 +1,7 @@
 # Settings
 
-Pushed from `⚙` on Train. Short on purpose — there is no account, no sync, and no ad
-preferences to bury anything under.
+Pushed from the Settings row at the bottom of Train. Short on purpose — there
+is no account, no sync, and no ad preferences to bury anything under.
 
 ```
   Settings
@@ -38,7 +38,7 @@ preferences to bury anything under.
   send it
 ```
 
-Reached from: `⚙` at the top left of Train
+Reached from: the Settings row at the bottom of Train
 
 ## The ⓘ popovers
 

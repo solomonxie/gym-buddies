@@ -6,10 +6,10 @@ level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 ```
    TRAIN  (the only root, no tab bar)
       │
-      ├─ ⚙ ──────────▶ Settings
       ├─ [Exercises] ▶ Exercises
       ├─ [Gyms] ─────▶ Gyms
       ├─ [Progress] ─▶ Progress
+      ├─ [Settings] ─▶ Settings   (last row on the page)
       ▶ Start ═════▶  SESSION  (full screen)
 ```
 
