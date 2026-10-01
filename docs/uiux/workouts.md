@@ -5,7 +5,7 @@ The app's only root — no tab bar. Progress, Exercises, Gyms and Settings
 are pushed from it instead of taking a tab each.
 
 ```
-  ⚙       Gym Buddy                      ← title is the app name
+          Gym Buddy                      ← title is the app name
  ╭────────────────────────────────────────╮
  │ UP NEXT                Last 6 days ago │  ← least recently done: a
  │ Fraiser Heights                        │     rotation without asking
@@ -48,11 +48,15 @@ are pushed from it instead of taking a tab each.
  │ 1 exercise · ~4 min                    │
  │ Never done                             │
  ╰────────────────────────────────────────╯
+ ╭────────────────────────────────────────╮
+ │ ⚙  Settings                          › │  ← set once, rarely revisited:
+ ╰────────────────────────────────────────╯     last thing on the page
 ```
 
-Reached from: launch — it's the root. `⚙` pushes Settings; the cards push
-Exercises, Gyms and Progress.
-Nothing built yet: the empty state, with the same two tiles under it.
+Reached from: launch — it's the root. the cards push Exercises, Gyms and
+Progress; the Settings row at the bottom pushes Settings.
+Nothing built yet: the empty state, with the same two tiles and the Settings
+row under it.
 
 ## Workout detail
 

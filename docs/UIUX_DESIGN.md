@@ -16,11 +16,11 @@ gestures, in-place pickers, and the ⓘ rule.
 | Exercises (♥ section) · Exercise detail · Editor | pushed from Train, pushed page, sheet | [`uiux/exercises.md`](uiux/exercises.md) |
 | Gyms · Gym editor | pushed from Train, pushed page | [`uiux/gyms.md`](uiux/gyms.md) |
 | Progress · Session log · Trend | pushed from Train, pushed pages | [`uiux/logs.md`](uiux/logs.md) |
-| Settings · About | pushed from Train's `⚙`, pushed page | [`uiux/settings.md`](uiux/settings.md) |
+| Settings · About | pushed from Train's bottom row, pushed page | [`uiux/settings.md`](uiux/settings.md) |
 | Components | reused parts | [`uiux/components.md`](uiux/components.md) |
 
 No tabs. Train is the one root: start a workout, glance at progress, and
-reach Exercises, Gyms and Settings from cards and its `⚙` — each is looked
+reach Exercises, Gyms and Settings from cards and the Settings row at its foot — each is looked
 up now and then, and five tabs read as five equal jobs.
 Favourites is a section at the top of Exercises, not a tab —
 the same rows repeated, so it lives in the same list and drawing.

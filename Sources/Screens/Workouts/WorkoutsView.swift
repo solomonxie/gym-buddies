@@ -24,9 +24,12 @@ struct WorkoutsView: View {
                         systemImage: "dumbbell",
                         action: ("Build a workout", { creating = true })
                     )
-                    PlacesRow()
-                        .padding(.horizontal, Theme.Metrics.gutter)
-                        .padding(.bottom, 24)
+                    VStack(spacing: 12) {
+                        PlacesRow()
+                        SettingsRow()
+                    }
+                    .padding(.horizontal, Theme.Metrics.gutter)
+                    .padding(.bottom, 24)
                 }
             } else {
                 content
@@ -34,12 +37,6 @@ struct WorkoutsView: View {
         }
         .background(Theme.surface)
         .navigationTitle("Gym Buddy")
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                NavigationLink(value: Route.settings) { Image(systemName: "gearshape") }
-                    .accessibilityLabel("Settings")
-            }
-        }
         .sheet(isPresented: $creating) {
             NewWorkoutSheet()
         }
@@ -72,6 +69,8 @@ struct WorkoutsView: View {
                 ForEach(model.workouts) { workout in
                     WorkoutCard(workout: workout)
                 }
+                SettingsRow()
+                    .padding(.top, 12)
             }
             .padding(.horizontal, Theme.Metrics.gutter)
             .padding(.bottom, 24)
@@ -141,6 +140,25 @@ private struct PlacesRow: View {
                 }
             }
         }
+    }
+}
+
+private struct SettingsRow: View {
+    var body: some View {
+        NavigationLink(value: Route.settings) {
+            HStack(spacing: 12) {
+                Image(systemName: "gearshape").foregroundStyle(.secondary)
+                Text("Settings").foregroundStyle(.primary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .card(padding: 16)
     }
 }
 

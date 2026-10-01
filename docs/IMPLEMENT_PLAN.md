@@ -62,7 +62,7 @@ by construction.
 - [x] T3.9 Settings and its children, ⓘ popovers, unit switch guarded mid-session (drawing: `uiux/settings.md`) — see `Sources/Screens/Settings` — depends: T3.2
 - [x] T3.10 New-workout sheet — blank or from a template, preview with reasons and pool picker (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/NewWorkoutSheet.swift` — depends: T2.10, T3.6
 - [x] T3.11 Gyms screen and editor — open now, hours, price, equipment, travel; gyms ticked on workout detail with missing equipment named (drawing: `uiux/gyms.md`) — see `Sources/Screens/Gyms` — depends: T2.11, T3.6
-- [ ] T3.12 No tabs — Train is the one root: Progress summary card, Exercises and Gyms tiles, `+` in the Workouts header, Settings behind `⚙` (drawing: `uiux/README.md`, `uiux/workouts.md`) — see `Sources/App/RootView.swift` — depends: T3.1, T3.11
+- [ ] T3.12 No tabs — Train is the one root: Progress summary card, Exercises and Gyms tiles, `+` in the Workouts header, Settings as the last row (drawing: `uiux/README.md`, `uiux/workouts.md`) — see `Sources/App/RootView.swift` — depends: T3.1, T3.11
 - [ ] T3.13 Gym equipment as machines — ~40 `Kit` pieces (free weights, cable station, named machines, cardio) each exercise needs one of; folded searchable picker with All/None per kind; old gyms migrated; workout detail names the exercises a gym can't do (drawing: `uiux/gyms.md`) — see `Core/Sources/GymBuddyCore/Kit.swift`, `Sources/Screens/Gyms/GymKitView.swift` — depends: T3.11
 - [ ] T3.14 Library folding — search always shown, no chip row, 3 rows per group until opened, Favourites section on top (drawing: `uiux/exercises.md`) — see `Sources/Screens/Exercises` — depends: T3.3
 
