@@ -57,8 +57,9 @@ read it every visit.
 
  AUTOMATIC BACKUPS ⓘ
  ⌐ After every change, a copy is saved on
-   this phone — the newest 20 of each day,
-   for 7 days. With iCloud on, one file a
+   this phone — the newest 20 from today
+   and the last one from each of the 6
+   days before. With iCloud on, one file a
    day also goes to iCloud Drive → Gym
    Buddy, replaced by each change that day
    and kept for 30 days. ¬
@@ -77,9 +78,10 @@ read it every visit.
  ‹ Settings        Backups
  ──────────────────────────────────────────
   A copy is saved after every change: the
-  newest 20 of each day, for the last 7
-  days. Restoring one saves what's here
-  now first, so it can be undone.
+  newest 20 from today and the last one
+  from each of the 6 days before.
+  Restoring one saves what's here now
+  first, so it can be undone.
  ──────────────────────────────────────────
   SATURDAY 26 SEPTEMBER
   21:05:33                          88 KB

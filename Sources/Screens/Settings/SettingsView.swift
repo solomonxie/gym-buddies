@@ -175,7 +175,7 @@ struct SettingsView: View {
         } header: {
             HStack(spacing: 2) {
                 Text("Automatic backups")
-                InfoButton(text: "After every change, a copy of your data is saved on this phone — the newest 20 of each day, for 7 days. With iCloud on, one file a day also goes to iCloud Drive → Gym Buddy, replaced by each change that day and kept for 30 days. It's your own iCloud; nothing passes through us.")
+                InfoButton(text: "After every change, a copy of your data is saved on this phone — the newest 20 from today and the last one from each of the 6 days before. With iCloud on, one file a day also goes to iCloud Drive → Gym Buddy, replaced by each change that day and kept for 30 days. It's your own iCloud; nothing passes through us.")
             }
         } footer: {
             if model.settings.iCloudBackup {
@@ -313,7 +313,7 @@ struct BackupsView: View {
     var body: some View {
         List {
             Section {
-                Text("A copy is saved after every change: the newest 20 of each day, for the last 7 days. Restoring one saves what's here now first, so it can be undone.")
+                Text("A copy is saved after every change: the newest 20 from today and the last one from each of the 6 days before. Restoring one saves what's here now first, so it can be undone.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

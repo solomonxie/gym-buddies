@@ -123,7 +123,8 @@ WorkoutLog        one finished session: started, finished, [SetLog]
 
 - **Storage**: one SQLite file on device. No cloud, no account.
 - **Backup, automatic**: after every change (debounced 3 s) a snapshot goes to
-  the app container — never overwritten, newest 20 per day, last 7 days.
+  the app container — never overwritten, newest 20 from today,
+  then the newest one from each of the 6 days before.
   Restoring one snapshots the current data first, so a restore is undoable.
 - **Backup, iCloud** (off by default): the same snapshot to the user's own
   iCloud Drive → Gym Buddy, one file per day replaced by each change, 30 days

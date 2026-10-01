@@ -13,18 +13,21 @@ final class BackupRotationTests: XCTestCase {
         XCTAssertEqual(BackupRotation.cloudName(at: noon), BackupRotation.cloudName(at: noon.addingTimeInterval(3600)))
     }
 
-    func testKeepsTheNewestTwentyOfADay() {
+    func testKeepsTheNewestTwentyOfToday() {
         let names = (0..<25).map { BackupRotation.localName(at: noon.addingTimeInterval(Double($0) * 60)) }
         let expired = BackupRotation.localExpired(names, now: noon.addingTimeInterval(3600))
         XCTAssertEqual(expired, Array(names.prefix(5)).sorted())
     }
 
-    func testKeepsSevenDaysIncludingToday() {
-        let names = (0..<10).map { day in
-            BackupRotation.localName(at: calendar.date(byAdding: .day, value: -day, to: noon)!)
+    func testEarlierDaysKeepTheirNewestForSevenDays() {
+        let names = (0..<10).flatMap { day in
+            (0..<3).map { minute in
+                BackupRotation.localName(at: calendar.date(byAdding: .day, value: -day, to: noon)!.addingTimeInterval(Double(minute) * 60))
+            }
         }
-        let expired = Set(BackupRotation.localExpired(names, now: noon))
-        XCTAssertEqual(expired, Set(names.suffix(3)))
+        let kept = Set(names).subtracting(BackupRotation.localExpired(names, now: noon.addingTimeInterval(3600)))
+        let newestOfEarlierDays = (1..<7).map { names[$0 * 3 + 2] }
+        XCTAssertEqual(kept, Set(names.prefix(3) + newestOfEarlierDays))
     }
 
     func testNeverTouchesFilesItDidNotWrite() {
