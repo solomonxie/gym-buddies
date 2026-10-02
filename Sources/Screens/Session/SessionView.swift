@@ -2,18 +2,14 @@ import SwiftUI
 import GymBuddyCore
 
 /// The active workout. Everything on it is sized by how often it's touched:
-/// log a set fifty times, ± a few times, everything else almost never.
+/// end a set fifty times, ± a few times, everything else almost never.
 struct SessionView: View {
     @Environment(AppModel.self) private var model
     @State private var showingJump = false
     @State private var showingExit = false
     @State private var showingSets = false
-    @State private var showingMulti = false
     @State private var editing: SessionField?
     @State private var logged = 0
-    /// A long press opens the several-sets dialog; the release that follows
-    /// must not also log one.
-    @State private var suppressTap = false
 
     var body: some View {
         @Bindable var model = model
@@ -140,8 +136,7 @@ struct SessionView: View {
             .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: 10) {
-                TimerBar(session: session)
-                primaryButton(session)
+                SetButton(session: session) { logged += 1 }
                 upNext(session)
             }
             .padding(.horizontal, Theme.Metrics.gutter)
@@ -260,68 +255,6 @@ struct SessionView: View {
             }
         }
         .transition(.opacity.combined(with: .move(edge: .top)))
-    }
-
-    // MARK: - Start / log set
-
-    /// One button, one thumb: Start set, then Log set once it's running.
-    private func primaryButton(_ session: WorkoutSession) -> some View {
-        let action = session.primaryAction
-        let remaining = (session.currentEntry.map { $0.plan.targetSets - session.completedSets(for: $0.id) }) ?? 0
-        return Button {
-            if suppressTap {
-                suppressTap = false
-                return
-            }
-            if case .start = action {
-                model.startSet()
-            } else {
-                model.completeSets(1)
-                logged += 1
-            }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: Self.icon(action))
-                    .font(.system(size: 20, weight: .heavy))
-                Text(Self.title(action))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            .font(.system(size: 21, weight: .bold, design: .rounded))
-        }
-        .buttonStyle(PrimaryButtonStyle(height: 72))
-        .simultaneousGesture(LongPressGesture(minimumDuration: 0.6).onEnded { _ in
-            guard remaining > 1 else { return }
-            suppressTap = true
-            showingMulti = true
-        })
-        .accessibilityLabel(Self.title(action))
-        .accessibilityAction(named: "Log several sets") { if remaining > 1 { showingMulti = true } }
-        .confirmationDialog("Log several identical sets", isPresented: $showingMulti, titleVisibility: .visible) {
-            ForEach(2...max(2, remaining), id: \.self) { n in
-                Button("Log \(n) sets") {
-                    model.completeSets(n)
-                    logged += 1
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("For warm-ups: each at the reps and weight shown.")
-        }
-    }
-
-    private static func title(_ action: WorkoutSession.PrimaryAction) -> String {
-        switch action {
-        case .start(let set): "Start set \(set)"
-        case .logSet: "Log set"
-        case .logAndNextExercise: "Log set & next exercise"
-        case .logAndFinish: "Log set & finish"
-        }
-    }
-
-    private static func icon(_ action: WorkoutSession.PrimaryAction) -> String {
-        if case .start = action { return "play.fill" }
-        return "checkmark"
     }
 
     // MARK: - Up next

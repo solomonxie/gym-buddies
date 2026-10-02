@@ -89,21 +89,75 @@ final class SetTimerTests: XCTestCase {
 }
 
 final class PrimaryActionTests: XCTestCase {
-    func testStartThenLogThenNextExerciseThenFinish() {
+    func testARepSetNeedsNoStartOutsideRest() {
         var s = Fixtures.session()
         var seen: [WorkoutSession.PrimaryAction] = []
         var t = Fixtures.t0
         while !s.isFinished {
-            seen.append(s.primaryAction)
-            s.startSet(at: t)
-            seen.append(s.primaryAction)
-            s.completeSet(at: t + 30)
+            seen.append(s.primaryAction(resting: false))
+            s.completeSet(at: t)
             t += 60
         }
-        XCTAssertEqual(seen.first, .start(set: 1))
-        XCTAssertEqual(seen.last, .logAndFinish)
-        XCTAssertTrue(seen.contains(.logSet))
-        XCTAssertTrue(seen.contains(.logAndNextExercise))
-        XCTAssertEqual(seen.filter { $0 == .logAndFinish }.count, 1)
+        XCTAssertEqual(seen.first, .endSetAndNextExercise)
+        XCTAssertTrue(seen.contains(.endSet(2)))
+        XCTAssertFalse(seen.contains { if case .startSet = $0 { true } else { false } })
+        XCTAssertEqual(seen.filter { $0 == .endSetAndFinish }.count, 1)
+        XCTAssertEqual(seen.last, .endSetAndFinish)
+    }
+
+    func testRestingAlwaysOffersStart() {
+        var s = Fixtures.session()
+        s.completeSet(at: Fixtures.t0)
+        XCTAssertEqual(s.primaryAction(resting: true), .startSet(1))
+        s.startSet(at: Fixtures.t0 + 30)
+        XCTAssertNotEqual(s.primaryAction(resting: true), .startSet(1))
+    }
+
+    func testATimedSetStartsThenEnds() {
+        var s = TreadmillTests().session()
+        XCTAssertTrue(s.isTimed)
+        XCTAssertEqual(s.primaryAction(resting: false), .startSet(1))
+        XCTAssertEqual(s.primaryAction(resting: true), .startSet(1))
+        s.startSet(at: Fixtures.t0)
+        XCTAssertEqual(s.primaryAction(resting: false), .endSetAndFinish)
+    }
+
+    func testARepExerciseIsNotTimed() {
+        XCTAssertFalse(Fixtures.session().isTimed)
+    }
+}
+
+final class RepSetStartTests: XCTestCase {
+    func testARepSetStartsWhenTheRestBeforeItRanOut() {
+        var s = Fixtures.session()
+        s.completeSets(1, at: Fixtures.t0 + 100, restEndedAt: Fixtures.t0 + 60)
+        XCTAssertEqual(s.logs[0].startedAt, Fixtures.t0 + 60)
+        XCTAssertEqual(s.logs[0].duration, 40)
+    }
+
+    func testEndingASetDuringRestLeavesItsStartBlank() {
+        var s = Fixtures.session()
+        s.completeSets(1, at: Fixtures.t0 + 30, restEndedAt: nil)
+        XCTAssertNil(s.logs[0].startedAt)
+    }
+
+    func testAStartedTimedSetKeepsItsOwnStart() {
+        var s = TreadmillTests().session()
+        s.startSet(at: Fixtures.t0 + 90)
+        s.completeSets(1, at: Fixtures.t0 + 120, restEndedAt: Fixtures.t0 + 60)
+        XCTAssertEqual(s.logs[0].startedAt, Fixtures.t0 + 90)
+    }
+
+    func testARepSetBeganWhenRestRanOutButATimedOneWaitsForStart() {
+        XCTAssertEqual(Fixtures.session().setBegan(restEndedAt: Fixtures.t0), Fixtures.t0)
+        XCTAssertNil(TreadmillTests().session().setBegan(restEndedAt: Fixtures.t0))
+    }
+
+    func testEndsAtIsStartPlusDuration() {
+        var r = RestTimer()
+        XCTAssertNil(r.endsAt)
+        r.start(60, at: Fixtures.t0)
+        r.extend(by: 30)
+        XCTAssertEqual(r.endsAt, Fixtures.t0 + 90)
     }
 }

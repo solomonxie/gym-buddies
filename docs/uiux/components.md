@@ -23,10 +23,10 @@ The one filled button on a screen. Full width, accent, 20pt corners; 64pt
 tall, 72pt on Session. Grey when disabled.
 
 ```
- log       ╭──────────────────────────────╮
-           │          ✓  Log set          │   72pt
+ end       ╭──────────────────────────────╮
+           │         ✓  End set 2         │   72pt
            ╰──────────────────────────────╯
- final     │      ✓  Log set & finish     │   72pt
+ final     │      ✓  End set & finish     │   72pt
  finish    │        Finish workout        │   72pt, all done or skipped
  hero      │           ▶  Start           │
  detail    │       ▶  Start workout       │
@@ -86,18 +86,24 @@ The compact version, outside Session: workout line editor, log set editor.
  lb, 10 lb a tap
 ```
 
-## Rest bar
+## Set button
+
+Session's primary action carries the clock. Resting: always Start set. Set
+begun: End set. A rep set begins on its own when rest runs out; a timed one
+waits for Start.
 
 ```
- running  ╭▒▒▒▒▒▒▒▒▒▒──────────────────────────────╮
-          │ ◷ Rest  00:00:28          ( +30s ) (×) │
-          ╰▒▒▒▒▒▒▒▒▒▒──────────────────────────────╯
- fired    │ ◷ Rest over  (bell, green fill)    (×) │
- absent   (nothing — no placeholder, no zero row)
+ resting   ╭▒▒▒▒▒▒▒▒▒────────────────╮ ╭──────╮
+           │      ▶  Start set 3     │ │ +30s │
+           │▒▒▒▒▒▒▒▒▒ Rest 00:00:28  │ │      │
+           ╰▒▒▒▒▒▒▒▒▒────────────────╯ ╰──────╯
+ timed     │       ✓  End set 1      │ │  ×   │
+ time's up │ green, Time's up +00:12 │ │  ×   │
+ idle      │        ✓  End set 2           │   no side button
 ```
 
-Background fills left to right in the accent (green once over). Never replaces
-the primary action; it sits above it.
+Fill: a darker band over the accent, the time still to go — it drains
+right→left as the countdown runs out. Side button 72pt, only while there's a clock to change.
 
 ## Progress marks
 
