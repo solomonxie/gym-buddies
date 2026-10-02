@@ -124,19 +124,33 @@ public struct WorkoutSession: Codable, Sendable {
 
     public var hasLoggedAnything: Bool { !logs.isEmpty }
 
-    /// What the one big button does next: start the set, then log it.
+    /// What the one big button does next. While resting it's always Start —
+    /// the next set hasn't begun. A rep set needs no Start once rest runs out:
+    /// it began then. A timed set always needs Start, for its countdown.
     public enum PrimaryAction: Equatable, Sendable {
-        case start(set: Int)
-        case logSet
-        case logAndNextExercise
-        case logAndFinish
+        case startSet(Int)
+        case endSet(Int)
+        case endSetAndNextExercise
+        case endSetAndFinish
     }
 
-    public var primaryAction: PrimaryAction {
-        guard let entry = currentEntry else { return .logAndFinish }
-        guard isSetRunning else { return .start(set: currentSetNumber) }
-        if isOnFinalSet { return .logAndFinish }
-        return completedSets(for: entry.id) + 1 >= entry.plan.targetSets ? .logAndNextExercise : .logSet
+    /// `resting` is a rest that hasn't run out yet.
+    public func primaryAction(resting: Bool) -> PrimaryAction {
+        guard let entry = currentEntry else { return .endSetAndFinish }
+        if !isSetRunning, resting || isTimed { return .startSet(currentSetNumber) }
+        if isOnFinalSet { return .endSetAndFinish }
+        return completedSets(for: entry.id) + 1 >= entry.plan.targetSets ? .endSetAndNextExercise : .endSet(currentSetNumber)
+    }
+
+    /// When the set on screen began: its Start, or for a rep set nobody
+    /// started, the end of the rest before it. Nil before then.
+    public func setBegan(restEndedAt: Date?) -> Date? {
+        setStartedAt ?? (isTimed ? nil : restEndedAt)
+    }
+
+    /// Counted in seconds or minutes, so the set has a clock to start.
+    public var isTimed: Bool {
+        currentEntry?.measure.duration(1) != nil
     }
 
     // MARK: - Nudging the set about to be logged
@@ -257,9 +271,11 @@ public struct WorkoutSession: Codable, Sendable {
 
     /// The long-press: several identical sets at once, for warm-ups. Stops at
     /// the end of the current exercise rather than spilling into the next.
+    /// A rep set nobody started began when the rest before it ran out.
     @discardableResult
-    public mutating func completeSets(_ count: Int, at now: Date) -> SetOutcome {
+    public mutating func completeSets(_ count: Int, at now: Date, restEndedAt: Date? = nil) -> SetOutcome {
         guard let entry = currentEntry else { return .workoutComplete }
+        if let began = setBegan(restEndedAt: restEndedAt), began <= now { setStartedAt = began }
         let room = entry.plan.targetSets - completedSets(for: entry.id)
         var outcome = SetOutcome.workoutComplete
         for _ in 0..<max(1, min(count, room)) {

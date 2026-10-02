@@ -298,7 +298,8 @@ final class AppModel {
     func completeSets(_ count: Int = 1, at now: Date = .now) {
         guard var current = session, let entry = current.currentEntry else { return }
         let setNumber = current.currentSetNumber + count - 1
-        let outcome = current.completeSets(count, at: now)
+        let restEndedAt = restTimer.hasFired(at: now) ? restTimer.endsAt : nil
+        let outcome = current.completeSets(count, at: now, restEndedAt: restEndedAt)
         session = current
         backupSoon()
         if settings.vibrate { UIImpactFeedbackGenerator(style: .medium).impactOccurred() }

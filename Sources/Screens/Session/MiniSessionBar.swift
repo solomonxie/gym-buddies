@@ -49,7 +49,7 @@ struct MiniSessionBar: View {
         return "\(entry.exercise.name) · Set \(session.currentSetNumber) of \(entry.plan.targetSets)"
     }
 
-    /// Whichever clock the Session screen's timer bar would show, else elapsed.
+    /// Whichever clock the Session screen's set button would show, else elapsed.
     private func clock(_ session: WorkoutSession, at now: Date) -> (text: String, icon: String, tint: Color) {
         if session.isSetRunning {
             if session.isSetTimeUp(at: now) { return ("Time's up", "bell.fill", Theme.done) }

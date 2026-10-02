@@ -35,11 +35,15 @@ public struct RestTimer: Equatable, Sendable {
         return max(0, duration - now.timeIntervalSince(startedAt))
     }
 
-    /// 0 at the start, 1 when it fires — the ring fills, it doesn't drain.
+    /// 0 at the start, 1 when it fires.
     public func progress(at now: Date) -> Double {
         guard let startedAt, duration > 0 else { return 0 }
         let elapsed = now.timeIntervalSince(startedAt)
         return min(1, max(0, elapsed / duration))
+    }
+
+    public var endsAt: Date? {
+        startedAt.map { $0 + duration }
     }
 
     public func hasFired(at now: Date) -> Bool {

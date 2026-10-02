@@ -4,7 +4,7 @@ A workout being performed. Full-screen cover — Train is gone, because
 nothing else is happening for the next hour.
 
 This is the screen the app exists for. Everything on it is sized by how often
-it gets touched: **log a set** fifty times a workout, **± reps/weight** a few
+it gets touched: **end a set** fifty times a workout, **± reps/weight** a few
 times, everything else almost never. So the top half is for reading, the bottom
 half is for thumbs — the values are read beside the body, and tapping one brings
 its ± down to the thumb.
@@ -30,8 +30,8 @@ its ± down to the thumb.
                              │     LB     │
                              ╰────────────╯
  ╭────────────────────────────────────────╮
- │            ▶  Start set 2              │  ← 72pt, the one accent fill;
- ╰────────────────────────────────────────╯     becomes ✓ Log set once started
+ │             ✓  End set 2               │  ← 72pt, the one accent fill;
+ ╰────────────────────────────────────────╯     reps outside rest: no Start
   Next  Lat Pull Downs  3 × 10 · 60 lb  ⌃    ← opens the jump sheet
 ```
 
@@ -41,51 +41,59 @@ on an unfinished session
 ## States
 
 ```
-resting — the bar appears ABOVE the button and never replaces it
- ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────────────╮
- │ ◷ Rest  00:00:28          ( +30s ) (×) │  ← tinted fill grows left→right:
- ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────────────╯     the ring, unrolled
- ╭────────────────────────────────────────╮
- │            ▶  Start set 3              │  ← still live: starting early
- ╰────────────────────────────────────────╯     is a legitimate choice
+one button, one action at a time — its fill is the clock, draining
+right→left as rest or a timed set runs out; a 72pt side button appears
+only while there's a clock to change
 
-rest elapsed, on screen
- ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╮
- │ ◷ Rest over                        (×) │  ← bell, green; stays until ×
- ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╯     or the next set
+resting — always Start: the next set hasn't begun
+ ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────╮ ╭──────╮
+ │             ▶  Start set 3     │ │ +30s │  ← tap: rest ends, the set's
+ │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Rest 00:00:28   │ │      │     clock starts
+ ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒─────────────────╯ ╰──────╯
+
+rep set running — Start tapped, or rest ran out on its own (counts from then)
+ ╭────────────────────────────────╮ ╭──────╮
+ │             ✓  End set 3       │ │  ×   │  ← × only after a tapped Start
+ │            00:00:41            │ │      │
+ ╰────────────────────────────────╯ ╰──────╯
+
+rest elapsed, timed — nothing has started yet
+ ╭────────────────────────────────────────╮
+ │             ▶  Start set 3             │
+ │               Rest over                │
+ ╰────────────────────────────────────────╯
 
 rest elapsed, phone in a pocket
  ⌐ Rest over · Seated Machine Rows 3 of 3 ¬   ← local notification, not a
                                                 foreground timer
 
-set running — Start tapped; same bar as rest (never both), ends any rest
+timed (plank seconds, treadmill minutes) — always needs a Start
  ╭────────────────────────────────────────╮
- │ ⏱ Set 2  00:00:41                  (×) │  ← reps: counts up, no fill
- ╰────────────────────────────────────────╯
- ╭────────────────────────────────────────╮
- │               ✓  Log set               │
+ │             ▶  Start set 1             │
  ╰────────────────────────────────────────╯
 
-set running, timed (treadmill minutes, plank seconds)
- ╭▒▒▒▒▒▒▒▒▒▒▒▒────────────────────────────╮
- │ ⏱ Set 1  00:14:22                  (×) │  ← counts down the MINUTES
- ╰▒▒▒▒▒▒▒▒▒▒▒▒────────────────────────────╯     tile; ± moves the finish
+timed set running — counts down the SECONDS/MINUTES tile; ± moves the finish
+ ╭▒▒▒▒▒▒▒▒▒▒▒▒────────────────────╮ ╭──────╮
+ │             ✓  End set 1       │ │  ×   │  ← × cancels, nothing logged
+ │▒▒▒▒▒▒▒▒▒▒▒▒    00:00:32        │ │      │
+ ╰▒▒▒▒▒▒▒▒▒▒▒▒────────────────────╯ ╰──────╯
 
 time's up
- ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╮
- │ 🔔 Time's up  +00:00:12            (×) │  ← green, keeps counting over;
- ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╯     never logs by itself
- ⌐ Time's up · Incline Treadmill Walking 1 of 1 ¬   ← locked phone
+ ╭▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╮ ╭──────╮
+ │             ✓  End set 1       │ │  ×   │  ← green, keeps counting over;
+ │      Time's up +00:00:12       │ │      │     never ends by itself
+ ╰▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒╯ ╰──────╯
+ ⌐ Time's up · Plank 1 of 3 ¬   ← locked phone
 
-last set of an exercise, running
- │       ✓  Log set & next exercise       │
+last set of an exercise
+ │       ✓  End set & next exercise       │
+
+last set of the last exercise
+ │          ✓  End set & finish           │  ← opens the summary directly
 
 first ever time
   ○ ○ ○  Set 1 of 3               LAST TIME
                                           —
-
-last set of the last exercise, running
- │          ✓  Log set & finish           │  ← opens the summary directly
 
 exercise with no load (bodyweight, band)
    [ muscle map ]            │  12  REPS  │   ← weight card gone entirely,
@@ -208,8 +216,8 @@ every exercise done or skipped
 
 | Target | Action | Result |
 |---|---|---|
-| `[[ ▶ Start set ]]` | tap | starts the set clock in the timer bar, ends rest |
-| `[[ ✓ Log set ]]` | tap | writes the log (with its start), starts rest, advances the counter |
+| `[[ ▶ Start set ]]` | tap | ends rest, starts the set's clock (counts down if timed) |
+| `[[ ✓ End set ]]` | tap | writes the log with its start, starts rest, advances the counter |
 | big button | long-press | log several identical sets, for warm-ups |
 | value card | tap | adjust sheet for that value |
 | `( + ) / ( − )` weight | tap | one real increment of *that* equipment |
@@ -220,9 +228,8 @@ every exercise done or skipped
 | `(◀\|)` Back | tap | the last unfinished exercise left by skip, jump or finishing a line; un-skips it |
 | `(≡)` / `Next …` | tap | jump sheet |
 | jump-sheet row | tap | jumps straight to it |
-| `(×)` on set clock | tap | cancels the clock, nothing logged |
-| `+30s` | tap | extends rest, keeping the time already rested |
-| `(×)` on rest | tap | dismiss, no penalty, no confirm |
+| `(×)` beside a started set | tap | cancels the clock, nothing logged |
+| `+30s` beside rest | tap | extends rest, keeping the time already rested |
 | `(×)` top-left | tap | exit dialog above |
 | `Keep in background` | tap | Session hides; mini bar at the bottom |
 | mini bar | tap | back to Session |
@@ -231,9 +238,10 @@ every exercise done or skipped
 
 | Key | String |
 |---|---|
-| `session.logSet` | Log set |
-| `session.logSet.next` | Log set & next exercise |
-| `session.logSet.final` | Log set & finish |
+| `session.endSet` | End set {n} |
+| `session.endSet.next` | End set & next exercise |
+| `session.endSet.final` | End set & finish |
+| `session.resting` | Rest {time} |
 | `session.set` | Set {n} of {total} |
 | `session.lastTime` | LAST TIME / {reps} × {weight} |
 | `session.lastTime.none` | — |
@@ -241,10 +249,8 @@ every exercise done or skipped
 | `session.back` | Back |
 | `session.next` | Next {exercise} {sets} × {reps} · {weight} |
 | `session.start` | Start set {n} |
-| `session.running` | Set {n} |
 | `session.timeUp` | Time's up |
 | `session.timeUp.notification` | Time's up · {exercise} {n} of {total} |
-| `session.resting` | Rest |
 | `session.restOver` | Rest over |
 | `session.restOver.notification` | Rest over · {exercise} {n} of {total} |
 | `session.extend` | +30s |

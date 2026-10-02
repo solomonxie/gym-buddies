@@ -68,23 +68,25 @@ orange). Colour means "you can act on this"; everything else is grey.
 
 ## The flow that the app is for
 
-Log a set. It happens fifty times a workout and it is one tap:
+End a set. It happens fifty times a workout and it is one tap — the same
+button, whatever comes next:
 
 ```
-   set in progress            tap [[ ✓ Log set ]]        resting
+   set in progress            tap [[ ✓ End set ]]        resting
  ┌──────────────────┐       ┌──────────────────┐     ┌──────────────────┐
  │ ●○○ Set 2 of 3   │       │   written to the │     │ ●●○ Set 3 of 3   │
  │ (−)   10    (+)  │  ──▶  │   log as-is, the │ ──▶ │ (−)   10    (+)  │
  │ (−)  50.0   (+)  │       │   plan untouched │     │ (−)  50.0   (+)  │
- │                  │       └──────────────────┘     │ ◷ Rest 00:00:58  │
- │ [[ ✓ Log set ]]  │                                │ [[ ✓ Log set ]]  │
+ │                  │       └──────────────────┘     │                  │
+ │ [[ ✓ End set ]]  │                                │[[▶ Start set]]▒▒▒│
  └──────────────────┘                                └──────────────────┘
-                                                      ↑ still tappable
+                                                      ↑ fill is the clock
 ```
 
-**Resting never blocks logging.** The rest bar appears above the button, it
-never replaces it — dropping straight into the next set is a legitimate choice
-and the app has no business making you dismiss a timer first.
+**One button that never lies.** Resting, it says Start set — rest is its fill.
+Once a set has begun, it says End set. A rep set begins on its own when rest
+runs out (one tap a set); cutting rest short is Start, then End. A timed set
+(plank, treadmill) always needs Start for its countdown.
 
 Finishing an exercise, and finishing the workout:
 

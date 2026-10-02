@@ -28,11 +28,11 @@ level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 Full alphabet in the `uiux` skill's `references/notation.md`. This app leans on:
 
 ```
-[[ Log set ]]  the one filled accent button      ›  pushes a screen
+[[ End set ]]  the one filled accent button      ›  pushes a screen
 ( Skip )       soft / secondary button           ✓  done
 (×) (≡) (▶)    round icon button                 ≡  jump to any exercise
 ╭─╮ ╰─╯        a card, 20pt corners              ⓘ  popover with the long text
-▒▒▒ on a border  rest fill, the ring unrolled    [▣] equipment glyph tile
+▒▒▒ on a border  clock fill, the ring unrolled    [▣] equipment glyph tile
 (♡) / [♥]      chip off / on                     ▶|  skip this exercise
 !  destructive                                   ⌐ … ¬  toast
 3 × 10 · 50 lb   sets × reps · load — the app's one compact number format
