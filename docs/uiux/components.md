@@ -47,21 +47,20 @@ Quiet secondary: tinted text on a soft capsule, 44pt.
 ## Value tile
 
 Session's reps and weight. The only control most people touch mid-set.
+Side by side in one row above the set button.
 
 ```
- loaded  ╭────────────────────────────────────────╮
-         │ ( − )            50.0            ( + ) │
-         │              LB  ± 10 lb               │
-         ╰────────────────────────────────────────╯
- reps    │ ( − )             10             ( + ) │
-         │                  REPS                  │
- timed   │ ( − )             60             ( + ) │
-         │                SECONDS                 │
- unloaded  weight tile removed, not disabled
+         ╭───────────────────╮ ╭──────────────────╮
+         │ (−)   10    (+)   │ │ (−)  50.0   (+)  │   60pt tall
+         │       REPS        │ │       LB         │
+         ╰───────────────────╯ ╰──────────────────╯
+ timed   │ (−)   60    (+)   │
+         │     SECONDS       │
+ unloaded  weight tile removed, reps takes the row
 
- ( − ) ( + )  60pt circles at the thumb's edges; hold repeats,
-              faster every five steps; light haptic on press
- number       54pt tabular, rolls on change; tap → keypad sheet
+ (−) (+)  36pt circles in a 60pt tap target; hold repeats,
+          faster every five steps; light haptic on press
+ number   24pt tabular, rolls on change; tap → keypad sheet
 ```
 
 Increment comes from the equipment, never from a constant:

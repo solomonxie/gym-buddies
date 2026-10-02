@@ -59,46 +59,51 @@ struct FieldSpec {
     }
 }
 
-/// The working values stacked beside the muscle map. Reading them is the
-/// common case; tapping one brings its ± down to the thumb.
-struct ValueColumn: View {
+/// The working values in one row just above the set button: − and + at
+/// each tile's edges, tap the number to type it.
+struct ValueTiles: View {
     @Environment(AppModel.self) private var model
     @Binding var editing: SessionField?
 
     var body: some View {
-        VStack(spacing: 8) {
+        HStack(spacing: 8) {
             ForEach(SessionField.allCases) { field in
                 if let spec = FieldSpec.make(field, model: model) {
-                    Button { editing = field } label: {
-                        VStack(spacing: 0) {
-                            Text(spec.value)
-                                .font(.tabular(34, weight: .bold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.5)
-                                .contentTransition(.numericText())
-                                .animation(.snappy(duration: 0.2), value: spec.value)
-                            Text(spec.label).eyebrow()
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 72)
-                        .background(RoundedRectangle(cornerRadius: Theme.Metrics.corner, style: .continuous).fill(Theme.card))
-                        .overlay(alignment: .topTrailing) {
-                            Image(systemName: "plusminus")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.tertiary)
-                                .padding(8)
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("\(spec.value) \(spec.label)")
-                    .accessibilityHint("Adjust")
+                    tile(field, spec)
                 }
             }
         }
     }
+
+    /// 60pt tap targets either side, drawn as smaller circles so the number fits.
+    private func tile(_ field: SessionField, _ spec: FieldSpec) -> some View {
+        HStack(spacing: 0) {
+            RepeatButton(systemImage: "minus", label: spec.decrementLabel, circle: 36) { spec.step(-1) }
+            Button { editing = field } label: {
+                VStack(spacing: 0) {
+                    Text(spec.value)
+                        .font(.tabular(24, weight: .bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .contentTransition(.numericText())
+                        .animation(.snappy(duration: 0.2), value: spec.value)
+                    Text(spec.label).eyebrow()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                .frame(maxWidth: .infinity, minHeight: Theme.tapTarget)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(spec.value) \(spec.label)")
+            .accessibilityHint("Type a number")
+            RepeatButton(systemImage: "plus", label: spec.incrementLabel, circle: 36) { spec.step(1) }
+        }
+        .background(RoundedRectangle(cornerRadius: Theme.Metrics.corner, style: .continuous).fill(Theme.card))
+    }
 }
 
-/// − and + at the thumb's edges; tap the number to type it instead.
+/// Opened from a tile's number, straight into typing; ± stay for fine-tuning.
 struct AdjustSheet: View {
     let field: SessionField
     @Environment(AppModel.self) private var model
@@ -151,6 +156,7 @@ struct AdjustSheet: View {
                 .disabled(typing && parsed == nil)
             }
             .padding()
+            .onAppear { startTyping(spec) }
         } else {
             Color.clear.onAppear { dismiss() }
         }
