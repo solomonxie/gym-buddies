@@ -47,6 +47,8 @@ struct RepeatButton: View {
     let systemImage: String
     let label: String
     var size: CGFloat = Theme.tapTarget
+    /// A smaller drawn circle inside the same `size` tap target.
+    var circle: CGFloat?
     let action: () -> Void
 
     @State private var repeater: Task<Void, Never>?
@@ -54,14 +56,16 @@ struct RepeatButton: View {
     @State private var pressed = false
 
     var body: some View {
+        let drawn = circle ?? size
         Image(systemName: systemImage)
-            .font(.system(size: size * 0.36, weight: .semibold))
+            .font(.system(size: drawn * 0.4, weight: .semibold))
             .foregroundStyle(.primary)
-            .frame(width: size, height: size)
+            .frame(width: drawn, height: drawn)
             .background(Circle().fill(Theme.fill))
             .scaleEffect(pressed ? 0.92 : 1)
             .animation(.spring(duration: 0.2), value: pressed)
-            .contentShape(Circle())
+            .frame(width: size, height: size)
+            .contentShape(circle == nil ? AnyShape(Circle()) : AnyShape(Rectangle()))
             .onLongPressGesture(minimumDuration: 0.35, maximumDistance: 30) {
                 startRepeating()
             } onPressingChanged: { pressing in

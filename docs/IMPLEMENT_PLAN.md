@@ -84,7 +84,7 @@ drawing and wiring, not logic.
 - [x] T4.9 Set clock — the big button says Start set while resting or before a timed set, End set once a set has begun; rest is its fill, and a rep set begins on its own when rest runs out; counts down for timed sets (treadmill minutes, plank seconds), time's-up alert with the screen locked, start time kept on the log (drawing: `uiux/session.md`) — see `Sources/Screens/Session/SetButton.swift` — depends: T4.2, T4.4
 - [x] T4.10 Keep in background — the exit dialog can hide the session instead of ending it; a mini bar at the bottom shows its live clock and opens it again (drawing: `uiux/session.md`) — see `Sources/Screens/Session/MiniSessionBar.swift` — depends: T4.6, T4.9
 - [x] T4.11 Counted in, per workout line — reps, seconds or minutes, overriding the exercise; the set log keeps what it counted and `LAST TIME` only compares like with like (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/WorkoutDetailView.swift` — depends: T4.9
-- [x] T4.12 Values beside the body — compact value cards next to the muscle map; tapping one opens a bottom adjust sheet with ± and typing. Back beside Skip returns to the last unfinished exercise left behind (drawing: `uiux/session.md`) — see `Sources/Screens/Session/ValuePanel.swift` — depends: T4.2, T4.5
+- [x] T4.12 Values above the button — tiles in one row with 60pt ± right above the set button, muscle map above them; tapping a number opens a keypad sheet. Back beside Skip returns to the last unfinished exercise left behind (drawing: `uiux/session.md`) — see `Sources/Screens/Session/ValuePanel.swift` — depends: T4.2, T4.5
 
 ## Phase 5: Logs and graphs
 

@@ -120,22 +120,19 @@ struct SessionView: View {
                     setRow(session, entry)
                     if showingSets { changeSets(session, entry) }
                     ProgressionOffer(session: session, entry: entry)
-                    HStack(alignment: .center, spacing: 12) {
-                        if !entry.exercise.muscles.isEmpty {
-                            MuscleMap(highlighted: entry.exercise.muscles)
-                                .frame(maxWidth: .infinity, maxHeight: 220)
-                                .opacity(0.8)
-                        }
-                        ValueColumn(editing: $editing)
-                            .frame(maxWidth: entry.exercise.muscles.isEmpty ? .infinity : 150)
+                    if !entry.exercise.muscles.isEmpty {
+                        MuscleMap(highlighted: entry.exercise.muscles)
+                            .frame(maxWidth: .infinity, maxHeight: 220)
+                            .opacity(0.8)
+                            .padding(.top, 4)
                     }
-                    .padding(.top, 4)
                 }
                 .padding(.horizontal, Theme.Metrics.gutter)
             }
             .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: 10) {
+                ValueTiles(editing: $editing)
                 SetButton(session: session) { logged += 1 }
                 upNext(session)
             }

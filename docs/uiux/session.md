@@ -6,8 +6,8 @@ nothing else is happening for the next hour.
 This is the screen the app exists for. Everything on it is sized by how often
 it gets touched: **end a set** fifty times a workout, **± reps/weight** a few
 times, everything else almost never. So the top half is for reading, the bottom
-half is for thumbs — the values are read beside the body, and tapping one brings
-its ± down to the thumb.
+half is for thumbs — the values sit in one row right above the button, ± at
+each tile's edges.
 
 ```
  (×)          Fraiser Heights          (≡)
@@ -21,14 +21,13 @@ its ± down to the thumb.
   ● ○ ○  Set 2 of 3 ⌄             LAST TIME
                                  10 × 50 lb
 
-   [ muscle map, faded ]     ╭────────────╮
-    front        back        │     10   ± │   ← values stacked beside the
-                             │    REPS    │     body, 72pt cards; tap one
-                             ╰────────────╯     for the adjust sheet
-                             ╭────────────╮
-                             │   50.0   ± │
-                             │     LB     │
-                             ╰────────────╯
+            [ muscle map, faded ]              ← decoration, never tapped
+             front        back
+
+ ╭───────────────────╮ ╭──────────────────╮
+ │ (−)   10    (+)   │ │ (−)  50.0   (+)  │  ← one row, 60pt tall; ± drawn
+ │       REPS        │ │       LB         │     small, tapped across 60pt;
+ ╰───────────────────╯ ╰──────────────────╯     tap the number to type it
  ╭────────────────────────────────────────╮
  │             ✓  End set 2               │  ← 72pt, the one accent fill;
  ╰────────────────────────────────────────╯     reps outside rest: no Start
@@ -96,15 +95,14 @@ first ever time
                                           —
 
 exercise with no load (bodyweight, band)
-   [ muscle map ]            │  12  REPS  │   ← weight card gone entirely,
-                                              not a disabled "0.0"
+ │ (−)                12               (+) │  ← weight tile gone; reps takes
+ │                   REPS                    │     the row, not a disabled "0.0"
 
-no muscles listed — the cards take the full width
+no muscles listed — no map, the space stays empty
 
 treadmill — minutes, and incline instead of weight
-   [ muscle map ]            │ 20 MINUTES │   ← ± 1 min
-                             │ 8.5 INCL % │   ← steps and clamps 0–30%,
-                                              never a weight
+ │ (−)   20    (+)   │ │ (−)   8.5   (+)  │  ← ± 1 min · incline steps
+ │     MINUTES       │ │    INCLINE %     │     and clamps 0–30%
  LAST TIME  20 min · 8% incline
 
 progression offer, set 1 only, once per exercise per session
@@ -138,15 +136,10 @@ every exercise done or skipped
     Lat Pull Downs          3 × 10 · 60 lb
     Seated Leg Curls             skipped
 
- adjust — tap a value card; bottom sheet, the thumb's third
+ type — tap a tile's number; 50 → 135 isn't a job for ±
  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
             Weight (lb)  ± 10 lb
-  ( − )            50.0            ( + )     ← 60pt, press-hold repeats;
-                                               value updates live
-  [[              Done               ]]
-
- …tap the number; 50 → 135 isn't a job for ±
-  ( − )            135|            ( + )     ← keypad up, Done → Set
+  ( − )            135|            ( + )     ← keypad up at once, Set
 
  long-press the big button, 2+ sets left
  ┌──────────────────────────────────────┐
@@ -219,10 +212,9 @@ every exercise done or skipped
 | `[[ ▶ Start set ]]` | tap | ends rest, starts the set's clock (counts down if timed) |
 | `[[ ✓ End set ]]` | tap | writes the log with its start, starts rest, advances the counter |
 | big button | long-press | log several identical sets, for warm-ups |
-| value card | tap | adjust sheet for that value |
+| value number | tap | keypad sheet to type it |
 | `( + ) / ( − )` weight | tap | one real increment of *that* equipment |
 | `( + ) / ( − )` | press-hold | repeats, accelerating every five steps |
-| number in adjust sheet | tap | type it |
 | `Set 2 of 3 ⌄` | tap | change-sets row; can't drop below what's logged |
 | `( ▶\| Skip )` | tap | skip to the next exercise; anything logged stays logged |
 | `(◀\|)` Back | tap | the last unfinished exercise left by skip, jump or finishing a line; un-skips it |
