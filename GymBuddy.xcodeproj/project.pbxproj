@@ -45,6 +45,7 @@
 
 /* Begin PBXFileReference section */
 		1746F0632E5C745A28336401 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
+		182076D45309215087E8F2ED /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		3F70F22C705AC3AEE0396BEB /* ExerciseDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDetailView.swift; sourceTree = "<group>"; };
 		446F710BBA975FC4BDD9AE98 /* AddExercisesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExercisesView.swift; sourceTree = "<group>"; };
 		4814550399B03725CC792CBE /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
@@ -75,7 +76,6 @@
 		C73B5F7579859C8808487DAA /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		CEBF094C7BF3F7FE8471CA5F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D06884A6A49EFA8C4FFAB991 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
-		D95850760D6ED0115AEF1B9F /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		DFE672B3A6CF12DBF41A6303 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E947EE05D9A5BBDB6BDFDBB0 /* GymKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymKitView.swift; sourceTree = "<group>"; };
 		EBBD243475D297DB718FE665 /* ExerciseEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseEditorView.swift; sourceTree = "<group>"; };
@@ -155,15 +155,6 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		220D7511D7E997398CC188F8 /* gym-buddy */ = {
-			isa = PBXGroup;
-			children = (
-				D95850760D6ED0115AEF1B9F /* Signing.xcconfig */,
-			);
-			name = "gym-buddy";
-			path = .;
-			sourceTree = "<group>";
-		};
 		2B305489CD4AAB50E68BD4B0 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -185,7 +176,7 @@
 		2F9F8C3910A1CE82CF195499 = {
 			isa = PBXGroup;
 			children = (
-				220D7511D7E997398CC188F8 /* gym-buddy */,
+				8598A10E21481984BBA92B8F /* gym-buddies */,
 				83C553B68652D44E63D32F57 /* Packages */,
 				0BF025A9C200315D4AAB0995 /* Resources */,
 				0566E83339FE513BCEFD9800 /* Sources */,
@@ -242,6 +233,15 @@
 				560D14A1332E889BE9E8CC36 /* Core */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		8598A10E21481984BBA92B8F /* gym-buddies */ = {
+			isa = PBXGroup;
+			children = (
+				182076D45309215087E8F2ED /* Signing.xcconfig */,
+			);
+			name = "gym-buddies";
+			path = .;
 			sourceTree = "<group>";
 		};
 		85C5BEEE8BE70810D3D2D381 /* Gyms */ = {
@@ -301,6 +301,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					000686592F782893D1C3F5FA = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -382,18 +383,19 @@
 /* Begin XCBuildConfiguration section */
 		4172340842B0E4A21FA9D0D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D95850760D6ED0115AEF1B9F /* Signing.xcconfig */;
+			baseConfigurationReference = 182076D45309215087E8F2ED /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GymBuddy.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Sources/App/Info.plist;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "APP_BUNDLE_ID=$(APP_BUNDLE_ID)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.gymbuddy;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -401,18 +403,19 @@
 		};
 		B320099A9D90BFD30EC8FD91 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D95850760D6ED0115AEF1B9F /* Signing.xcconfig */;
+			baseConfigurationReference = 182076D45309215087E8F2ED /* Signing.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = GymBuddy.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Sources/App/Info.plist;
+				INFOPLIST_PREPROCESS = YES;
+				INFOPLIST_PREPROCESSOR_DEFINITIONS = "APP_BUNDLE_ID=$(APP_BUNDLE_ID)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.gymbuddy;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

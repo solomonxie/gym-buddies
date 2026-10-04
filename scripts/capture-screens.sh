@@ -10,6 +10,8 @@ OUT=${1:-/tmp/gymbuddy-shots}
 DEVICE=${DEVICE:-$(xcrun devicectl list devices 2>/dev/null | grep 'physical' | grep -oE '[0-9A-F]{8}-[0-9A-F]{16}' | head -1)}
 [ -n "$DEVICE" ] || { echo "No paired iPhone found"; exit 1; }
 mkdir -p "$OUT"
+APP_ID=$(sed -n 's/^APP_BUNDLE_ID *= *//p' Local.xcconfig)
+[ -n "$APP_ID" ] || { echo "APP_BUNDLE_ID missing in Local.xcconfig"; exit 1; }
 
 xcodebuild -project GymBuddy.xcodeproj -scheme GymBuddy -configuration Debug \
   -destination 'generic/platform=iOS' -derivedDataPath build -allowProvisioningUpdates -quiet build
@@ -17,7 +19,7 @@ xcrun devicectl device install app --device "$DEVICE" build/Build/Products/Debug
 
 shot() {
   xcrun devicectl device process launch --device "$DEVICE" --terminate-existing \
-    com.example.gymbuddy -demo -screen "$2" >/dev/null
+    "$APP_ID" -demo -screen "$2" >/dev/null
   sleep 3
   xcrun devicectl device capture screenshot --device "$DEVICE" --destination "$OUT/$1.png" >/dev/null
   echo "$1"
