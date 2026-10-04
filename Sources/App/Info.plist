@@ -24,7 +24,7 @@
 	<false/>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.com.example.gymbuddy</key>
+		<key>iCloud.APP_BUNDLE_ID</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
