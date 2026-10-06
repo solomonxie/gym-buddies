@@ -24,9 +24,9 @@ tall, 72pt on Session. Grey when disabled.
 
 ```
  end       ╭──────────────────────────────╮
-           │         ✓  End set 2         │   72pt
+           │         ✓  Done set          │   72pt
            ╰──────────────────────────────╯
- final     │      ✓  End set & finish     │   72pt
+ final     │      ✓  Finish workout       │   72pt
  finish    │        Finish workout        │   72pt, all done or skipped
  hero      │           ▶  Start           │
  detail    │       ▶  Start workout       │
@@ -88,17 +88,17 @@ The compact version, outside Session: workout line editor, log set editor.
 ## Set button
 
 Session's primary action carries the clock. Resting: always Start set. Set
-begun: End set. A rep set begins on its own when rest runs out; a timed one
-waits for Start.
+begun: Done set. When rest runs out the button stays Start set until tapped; nothing
+begins on its own.
 
 ```
  resting   ╭▒▒▒▒▒▒▒▒▒────────────────╮ ╭──────╮
            │      ▶  Start set 3     │ │ +30s │
            │▒▒▒▒▒▒▒▒▒ Rest 00:00:28  │ │      │
            ╰▒▒▒▒▒▒▒▒▒────────────────╯ ╰──────╯
- timed     │       ✓  End set 1      │ │  ×   │
+ timed     │       ✓  Done set       │ │  ×   │
  time's up │ green, Time's up +00:12 │ │  ×   │
- idle      │        ✓  End set 2           │   no side button
+ idle      │        ✓  Done set            │   no side button
 ```
 
 Fill: a darker band over the accent, the time still to go — it drains
