@@ -28,7 +28,7 @@ level up in [`../UIUX_DESIGN.md`](../UIUX_DESIGN.md).
 Full alphabet in the `uiux` skill's `references/notation.md`. This app leans on:
 
 ```
-[[ End set ]]  the one filled accent button      ›  pushes a screen
+[[ Done set ]]  the one filled accent button      ›  pushes a screen
 ( Skip )       soft / secondary button           ✓  done
 (×) (≡) (▶)    round icon button                 ≡  jump to any exercise
 ╭─╮ ╰─╯        a card, 20pt corners              ⓘ  popover with the long text

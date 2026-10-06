@@ -98,7 +98,7 @@ final class PrimaryActionTests: XCTestCase {
             s.completeSet(at: t)
             t += 60
         }
-        XCTAssertEqual(seen.first, .endSetAndNextExercise)
+        XCTAssertEqual(seen.first, .nextExercise)
         XCTAssertTrue(seen.contains(.endSet(2)))
         XCTAssertFalse(seen.contains { if case .startSet = $0 { true } else { false } })
         XCTAssertEqual(seen.filter { $0 == .endSetAndFinish }.count, 1)

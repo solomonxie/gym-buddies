@@ -130,7 +130,7 @@ public struct WorkoutSession: Codable, Sendable {
     public enum PrimaryAction: Equatable, Sendable {
         case startSet(Int)
         case endSet(Int)
-        case endSetAndNextExercise
+        case nextExercise
         case endSetAndFinish
     }
 
@@ -139,7 +139,7 @@ public struct WorkoutSession: Codable, Sendable {
         guard let entry = currentEntry else { return .endSetAndFinish }
         if !isSetRunning, resting || isTimed { return .startSet(currentSetNumber) }
         if isOnFinalSet { return .endSetAndFinish }
-        return completedSets(for: entry.id) + 1 >= entry.plan.targetSets ? .endSetAndNextExercise : .endSet(currentSetNumber)
+        return completedSets(for: entry.id) + 1 >= entry.plan.targetSets ? .nextExercise : .endSet(currentSetNumber)
     }
 
     /// When the set on screen began: its Start, or for a rep set nobody

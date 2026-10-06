@@ -2,7 +2,7 @@ import SwiftUI
 import GymBuddyCore
 
 /// The one big button, and the clock along with it: Start set while resting
-/// or before a timed set, End set once a set has begun. Its band drains
+/// or before a timed set, Done set once a set has begun. Its band drains
 /// right→left as rest or a timed set runs out. `+30s` or `×` sits beside it
 /// only while there's a clock to change.
 struct SetButton: View {
@@ -57,13 +57,13 @@ struct SetButton: View {
     private func face(at now: Date) -> Face {
         let rest = model.restTimer
         let restOver = rest.hasFired(at: now)
-        let action = session.primaryAction(resting: rest.isRunning && !restOver)
+        let action = session.primaryAction(resting: rest.isRunning)
         if rest.isRunning, !restOver, !session.isSetRunning {
             let left = rest.remaining(at: now).rounded(.up)
             return Face(action: action, detail: "Rest " + RestTimer.format(left), remaining: 1 - rest.progress(at: now),
                         countdown: Int(left), side: .extend)
         }
-        guard let began = session.setBegan(restEndedAt: restOver ? rest.endsAt : nil) else {
+        guard let began = session.setBegan(restEndedAt: nil) else {
             return Face(action: action, detail: restOver ? "Rest over" : nil)
         }
         let elapsed = max(0, now.timeIntervalSince(began))
@@ -162,7 +162,7 @@ struct SetButton: View {
         }
         switch action {
         case .startSet: model.startSet()
-        case .endSet, .endSetAndNextExercise, .endSetAndFinish:
+        case .endSet, .nextExercise, .endSetAndFinish:
             model.completeSets(1)
             onLogged()
         }
@@ -171,9 +171,9 @@ struct SetButton: View {
     private static func title(_ action: WorkoutSession.PrimaryAction) -> String {
         switch action {
         case .startSet(let set): "Start set \(set)"
-        case .endSet(let set): "End set \(set)"
-        case .endSetAndNextExercise: "End set & next exercise"
-        case .endSetAndFinish: "End set & finish"
+        case .endSet: "Done set"
+        case .nextExercise: "Done exercise"
+        case .endSetAndFinish: "Finish workout"
         }
     }
 
