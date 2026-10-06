@@ -34,7 +34,6 @@ struct GymEditorView: View {
                             increment: { gym.wrappedValue.travelMinutes += 5 },
                             canDecrement: gym.wrappedValue.travelMinutes > 0)
             }
-            PriceSection(price: gym.price)
             Section {
                 NavigationLink {
                     GymKitView(gym: gym)
@@ -50,6 +49,7 @@ struct GymEditorView: View {
             } footer: {
                 Text("Tick what this place has. Bodyweight moves count everywhere.")
             }
+            PriceSection(price: gym.price)
             HoursSection(hours: gym.hours)
             Section("Notes") {
                 TextField("Locker code, parking, busy hours…", text: gym.notes, axis: .vertical)
