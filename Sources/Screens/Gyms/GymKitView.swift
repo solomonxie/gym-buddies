@@ -8,23 +8,38 @@ struct GymKitView: View {
     @Environment(AppModel.self) private var model
     @State private var query = ""
     @State private var expanded: Set<Kit.Kind> = []
+    @State private var selectedOnly = false
 
     private static let folded = 5
 
     var body: some View {
-        let groups = Kit.pickable(model.exercises, matching: query)
+        let all = Kit.pickable(model.exercises, matching: query)
+        let groups = selectedOnly
+            ? all.map { (kind: $0.kind, kits: $0.kits.filter { gym.kitIDs.contains($0.id) }) }.filter { !$0.kits.isEmpty }
+            : all
+        let selectedCount = Set(Kit.pickable(model.exercises, matching: "").flatMap(\.kits).map(\.id)).intersection(gym.kitIDs).count
         let uses = Dictionary(grouping: model.exercises.compactMap { Kit.needed(by: $0)?.id }, by: { $0 }).mapValues(\.count)
         List {
+            Section {
+                Picker("Show", selection: $selectedOnly) {
+                    Text("All").tag(false)
+                    Text("Selected (\(selectedCount))").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
             if groups.isEmpty {
-                Text("Nothing called “\(query)”.").foregroundStyle(.secondary)
+                Text(selectedOnly ? "Nothing selected\(query.isEmpty ? "" : " matches “\(query)”")." : "Nothing called “\(query)”.")
+                    .foregroundStyle(.secondary)
             }
             ForEach(groups, id: \.kind) { group in
-                let open = !query.isEmpty || expanded.contains(group.kind)
+                let open = selectedOnly || !query.isEmpty || expanded.contains(group.kind)
                 Section {
                     ForEach(open ? group.kits : Array(group.kits.prefix(Self.folded))) { kit in
                         row(kit, uses: uses[kit.id] ?? 0)
                     }
-                    if query.isEmpty && group.kits.count > Self.folded {
+                    if query.isEmpty && !selectedOnly && group.kits.count > Self.folded {
                         Button(open ? "Show fewer" : "Show \(group.kits.count - Self.folded) more") {
                             if open { expanded.remove(group.kind) } else { expanded.insert(group.kind) }
                         }

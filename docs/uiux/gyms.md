@@ -35,10 +35,10 @@ Pushed from a row, or `+` for a new one. Saves as you go, like a workout line.
   [ Name                              ]
   TRAVEL
   Travel time        [−] 15 min [+]        ← 5 min a tap
-  PRICE
-  [ 45.00 ]                  ( month ⌄ )    ← visit / month / year; blank = free
   EQUIPMENT
   Machines & equipment         12 of 43  ›  ← bodyweight always counts
+  PRICE
+  [ 45.00 ]                  ( month ⌄ )    ← visit / month / year; blank = free
   HOURS                   ( Same every day )
   Open 24 hours                       ( )
   Mon   06:00 – 22:00                 (●)   ← toggle off = closed that day
@@ -63,6 +63,7 @@ leg press or it doesn't; "machine" says too little.
   ┌──────────────────────────────────────┐
   │ 🔍 Search                            │
   └──────────────────────────────────────┘
+  [ All | Selected (19) ]                    ← ticked ones only, search still applies
   WEIGHTS & CABLES  4/5             All    ← whole kind in one tap
  ╭────────────────────────────────────────╮
  │ Barbell                            (●) │
