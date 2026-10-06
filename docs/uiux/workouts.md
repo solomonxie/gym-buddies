@@ -82,7 +82,7 @@ row under it.
  │     Back · 3 × 10 · 50 lb · rest 90s   │
  │ [▣] Seated Leg Curls                ☰  │
  │     Legs · 3 × 10 · 50 lb              │
- │ [▣] Seated Machine Presses          ☰  │
+ │ [▣] Seated Machine Shoulder Press  ☰  │
  │     Shoulders · 3 × 10 · 40 lb         │
  │ [▣] Planking                        ☰  │
  │     Core · 3 × 60s                     │
@@ -193,6 +193,9 @@ to the template.
 Multi-select, because nobody adds exactly one exercise. Added lines take the
 default 3 sets, and the reps and weight from the last time you did that
 movement — a brand-new one starts at 10 reps and no load.
+
+Only exercises that at least one of the workout's gyms has kit for are listed.
+A workout with no gym ticked lists everything.
 
 ## States
 

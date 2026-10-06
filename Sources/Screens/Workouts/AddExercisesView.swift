@@ -11,9 +11,15 @@ struct AddExercisesView: View {
     @State private var selected: [String] = []
     @State private var creating: String?
 
+    private var workoutGyms: [Gym] {
+        (model.workout(id: workoutID)?.gymIDs ?? []).compactMap { model.gym(id: $0) }
+    }
+
     private var filtered: [Exercise] {
-        model.exercises.filter { e in
-            (group == nil || e.muscleGroup == group)
+        let gyms = workoutGyms
+        return model.exercises.filter { e in
+            Gym.offer(e, among: gyms)
+                && (group == nil || e.muscleGroup == group)
                 && (query.isEmpty || e.name.localizedCaseInsensitiveContains(query))
         }
         .sorted { a, b in

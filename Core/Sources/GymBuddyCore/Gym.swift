@@ -43,6 +43,11 @@ public struct Gym: Identifiable, Hashable, Codable, Sendable {
         Kit.needed(by: exercise).map { kitIDs.contains($0.id) } ?? true
     }
 
+    /// Whether any of `gyms` has it. No gyms chosen means no restriction.
+    public static func offer(_ exercise: Exercise, among gyms: [Gym]) -> Bool {
+        gyms.isEmpty || gyms.contains { $0.has(exercise) }
+    }
+
     /// What the workout needs that this gym doesn't have, in plan order.
     public func missingExercises(for workout: Workout, exercises: [String: Exercise]) -> [Exercise] {
         var missing: [Exercise] = []

@@ -120,4 +120,13 @@ final class GymTests: XCTestCase {
         XCTAssertEqual(Price(cents: 4500, period: .month).format(locale: us), "$45/month")
         XCTAssertEqual(Price(cents: 1250, period: .visit).format(locale: us), "$12.50/visit")
     }
+
+    func testExerciseIsOfferedWhenAnyChosenGymHasIt() {
+        let press = SeedLibrary.byID["seated-machine-presses"]!
+        let withPress = Gym(id: "a", name: "A", kitIDs: [Kit.needed(by: press)!.id])
+        let bare = Gym(id: "b", name: "B")
+        XCTAssertTrue(Gym.offer(press, among: [bare, withPress]))
+        XCTAssertFalse(Gym.offer(press, among: [bare]))
+        XCTAssertTrue(Gym.offer(press, among: []))
+    }
 }

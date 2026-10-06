@@ -27,6 +27,7 @@ public enum SeedLibrary {
 
     private static func e(
         _ name: String,
+        id: String? = nil,
         _ group: MuscleGroup,
         _ equipment: Equipment,
         _ muscles: [Muscle],
@@ -36,7 +37,7 @@ public enum SeedLibrary {
         how: [String] = []
     ) -> Exercise {
         Exercise(
-            id: slug(name),
+            id: id ?? slug(name),
             name: name,
             muscleGroup: group,
             equipment: equipment,
@@ -556,7 +557,7 @@ public enum SeedLibrary {
     // MARK: - Shoulders
 
     private static let shoulders: [Exercise] = [
-        e("Seated Machine Presses", .shoulders, .machine, [.frontDelts, .triceps], how: [
+        e("Seated Machine Shoulder Press", id: "seated-machine-presses", .shoulders, .machine, [.frontDelts, .triceps], how: [
             "Set the seat so handles start at shoulder height",
             "Keep your back flat against the pad",
             "Press without locking out hard or shrugging",
