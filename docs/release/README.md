@@ -4,7 +4,7 @@ Bundle ID `com.example.gymbuddy` · iOS 17.0+ · iPhone only, portrait.
 
 - [`listing.md`](listing.md) — step-by-step plan and every App Store Connect field, ready to paste
 - [`privacy-policy.md`](privacy-policy.md) — the policy; its GitHub URL is the Privacy Policy URL
-- `screenshots/6.9`, `screenshots/6.5` — upload-ready, from `make capture` + `make screenshots`
+- `screenshots/` — ready, ten shots from Demo mode (2026-10-02); upload in filename order (listing.md → Screenshots)
 
 Before the first build: `cp Local.xcconfig.example Local.xcconfig` and put your Apple
 Developer Team ID in it. Gitignored — this repo is public and an account identifier

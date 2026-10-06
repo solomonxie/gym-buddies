@@ -1,0 +1,77 @@
+{
+  "unit": "pounds",
+  "favourites": ["barbell-deadlifts", "pull-ups", "barbell-bench-press", "lat-pull-downs", "barbell-squats", "goblet-squats"],
+  "gyms": [
+    {
+      "id": "home", "name": "Home",
+      "kit": ["dumbbell", "kettlebell", "band"],
+      "notes": "Adjustable dumbbells to 50 lb, one 35 lb kettlebell."
+    },
+    {
+      "id": "demo-downtown", "name": "Downtown Gym", "kit": "all",
+      "price": { "cents": 4500, "period": "month" },
+      "open": 300, "close": 1380, "travelMinutes": 12,
+      "notes": "Squat racks are free before 7 am."
+    },
+    {
+      "id": "demo-riverside", "name": "Riverside Fitness",
+      "kit": ["barbell", "dumbbell", "cable", "treadmill", "machine-lat-pulldown", "machine-leg-press", "machine-seated-row-machine"],
+      "price": { "cents": 1200, "period": "visit" },
+      "open": 360, "close": 1260, "travelMinutes": 20
+    }
+  ],
+  "workouts": [
+    {
+      "id": "demo-full-body", "name": "Full Body", "gyms": ["demo-downtown"],
+      "lines": [
+        { "exercise": "incline-treadmill-walking", "sets": 1, "reps": 10, "lb": 0, "incline": 8 },
+        { "exercise": "seated-machine-rows", "sets": 3, "reps": 10, "lb": 70 },
+        { "exercise": "lat-pull-downs", "sets": 3, "reps": 10, "lb": 100, "rest": 90 },
+        { "exercise": "seated-leg-curls", "sets": 3, "reps": 10, "lb": 70 },
+        { "exercise": "seated-machine-presses", "sets": 3, "reps": 10, "lb": 60 },
+        { "exercise": "planking", "sets": 3, "reps": 60, "lb": 0 }
+      ]
+    },
+    {
+      "id": "demo-push", "name": "Push Day", "gyms": ["demo-downtown", "demo-riverside"],
+      "lines": [
+        { "exercise": "barbell-bench-press", "sets": 5, "reps": 5, "lb": 165, "rest": 150 },
+        { "exercise": "barbell-overhead-press", "sets": 3, "reps": 8, "lb": 95 },
+        { "exercise": "dumbbell-flyes", "sets": 3, "reps": 12, "lb": 30 },
+        { "exercise": "dumbbell-lateral-raises", "sets": 3, "reps": 15, "lb": 17.5 },
+        { "exercise": "cable-tricep-extensions", "sets": 3, "reps": 12, "lb": 45 }
+      ]
+    },
+    {
+      "id": "demo-legs", "name": "Legs", "gyms": ["demo-downtown"],
+      "lines": [
+        { "exercise": "barbell-squats", "sets": 5, "reps": 5, "lb": 205, "rest": 180 },
+        { "exercise": "leg-press", "sets": 3, "reps": 10, "lb": 290 },
+        { "exercise": "leg-extensions", "sets": 3, "reps": 12, "lb": 90 },
+        { "exercise": "walking-lunges", "sets": 3, "reps": 10, "lb": 35 },
+        { "exercise": "standing-calf-raises", "sets": 3, "reps": 15, "lb": 120 }
+      ]
+    },
+    {
+      "id": "demo-home", "name": "Home Dumbbells", "gyms": ["home"],
+      "lines": [
+        { "exercise": "goblet-squats", "sets": 3, "reps": 12, "lb": 45 },
+        { "exercise": "dumbbell-bench-press", "sets": 3, "reps": 10, "lb": 45 },
+        { "exercise": "one-arm-dumbbell-rows", "sets": 3, "reps": 10, "lb": 45 },
+        { "exercise": "kettlebell-swings", "sets": 3, "reps": 15, "lb": 35 },
+        { "exercise": "band-pull-aparts", "sets": 2, "reps": 20, "lb": 0 }
+      ]
+    }
+  ],
+  "history": {
+    "weeks": 10,
+    "days": [
+      { "weekday": 2, "workout": "demo-full-body" },
+      { "weekday": 4, "workout": "demo-push" },
+      { "weekday": 6, "workout": "demo-legs" },
+      { "weekday": 7, "workout": "demo-home", "everyOtherWeek": true }
+    ],
+    "lastNote": "Left shoulder tight on the rows, went light on the third set."
+  },
+  "inProgress": { "workout": "demo-full-body", "minutesAgo": 14, "skip": 1, "sets": 1 }
+}

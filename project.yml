@@ -31,6 +31,9 @@ targets:
       - path: Resources
         excludes:
           - "**/*.md"
+      - path: demo
+        type: folder
+        buildPhase: resources
     entitlements:
       path: GymBuddy.entitlements
       properties:
@@ -43,26 +46,29 @@ targets:
     info:
       path: Sources/App/Info.plist
       properties:
-        CFBundleDisplayName: Gym Buddy
+        CFBundleDisplayName: Gym Buddies
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         ITSAppUsesNonExemptEncryption: false
+        AppStoreRegion: $(APP_STORE_REGION)
         UIFileSharingEnabled: false
-        # iCloud Drive → Gym Buddy, where the daily iCloud backup lands.
+        # iCloud Drive → Gym Buddies, where the daily iCloud backup lands.
         # Dict KEYS don't get $(...) expansion, so APP_BUNDLE_ID is substituted
         # by the Info.plist preprocessor (INFOPLIST_PREPROCESSOR_DEFINITIONS).
         NSUbiquitousContainers:
           iCloud.APP_BUNDLE_ID:
             NSUbiquitousContainerIsDocumentScopePublic: true
-            NSUbiquitousContainerName: Gym Buddy
+            NSUbiquitousContainerName: Gym Buddies
             NSUbiquitousContainerSupportedFolderLevels: None
     settings:
       base:
         INFOPLIST_PREPROCESS: YES
         INFOPLIST_PREPROCESSOR_DEFINITIONS: APP_BUNDLE_ID=$(APP_BUNDLE_ID)
+        # us | cn — `make <target> STORE=cn`
+        APP_STORE_REGION: us
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1"

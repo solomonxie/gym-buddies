@@ -82,9 +82,15 @@ make device                    # build + install on the paired iPhone
 make release                   # archive + upload — docs/release/
 ```
 
-Debug builds take `-demo` (a phone full of history, in memory — the real
-database is never opened) and `-screen <name>` to open straight onto one
-screen; `make capture` uses both for store screenshots.
+Settings → **Demo mode** switches to a separate database
+(`GymBuddy-demo.sqlite`) seeded from [`demo/seed.json`](demo/seed.json) —
+gyms, workouts, ten weeks of history, a session in progress. The real database
+is never touched; **Reset demo data** reseeds. Debug builds also take `-demo`
+(Demo mode, freshly seeded, for that launch only) and `-screen <name>` to open
+one screen; `make capture` uses both.
+
+Installs upgrade in place and keep data. `STORE=us|cn` (default `us`) on any
+install target sets Info.plist `AppStoreRegion`; `cn` seeds the demo in kg.
 
 Signing is not committed. Set your team at build time:
 
@@ -105,39 +111,37 @@ training programme.
 
 ## Screenshots
 
-Captured from an iPhone 14 with the `-demo` data (`make capture`).
+Demo mode, iPhone simulator (`docs/release/screenshots/`).
 
 <table>
 <tr>
-<th>Session</th><th>Resting</th><th>Set running</th>
+<th>Session</th><th>Resting</th><th>Train</th>
 </tr>
 <tr>
-<td><img src="docs/screenshots/01-session.png" width="240"></td>
-<td><img src="docs/screenshots/02-resting.png" width="240"></td>
-<td><img src="docs/screenshots/09-set-running.png" width="240"></td>
+<td><img src="docs/release/screenshots/01-session.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/02-resting.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/03-train.jpg" width="250"></td>
 </tr>
 <tr>
-<th>Treadmill countdown</th><th>Train</th><th>Kept in background</th>
+<th>Progress</th><th>Trend</th><th>Summary</th>
 </tr>
 <tr>
-<td><img src="docs/screenshots/10-treadmill.png" width="240"></td>
-<td><img src="docs/screenshots/03-train.png" width="240"></td>
-<td><img src="docs/screenshots/11-background.png" width="240"></td>
+<td><img src="docs/release/screenshots/04-progress.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/05-trend.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/06-summary.jpg" width="250"></td>
 </tr>
 <tr>
-<th>Progress</th><th>Trend</th><th>Exercise</th>
+<th>Exercise</th><th>Gyms</th><th>Treadmill</th>
 </tr>
 <tr>
-<td><img src="docs/screenshots/04-progress.png" width="240"></td>
-<td><img src="docs/screenshots/05-trend.png" width="240"></td>
-<td><img src="docs/screenshots/06-exercise.png" width="240"></td>
+<td><img src="docs/release/screenshots/07-exercise.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/08-gyms.jpg" width="250"></td>
+<td><img src="docs/release/screenshots/09-treadmill.jpg" width="250"></td>
 </tr>
 <tr>
-<th>Summary</th><th>Exercise library</th><th></th>
+<th>Exercise library</th>
 </tr>
 <tr>
-<td><img src="docs/screenshots/07-summary.png" width="240"></td>
-<td><img src="docs/screenshots/08-library.png" width="240"></td>
-<td></td>
+<td><img src="docs/release/screenshots/10-library.jpg" width="250"></td>
 </tr>
 </table>

@@ -33,7 +33,7 @@ is no account, no sync, and no ad preferences to bury anything under.
   (     Export…     )  (     Import…     )
  ──────────────────────────────────────────
   About                                   ›
-  Gym Buddy 1.0 (1) · no ads, no account,
+  Gym Buddies 1.0 (1) · no ads, no account,
   nothing leaves this phone unless you
   send it
 ```
@@ -165,7 +165,7 @@ import, would replace
 import, wrong file
  ┌──────────────────────────────────────┐
  │ Couldn't do that                     │
- │ That file isn't a Gym Buddy backup.  │
+ │ That file isn't a Gym Buddies backup.  │
  │                             ( OK )   │
  └──────────────────────────────────────┘
 
@@ -209,7 +209,7 @@ mid-session
 | `settings.auto.icloudOff` | iCloud isn't available. Sign in to iCloud with iCloud Drive on, in iOS Settings. |
 | `backups.restore` | From {date}: {n} sessions and {m} workouts. What's here now is saved as a backup first. |
 | `settings.import.replace` | This backup has {n} sessions and {m} workouts. Your current {a} and {b} are overwritten. |
-| `settings.import.bad` | That file isn't a Gym Buddy backup. |
+| `settings.import.bad` | That file isn't a Gym Buddies backup. |
 | `settings.notifDenied` | Alerts are off in iOS Settings, so rest will only show on screen. |
 | `settings.unitsLocked` | Finish the workout first. |
 | `settings.about.tagline` | no ads, no account, nothing leaves this phone unless you send it |

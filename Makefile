@@ -2,10 +2,14 @@
 
 .DEFAULT_GOAL := help
 
+# App Store region baked into Info.plist AppStoreRegion: make device STORE=cn
+STORE ?= us
+export STORE
+
 help:
 	@echo "make test         Core tests (~1 s, no simulator)"
 	@echo "make check        tests + a device build"
-	@echo "make device       Debug build onto the paired iPhone"
+	@echo "make device       Debug build onto the paired iPhone (upgrades in place; STORE=us|cn)"
 	@echo "make release      check, then archive + upload to App Store Connect"
 	@echo "make release BUILD=202609261830   same, with the build number pinned"
 	@echo "make capture      store screenshots from the paired iPhone (demo data)"
@@ -17,7 +21,7 @@ test:
 build:
 	xcodegen generate
 	xcodebuild -project GymBuddy.xcodeproj -scheme GymBuddy -destination 'generic/platform=iOS' \
-	  -derivedDataPath build -allowProvisioningUpdates -quiet build
+	  -derivedDataPath build -allowProvisioningUpdates -quiet APP_STORE_REGION=$(STORE) build
 
 check: test build
 

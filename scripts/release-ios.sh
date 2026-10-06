@@ -21,7 +21,7 @@ xcodegen generate
 xcodebuild -project "$SCHEME.xcodeproj" -scheme "$SCHEME" \
   -configuration Release -destination 'generic/platform=iOS' \
   -archivePath "$ARCHIVE" -allowProvisioningUpdates \
-  CURRENT_PROJECT_VERSION="$BUILD" archive
+  CURRENT_PROJECT_VERSION="$BUILD" APP_STORE_REGION="${STORE:-us}" archive
 
 xcodebuild -exportArchive -archivePath "$ARCHIVE" \
   -exportOptionsPlist ExportOptions.plist \

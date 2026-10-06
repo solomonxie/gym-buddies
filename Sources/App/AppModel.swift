@@ -8,10 +8,12 @@ import UIKit
 @MainActor
 @Observable
 final class AppModel {
-    let store: Store
+    private(set) var store: Store = MemoryStore()
     /// Set when the database couldn't be opened — the app shows one screen
     /// offering a restore, never a silent empty list.
-    let loadError: String?
+    private(set) var loadError: String?
+    /// Demo mode: a separate, seeded database. The real one is left alone.
+    private(set) var isDemo = false
 
     private(set) var exercises: [Exercise] = []
     private(set) var workouts: [Workout] = []
@@ -28,7 +30,7 @@ final class AppModel {
         }
     }
 
-    /// Nil for the in-memory demo store — there's no file to copy.
+    /// Nil in demo mode — demo data is never backed up over the real backups.
     private var autoBackup: AutoBackup?
     private(set) var iCloudUnavailable = false
 
@@ -49,32 +51,77 @@ final class AppModel {
 
     var unit: WeightUnit { settings.unit }
 
-    init(store: Store? = nil) {
+    static let demoKey = "demoMode"
+    /// Off for DEBUG screenshot launches, so no permission alert covers the screen.
+    var asksForNotifications = true
+
+    /// A given `store` (tests, `-empty`) counts as demo: no backups, no export.
+    init(store: Store? = nil, demo: Bool? = nil, resetDemo: Bool = false) {
         if let store {
-            self.store = store
-            loadError = nil
+            asksForNotifications = false
+            use(store, demo: true)
         } else {
-            do {
-                self.store = try SQLiteStore(url: Self.databaseURL)
-                loadError = nil
-            } catch {
-                self.store = MemoryStore(exercises: SeedLibrary.exercises)
-                loadError = String(describing: error)
-            }
+            open(demo: demo ?? UserDefaults.standard.bool(forKey: Self.demoKey), reset: resetDemo)
         }
-        if let saved = try? self.store.settings() {
-            settings = saved
-        } else {
-            settings.unit = Locale.current.measurementSystem == .us ? .pounds : .kilograms
-        }
-        session = try? self.store.activeSession()
-        if let sqlite = self.store as? SQLiteStore { autoBackup = AutoBackup(store: sqlite) }
-        refresh()
     }
 
     static var databaseURL: URL {
         try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
         return URL.applicationSupportDirectory.appending(path: "GymBuddy.sqlite")
+    }
+
+    /// `make <target> STORE=cn` → Info.plist `AppStoreRegion`.
+    static var storeRegion: String {
+        Bundle.main.object(forInfoDictionaryKey: "AppStoreRegion") as? String ?? "us"
+    }
+
+    func setDemoMode(_ on: Bool) {
+        guard on != isDemo else { return }
+        UserDefaults.standard.set(on, forKey: Self.demoKey)
+        open(demo: on, reset: false)
+    }
+
+    func resetDemoData() {
+        guard isDemo else { return }
+        open(demo: true, reset: true)
+    }
+
+    private func open(demo: Bool, reset: Bool) {
+        dismissRest()
+        store = MemoryStore()
+        do {
+            use(try demo ? Self.openDemoStore(reset: reset) : SQLiteStore(url: Self.databaseURL), demo: demo)
+            loadError = nil
+        } catch {
+            use(MemoryStore(exercises: SeedLibrary.exercises), demo: demo)
+            loadError = String(describing: error)
+        }
+    }
+
+    private static func openDemoStore(reset: Bool) throws -> Store {
+        guard let url = Bundle.main.url(forResource: "seed", withExtension: "json", subdirectory: "demo") else {
+            throw StoreError(description: "Demo data is missing from the app.")
+        }
+        var seed = try DemoSeed.load(url)
+        if storeRegion == "cn" { seed.unit = .kilograms }
+        try FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
+        return try DemoStore.open(in: .applicationSupportDirectory, seed: seed, reset: reset)
+    }
+
+    private func use(_ newStore: Store, demo: Bool) {
+        store = newStore
+        isDemo = demo
+        autoBackup = demo ? nil : (newStore as? SQLiteStore).map { AutoBackup(store: $0) }
+        pendingSummary = nil
+        isSessionPresented = false
+        if let saved = try? newStore.settings() {
+            settings = saved
+        } else {
+            settings = Settings()
+            settings.unit = Locale.current.measurementSystem == .us ? .pounds : .kilograms
+        }
+        session = try? newStore.activeSession()
+        refresh()
     }
 
     /// Re-reads the store after a change, then schedules a backup of it.
@@ -258,7 +305,7 @@ final class AppModel {
         )
         restTimer.dismiss()
         isSessionPresented = true
-        if settings.alertWhenRestOver && store is SQLiteStore { RestAlerts.requestAuthorization() }
+        if settings.alertWhenRestOver && asksForNotifications { RestAlerts.requestAuthorization() }
     }
 
     func resume() {
@@ -404,7 +451,7 @@ final class AppModel {
 
     // MARK: - Backup
 
-    var sqliteStore: SQLiteStore? { store as? SQLiteStore }
+    var sqliteStore: SQLiteStore? { isDemo ? nil : store as? SQLiteStore }
 
     func exportBackup() throws -> URL {
         guard let sqlite = sqliteStore else { throw StoreError(description: "Demo data has no file to export.") }
