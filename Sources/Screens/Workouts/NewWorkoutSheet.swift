@@ -76,6 +76,7 @@ private struct TemplatePreview: View {
     @State private var pool = PoolLength.default
 
     private var workout: Workout { template.workout(pool: pool, catalogue: model.exercisesByID) }
+    private var isSafetyCritical: Bool { template.category == .pregnancy }
 
     var body: some View {
         List {
@@ -85,7 +86,12 @@ private struct TemplatePreview: View {
                     Label(note, systemImage: "circle.fill")
                         .labelStyle(BulletLabelStyle())
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(isSafetyCritical ? .primary : .secondary)
+                }
+            } header: {
+                if isSafetyCritical {
+                    Label("Before you start", systemImage: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
                 }
             }
             Section {

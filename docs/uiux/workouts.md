@@ -5,11 +5,11 @@ The app's only root — no tab bar. Progress, Exercises, Gyms and Settings
 are pushed from it instead of taking a tab each.
 
 ```
-          Gym Buddy                      ← title is the app name
+          Gym Buddies                      ← title is the app name
  ╭────────────────────────────────────────╮
- │ UP NEXT                Last 6 days ago │  ← least recently done: a
- │ Fraiser Heights                        │     rotation without asking
- │ 6 exercises · ~45 min                  │     for one; no line wraps
+ │ LAST WORKOUT           Last 6 days ago │  ← most recently done; no
+ │ Fraiser Heights                        │     planning of what's next
+ │ 6 exercises · ~45 min                  │     no line wraps
  │                                        │
  │ Walking                   1 × 5 · 3 lb │
  │ Seated Machine Rows     3 × 10 · 50 lb │
@@ -61,7 +61,7 @@ row under it.
 ## Workout detail
 
 ```
- ‹ Gym Buddy  Fraiser Heights       ⋯   +
+ ‹ Gym Buddies  Fraiser Heights       ⋯   +
  ╭────────────────────────────────────────╮
  │           ▶  Start workout             │  ← the reason you're here,
  ╰────────────────────────────────────────╯     not a small icon in a bar
@@ -210,7 +210,7 @@ empty workout
  │           ▶  Start workout·            │  ← disabled
   Add an exercise to start.
 
-session running — Train swaps UP NEXT for this
+session running — Train swaps LAST WORKOUT for this
  ╭────────────────────────────────────────╮
  │ IN PROGRESS                            │
  │ Fraiser Heights                        │
@@ -264,7 +264,7 @@ long name
 
 | Key | String |
 |---|---|
-| `train.upNext` | UP NEXT |
+| `train.lastWorkout` | LAST WORKOUT |
 | `train.inProgress` | IN PROGRESS |
 | `train.heroSummary` | {n} exercises · ~{minutes} min · last {n} days ago |
 | `train.more` | + {n} more |
@@ -293,8 +293,8 @@ long name
 
 ## Notes
 
-The hero card answers "what am I doing today?" before it's asked. It picks the
-least recently done workout, so a three-way split rotates on its own.
+The hero card is the workout done most recently (first in the list if none
+has been done) — repeat it in one tap. The app doesn't plan what's next.
 
 `▶` on every card, not just inside the detail screen: the common case is "do
 the thing I did last Tuesday", and that shouldn't cost a screen transition.

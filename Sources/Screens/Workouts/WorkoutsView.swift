@@ -7,11 +7,11 @@ struct WorkoutsView: View {
     @Environment(AppModel.self) private var model
     @State private var creating = false
 
-    /// Least recently done goes next — a rotation without asking for one.
-    private var upNext: Workout? {
-        model.workouts
-            .filter { !$0.exercises.isEmpty }
-            .min { ($0.lastPerformed ?? .distantPast) < ($1.lastPerformed ?? .distantPast) }
+    /// The workout done most recently; falls back to the first one if none has been done.
+    private var lastUsed: Workout? {
+        let usable = model.workouts.filter { !$0.exercises.isEmpty }
+        return usable.filter { $0.lastPerformed != nil }
+            .max { $0.lastPerformed! < $1.lastPerformed! } ?? usable.first
     }
 
     var body: some View {
@@ -36,7 +36,7 @@ struct WorkoutsView: View {
             }
         }
         .background(Theme.surface)
-        .navigationTitle("Gym Buddy")
+        .navigationTitle("Gym Buddies")
         .sheet(isPresented: $creating) {
             NewWorkoutSheet()
         }
@@ -47,8 +47,8 @@ struct WorkoutsView: View {
             VStack(alignment: .leading, spacing: 12) {
                 if let session = model.session {
                     ResumeCard(session: session)
-                } else if let next = upNext {
-                    HeroCard(workout: next)
+                } else if let last = lastUsed {
+                    HeroCard(workout: last)
                 }
                 PlacesRow()
                 if !model.logs.isEmpty {
@@ -197,7 +197,7 @@ private struct HeroCard: View {
             NavigationLink(value: Route.workout(workout.id)) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text("Up next").eyebrow()
+                        Text("Last workout").eyebrow()
                         Spacer()
                         Text(workout.lastPerformed.map { "Last \(Dates.ago($0))" } ?? "Never done")
                             .font(.footnote)

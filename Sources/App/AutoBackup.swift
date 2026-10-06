@@ -66,7 +66,7 @@ final class AutoBackup {
         return outcomes
     }
 
-    /// `iCloud Drive → Gym Buddy` in Files. Nil when the user isn't signed
+    /// `iCloud Drive → Gym Buddies` in Files. Nil when the user isn't signed
     /// in to iCloud or has turned iCloud Drive off for the app. Blocks, so
     /// never call it on the main thread.
     nonisolated static func cloudDirectory() -> URL? {

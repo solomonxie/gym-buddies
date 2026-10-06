@@ -121,13 +121,13 @@ SetLog            exercise, set number, reps, weight, completed at, pool length
 WorkoutLog        one finished session: started, finished, [SetLog]
 ```
 
-- **Storage**: one SQLite file on device. No cloud, no account.
+- **Storage**: one SQLite file on device. No cloud, no account. Demo mode (Settings) uses a second file, `GymBuddy-demo.sqlite`, seeded from `demo/seed.json`; never backed up or exported.
 - **Backup, automatic**: after every change (debounced 3 s) a snapshot goes to
   the app container — never overwritten, newest 20 from today,
   then the newest one from each of the 6 days before.
   Restoring one snapshots the current data first, so a restore is undoable.
 - **Backup, iCloud** (off by default): the same snapshot to the user's own
-  iCloud Drive → Gym Buddy, one file per day replaced by each change, 30 days
+  iCloud Drive → Gym Buddies, one file per day replaced by each change, 30 days
   kept. The one network egress, chosen because a phone-only backup dies with
   the phone. It's the user's account and quota; we run nothing and see nothing,
   so App Privacy stays "Data Not Collected".

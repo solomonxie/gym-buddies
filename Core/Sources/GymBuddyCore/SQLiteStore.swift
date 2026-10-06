@@ -384,7 +384,7 @@ public final class SQLiteStore: Store, @unchecked Sendable {
         var handle: OpaquePointer?
         guard sqlite3_open_v2(file.path, &handle, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else {
             sqlite3_close(handle)
-            throw StoreError(description: "That file isn't a Gym Buddy backup.")
+            throw StoreError(description: "That file isn't a Gym Buddies backup.")
         }
         defer { sqlite3_close(handle) }
         func count(_ table: String) throws -> Int {
@@ -392,7 +392,7 @@ public final class SQLiteStore: Store, @unchecked Sendable {
             defer { sqlite3_finalize(statement) }
             guard sqlite3_prepare_v2(handle, "SELECT COUNT(*) FROM \(table)", -1, &statement, nil) == SQLITE_OK,
                   sqlite3_step(statement) == SQLITE_ROW
-            else { throw StoreError(description: "That file isn't a Gym Buddy backup.") }
+            else { throw StoreError(description: "That file isn't a Gym Buddies backup.") }
             return Int(sqlite3_column_int(statement, 0))
         }
         _ = try count("migrations")

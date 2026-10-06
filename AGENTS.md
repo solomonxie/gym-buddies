@@ -72,3 +72,10 @@ network call is a design decision, not an implementation detail — it goes in
 Exercise illustrations are a licensing question, not a drawing one. The
 reference app's artwork is commercially licensed and cannot be copied — see
 `docs/IMPLEMENT_PLAN.md` T2.5.
+
+# Demo mode is a second database, never the real one
+
+Settings → Demo mode opens `GymBuddy-demo.sqlite`, seeded by Core's
+`DemoSeed`/`DemoStore` from `demo/seed.json` (bundled). Auto-backup, export
+and import are off there. Change demo content in the JSON, not in code.
+Installs upgrade in place — never uninstall to "reset"; use Reset demo data.

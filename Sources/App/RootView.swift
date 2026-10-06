@@ -55,7 +55,7 @@ struct DatabaseErrorView: View {
                 let target = AppModel.databaseURL
                 try? FileManager.default.removeItem(at: target)
                 try FileManager.default.copyItem(at: url, to: target)
-                failure = "Restored. Close and reopen Gym Buddy."
+                failure = "Restored. Close and reopen Gym Buddies."
             } catch {
                 failure = String(describing: error)
             }

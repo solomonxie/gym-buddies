@@ -26,12 +26,13 @@ struct SettingsView: View {
                 Toggle("Count down the last 3 seconds", isOn: $model.settings.countdownLastSeconds)
                     .disabled(!model.settings.vibrate)
             }
-            backups
+            if !model.isDemo { backups }
             data
+            demo
             Section {
                 NavigationLink("About") { AboutView() }
             } footer: {
-                Text("Gym Buddy \(Bundle.main.version) · no ads, no account, nothing leaves this phone unless you send it")
+                Text("Gym Buddies \(Bundle.main.version) · no ads, no account, nothing leaves this phone unless you send it")
             }
         }
         .navigationTitle("Settings")
@@ -175,7 +176,7 @@ struct SettingsView: View {
         } header: {
             HStack(spacing: 2) {
                 Text("Automatic backups")
-                InfoButton(text: "After every change, a copy of your data is saved on this phone — the newest 20 from today and the last one from each of the 6 days before. With iCloud on, one file a day also goes to iCloud Drive → Gym Buddy, replaced by each change that day and kept for 30 days. It's your own iCloud; nothing passes through us.")
+                InfoButton(text: "After every change, a copy of your data is saved on this phone — the newest 20 from today and the last one from each of the 6 days before. With iCloud on, one file a day also goes to iCloud Drive → Gym Buddies, replaced by each change that day and kept for 30 days. It's your own iCloud; nothing passes through us.")
             }
         } footer: {
             if model.settings.iCloudBackup {
@@ -216,6 +217,7 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity)
                     .disabled(model.session != nil)
             }
+            .disabled(model.isDemo)
             .buttonStyle(.bordered)
             .controlSize(.large)
         } header: {
@@ -223,6 +225,19 @@ struct SettingsView: View {
                 Text("Your data")
                 InfoButton(text: "Everything is one SQLite file on this phone. There is no account and no server, so an iCloud backup or an exported file is the only copy that survives losing the device.")
             }
+        }
+    }
+
+    private var demo: some View {
+        Section {
+            Toggle("Demo mode", isOn: Binding(get: { model.isDemo }, set: { model.setDemoMode($0) }))
+            if model.isDemo {
+                Button("Reset demo data", role: .destructive) { model.resetDemoData() }
+            }
+        } footer: {
+            Text(model.isDemo
+                 ? "Showing sample workouts, gyms and ten weeks of history. Your own data is kept apart, untouched, and back when this is off."
+                 : "Try the app with sample workouts and history. Your own data is kept apart and never touched.")
         }
     }
 
@@ -242,7 +257,7 @@ struct SettingsView: View {
             try FileManager.default.copyItem(at: picked, to: local)
             incoming = (local, try SQLiteStore.inspect(local))
         } catch {
-            failure = "That file isn't a Gym Buddy backup."
+            failure = "That file isn't a Gym Buddies backup."
         }
     }
 

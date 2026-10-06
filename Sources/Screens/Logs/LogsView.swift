@@ -27,7 +27,7 @@ struct LogsView: View {
         .toolbar {
             if !model.logs.isEmpty {
                 ToolbarItem(placement: .primaryAction) {
-                    ShareLink(item: csvFile(), preview: SharePreview("Gym Buddy sessions.csv")) {
+                    ShareLink(item: csvFile(), preview: SharePreview("Gym Buddies sessions.csv")) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .accessibilityLabel("Export sessions as CSV")
@@ -104,7 +104,7 @@ struct LogsView: View {
     }
 
     private func csvFile() -> URL {
-        let url = FileManager.default.temporaryDirectory.appending(path: "Gym Buddy sessions.csv")
+        let url = FileManager.default.temporaryDirectory.appending(path: "Gym Buddies sessions.csv")
         try? CSVExport.sessions(model.logs, exercises: model.exercisesByID, workouts: model.workouts, unit: model.unit)
             .write(to: url, atomically: true, encoding: .utf8)
         return url
