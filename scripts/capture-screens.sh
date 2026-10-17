@@ -14,8 +14,8 @@ APP_ID=$(sed -n 's/^APP_BUNDLE_ID *= *//p' Local.xcconfig)
 [ -n "$APP_ID" ] || { echo "APP_BUNDLE_ID missing in Local.xcconfig"; exit 1; }
 
 xcodebuild -project GymBuddy.xcodeproj -scheme GymBuddy -configuration Debug \
-  -destination 'generic/platform=iOS' -derivedDataPath build -allowProvisioningUpdates -quiet APP_STORE_REGION="${STORE:-us}" build
-xcrun devicectl device install app --device "$DEVICE" build/Build/Products/Debug-iphoneos/GymBuddy.app >/dev/null
+  -destination 'generic/platform=iOS' -derivedDataPath /tmp/gymbuddy-build -allowProvisioningUpdates -quiet APP_STORE_REGION="${STORE:-us}" build
+xcrun devicectl device install app --device "$DEVICE" /tmp/gymbuddy-build/Build/Products/Debug-iphoneos/GymBuddy.app >/dev/null
 
 shot() {
   xcrun devicectl device process launch --device "$DEVICE" --terminate-existing \

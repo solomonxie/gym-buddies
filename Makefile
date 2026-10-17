@@ -21,13 +21,13 @@ test:
 build:
 	xcodegen generate
 	xcodebuild -project GymBuddy.xcodeproj -scheme GymBuddy -destination 'generic/platform=iOS' \
-	  -derivedDataPath build -allowProvisioningUpdates -quiet APP_STORE_REGION=$(STORE) build
+	  -derivedDataPath /tmp/gymbuddy-build -allowProvisioningUpdates -quiet APP_STORE_REGION=$(STORE) build
 
 check: test build
 
 device: build
 	xcrun devicectl device install app --device "$$(xcrun devicectl list devices | grep physical | grep -oE '[0-9A-F]{8}-[0-9A-F]{16}' | head -1)" \
-	  build/Build/Products/Debug-iphoneos/GymBuddy.app
+	  /tmp/gymbuddy-build/Build/Products/Debug-iphoneos/GymBuddy.app
 
 # Archive, sign for the App Store and upload — no Xcode Organizer.
 # Needs Local.xcconfig (Team ID) and the app record in App Store Connect.
