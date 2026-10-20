@@ -50,6 +50,9 @@ public struct WorkoutSession: Codable, Sendable {
     /// Exercises left behind, most recent last, for Back. Optional so
     /// sessions saved before it existed still decode.
     private var cameFrom: [Int]?
+    /// `logs.count` when each `cameFrom` exercise was left, so Back knows
+    /// whether a set or a move came last. Nil in older saved sessions.
+    private var leftAfter: [Int]?
     /// When Start was tapped for the set about to be logged.
     public private(set) var setStartedAt: Date?
     /// Plan lines whose progression offer has been shown — once per session.
@@ -305,25 +308,76 @@ public struct WorkoutSession: Codable, Sendable {
     /// Where Back goes: the latest exercise left behind that still has
     /// sets to do. A finished one is history, not somewhere to return to.
     public var backEntry: Entry? {
-        backIndex.map { entries[$0] }
+        backPosition.map { entries[cameFrom![$0]] }
     }
 
-    private var backIndex: Int? {
-        (cameFrom ?? []).last { entries.indices.contains($0) && $0 != exerciseIndex && !isComplete(entries[$0]) }
+    private var backPosition: Int? {
+        (cameFrom ?? []).lastIndex { entries.indices.contains($0) && $0 != exerciseIndex && !isComplete(entries[$0]) }
+    }
+
+    private var leftAfterCounts: [Int] {
+        let moves = cameFrom ?? [], counts = (leftAfter ?? []).suffix(moves.count)
+        return Array(repeating: 0, count: moves.count - counts.count) + counts
     }
 
     /// Undo a skip, or return to where the list jump came from.
     public mutating func goBack() {
-        guard let target = backIndex else { return }
-        let position = cameFrom?.lastIndex(of: target) ?? 0
-        cameFrom = Array((cameFrom ?? []).prefix(position))
+        guard let position = backPosition else { return }
+        let target = cameFrom![position]
+        truncateMoves(to: position)
         entries[target].isSkipped = false
         exerciseIndex = target
         loadWorkingValues()
     }
 
+    /// What ◀| undoes: whichever came last, a logged set or leaving an exercise.
+    public enum Rewind: Equatable, Sendable {
+        case set(SetLog)
+        case exercise(Entry)
+
+        public var isSet: Bool { if case .set = self { true } else { false } }
+    }
+
+    public var rewind: Rewind? {
+        if let set = logs.last, backPosition.map({ leftAfterCounts[$0] < logs.count }) ?? true {
+            return .set(set)
+        }
+        return backEntry.map(Rewind.exercise)
+    }
+
+    public mutating func rewindOne() {
+        switch rewind {
+        case .set: undoLastSet()
+        case .exercise: goBack()
+        case nil: break
+        }
+    }
+
+    /// A mistaken Done: the set is unlogged and comes back with its values,
+    /// on its own exercise, even if Done had already moved on.
+    public mutating func undoLastSet() {
+        guard let set = logs.last,
+              let index = entries.firstIndex(where: { $0.id == set.planLineID }) else { return }
+        logs.removeLast()
+        completedByPlan[entries[index].id] = max(0, completedSets(for: entries[index].id) - 1)
+        truncateMoves(to: leftAfterCounts.firstIndex { $0 > logs.count } ?? leftAfterCounts.count)
+        entries[index].isSkipped = false
+        exerciseIndex = index
+        setStartedAt = nil
+        workingReps = set.reps
+        workingWeight = entries[index].exercise.equipment.isLoadable ? set.weight : entries[index].plan.targetWeight
+        workingIncline = set.incline ?? Self.startingIncline(entries[index])
+    }
+
+    private mutating func truncateMoves(to count: Int) {
+        let counts = leftAfterCounts
+        cameFrom = Array((cameFrom ?? []).prefix(count))
+        leftAfter = Array(counts.prefix(count))
+    }
+
     private mutating func leave() {
         guard entries.indices.contains(exerciseIndex) else { return }
+        leftAfter = leftAfterCounts + [logs.count]
         cameFrom = (cameFrom ?? []) + [exerciseIndex]
     }
 

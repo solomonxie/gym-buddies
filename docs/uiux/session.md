@@ -14,9 +14,11 @@ each tile's edges.
                   00:14:22
  ━━━━━━ ▓▓▓▓▓▓ ░░░░░░ ░░░░░░ ░░░░░░ ░░░░░░    ← one segment per exercise:
                                                  done · current (accent) · to go
-  Seated Machine        (◀|) ( ▶| Skip )    ← (◀|) Back, icon only, when
-  Rows                                          there's an unfinished one
-  Back · Machine                                behind you
+  Seated Machine        (◀|) ( ▶| Skip )    ← (◀|) icon only: undoes the
+  Rows                                          last set (its values come
+  Back · Machine                                back, rest stops) or the
+                                                last skip/jump, whichever
+                                                came last
 
   ● ○ ○  Set 2 of 3 ⌄             LAST TIME
                                  10 × 50 lb
@@ -178,6 +180,7 @@ every exercise done or skipped
 
  Summary, after the last set
  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+  (Undo last set)                            ← a mistaken Finish workout
   WORKOUT COMPLETE                           ← "FINISHING EARLY" +
   Fraiser Heights                               ( Keep going ) otherwise
   ╭──────────╮ ╭──────────╮ ╭────────────╮

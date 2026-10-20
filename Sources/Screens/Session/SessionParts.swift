@@ -228,9 +228,11 @@ struct SummarySheet: View {
             .background(Theme.surface)
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
-                if !session.isFinished {
-                    ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .cancellationAction) {
+                    if !session.isFinished {
                         Button("Keep going") { model.pendingSummary = nil }
+                    } else if let rewind = session.rewind {
+                        Button(rewind.isSet ? "Undo last set" : "Back") { model.rewind() }
                     }
                 }
             }

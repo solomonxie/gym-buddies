@@ -158,8 +158,8 @@ struct SessionView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            if let back = model.session?.backEntry {
-                Button { model.goBack() } label: {
+            if let rewind = model.session?.rewind {
+                Button { model.rewind() } label: {
                     Image(systemName: "backward.end.fill")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
@@ -169,7 +169,7 @@ struct SessionView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Back to \(back.exercise.name)")
+                .accessibilityLabel(rewindLabel(rewind))
             }
             Button { model.skipExercise() } label: {
                 Label("Skip", systemImage: "forward.end.fill")
@@ -181,6 +181,13 @@ struct SessionView: View {
             .accessibilityLabel("Skip \(entry.exercise.name)")
         }
         .padding(.top, 4)
+    }
+
+    private func rewindLabel(_ rewind: WorkoutSession.Rewind) -> String {
+        switch rewind {
+        case .set(let set): "Undo set \(set.setNumber) of \(model.exercisesByID[set.exerciseID]?.name ?? "")"
+        case .exercise(let entry): "Back to \(entry.exercise.name)"
+        }
     }
 
     private func setRow(_ session: WorkoutSession, _ entry: WorkoutSession.Entry) -> some View {

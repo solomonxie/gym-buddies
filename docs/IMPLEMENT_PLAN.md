@@ -85,6 +85,7 @@ drawing and wiring, not logic.
 - [x] T4.10 Keep in background — the exit dialog can hide the session instead of ending it; a mini bar at the bottom shows its live clock and opens it again (drawing: `uiux/session.md`) — see `Sources/Screens/Session/MiniSessionBar.swift` — depends: T4.6, T4.9
 - [x] T4.11 Counted in, per workout line — reps, seconds or minutes, overriding the exercise; the set log keeps what it counted and `LAST TIME` only compares like with like (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/WorkoutDetailView.swift` — depends: T4.9
 - [x] T4.12 Values above the button — tiles in one row with 60pt ± right above the set button, muscle map above them; tapping a number opens a keypad sheet. Back beside Skip returns to the last unfinished exercise left behind (drawing: `uiux/session.md`) — see `Sources/Screens/Session/ValuePanel.swift` — depends: T4.2, T4.5
+- [ ] T4.13 Undo a set — ◀| undoes the last logged set (values restored, rest stopped, back on its exercise) or the last skip/jump, whichever came last; `Undo last set` on the summary after Finish workout (drawing: `uiux/session.md`) — see `Core/Tests/GymBuddyCoreTests/UndoSetTests.swift` — depends: T4.12
 
 ## Phase 5: Logs and graphs
 

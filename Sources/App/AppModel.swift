@@ -395,9 +395,11 @@ final class AppModel {
         if session?.isFinished == true { pendingSummary = session }
     }
 
-    func goBack() {
-        updateSession { $0.goBack() }
+    /// ◀|: undoes the last set or the last move, whichever came last.
+    func rewind() {
+        updateSession { $0.rewindOne() }
         dismissRest()
+        pendingSummary = nil
     }
 
     func changeTargetSets(to count: Int) {
