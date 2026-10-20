@@ -4,7 +4,8 @@ import GymBuddyCore
 // MARK: - Progression offer
 
 /// Once per exercise per session, and always a question — an app that moves
-/// the pin for you is one you stop trusting the first time it's wrong.
+/// the pin for you is one you stop trusting the first time it's wrong. A chip
+/// under LAST TIME; ignoring it is "not today", it's gone after set 1.
 struct ProgressionOffer: View {
     let session: WorkoutSession
     let entry: WorkoutSession.Entry
@@ -12,17 +13,19 @@ struct ProgressionOffer: View {
 
     var body: some View {
         if let offer {
-            VStack(alignment: .leading, spacing: 12) {
-                Label(offer.text, systemImage: "arrow.up.right")
-                    .font(.subheadline.weight(.medium))
-                HStack(spacing: 8) {
-                    Button("Not today") { decline() }
-                        .buttonStyle(SoftButtonStyle(tint: .secondary))
-                    Button("Use \(LoadFormat.weight(offer.weight, model.unit))") { accept(offer.weight) }
-                        .buttonStyle(SoftButtonStyle())
-                }
+            Button { accept(offer.weight) } label: {
+                Label("Try \(LoadFormat.weight(offer.weight, model.unit))",
+                      systemImage: offer.weight > session.workingWeight ? "arrow.up.right" : "arrow.down.right")
+                    .font(.tabular(14, weight: .semibold))
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 30)
+                    .background(Capsule().fill(Theme.accent.opacity(0.18)))
+                    .foregroundStyle(Theme.accent)
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
             }
-            .card(padding: 14)
+            .buttonStyle(.plain)
+            .accessibilityHint(offer.text)
             .transition(.opacity)
         }
     }
@@ -53,10 +56,6 @@ struct ProgressionOffer: View {
             $0.markProgressionOffered(for: entry.id)
         }
     }
-
-    private func decline() {
-        model.updateSession { $0.markProgressionOffered(for: entry.id) }
-    }
 }
 
 // MARK: - Jump sheet
@@ -83,6 +82,15 @@ struct JumpSheet: View {
             .navigationTitle("Jump to")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    if let workoutID = model.session?.workoutID {
+                        NavigationLink {
+                            AddExercisesView(workoutID: workoutID, intoSession: true)
+                        } label: {
+                            Label("Add", systemImage: "plus")
+                        }
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
         }
@@ -260,12 +268,3 @@ struct SummarySheet: View {
         }
     }
 }
-                ToolbarItem(placement: .topBarLeading) {
-                    if let workoutID = model.session?.workoutID {
-                        NavigationLink {
-                            AddExercisesView(workoutID: workoutID, intoSession: true)
-                        } label: {
-                            Label("Add", systemImage: "plus")
-                        }
-                    }
-                }

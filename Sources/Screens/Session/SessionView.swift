@@ -119,7 +119,6 @@ struct SessionView: View {
                     exerciseTitle(entry)
                     setRow(session, entry)
                     if showingSets { changeSets(session, entry) }
-                    ProgressionOffer(session: session, entry: entry)
                     if !entry.exercise.muscles.isEmpty {
                         MuscleMap(highlighted: entry.exercise.muscles)
                             .frame(maxWidth: .infinity, maxHeight: 220)
@@ -210,12 +209,15 @@ struct SessionView: View {
             .accessibilityHint("Change the number of sets")
             Spacer()
             VStack(alignment: .trailing, spacing: 1) {
-                Text("Last time").eyebrow()
-                Text(lastTimeText(session, entry))
-                    .font(.tabular(15, weight: .medium))
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("Last time").eyebrow()
+                    Text(lastTimeText(session, entry))
+                        .font(.tabular(15, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                ProgressionOffer(session: session, entry: entry)
             }
-            .accessibilityElement(children: .combine)
         }
     }
 

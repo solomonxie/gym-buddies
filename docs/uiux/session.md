@@ -108,10 +108,10 @@ treadmill — minutes, and incline instead of weight
  LAST TIME  20 min · 8% incline
 
 progression offer, set 1 only, once per exercise per session
- ╭────────────────────────────────────────╮
- │ ↗ Hit all 3 × 10 last time. Try 60 lb? │
- │ ( Not today )  ( Use 60 lb )           │
- ╰────────────────────────────────────────╯
+  ● ○ ○  Set 1 of 3 ⌄             LAST TIME
+                                 10 × 50 lb
+                            ( ↗ Try 60 lb )  ← chip, tap to use; ignored =
+                                                not today, gone after set 1
 
 change sets — tap "Set 3 of 4 ⌄", unfolds in place
   ● ● ○ ○  Set 3 of 4 ⌃
