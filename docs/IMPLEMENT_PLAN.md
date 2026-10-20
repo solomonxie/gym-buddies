@@ -86,6 +86,7 @@ drawing and wiring, not logic.
 - [x] T4.11 Counted in, per workout line — reps, seconds or minutes, overriding the exercise; the set log keeps what it counted and `LAST TIME` only compares like with like (drawing: `uiux/workouts.md`) — see `Sources/Screens/Workouts/WorkoutDetailView.swift` — depends: T4.9
 - [x] T4.12 Values above the button — tiles in one row with 60pt ± right above the set button, muscle map above them; tapping a number opens a keypad sheet. Back beside Skip returns to the last unfinished exercise left behind (drawing: `uiux/session.md`) — see `Sources/Screens/Session/ValuePanel.swift` — depends: T4.2, T4.5
 - [ ] T4.13 Undo a set — ◀| undoes the last logged set (values restored, rest stopped, back on its exercise) or the last skip/jump, whichever came last; `Undo last set` on the summary after Finish workout (drawing: `uiux/session.md`) — see `Core/Tests/GymBuddyCoreTests/UndoSetTests.swift` — depends: T4.12
+- [ ] T4.14 Add an exercise mid-session — `+ Add` on the jump sheet opens the picker; lines go to the end of today's list, never into the saved workout or its plan drift (drawing: `uiux/session.md`) — see `Core/Tests/GymBuddyCoreTests/AddMidSessionTests.swift` — depends: T4.12
 
 ## Phase 5: Logs and graphs
 

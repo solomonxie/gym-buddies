@@ -4,6 +4,8 @@ import GymBuddyCore
 /// Multi-select, because nobody adds exactly one exercise.
 struct AddExercisesView: View {
     let workoutID: String
+    /// Into the running session instead of the saved workout.
+    var intoSession = false
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
@@ -63,14 +65,14 @@ struct AddExercisesView: View {
             }
         }
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
-        .navigationTitle("Add to \(model.workout(id: workoutID)?.name ?? "workout")")
+        .navigationTitle(intoSession ? "Add for today" : "Add to \(model.workout(id: workoutID)?.name ?? "workout")")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             if !selected.isEmpty {
                 HStack {
                     Text("\(selected.count) selected").foregroundStyle(.secondary)
                     Button("Add \(selected.count)") {
-                        model.add(selected, to: workoutID)
+                        if intoSession { model.addToSession(selected) } else { model.add(selected, to: workoutID) }
                         dismiss()
                     }
                     .buttonStyle(PrimaryButtonStyle())

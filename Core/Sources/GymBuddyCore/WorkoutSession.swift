@@ -11,14 +11,18 @@ public struct WorkoutSession: Codable, Sendable {
         public var exercise: Exercise
         public var plan: WorkoutExercise
         public var isSkipped: Bool = false
+        /// Added mid-session; never written back to the workout.
+        private var added: Bool?
 
         public var id: String { plan.id }
+        public var isAdded: Bool { added ?? false }
         public var measure: Measure { plan.measure(for: exercise) }
 
-        public init(exercise: Exercise, plan: WorkoutExercise, isSkipped: Bool = false) {
+        public init(exercise: Exercise, plan: WorkoutExercise, isSkipped: Bool = false, isAdded: Bool = false) {
             self.exercise = exercise
             self.plan = plan
             self.isSkipped = isSkipped
+            self.added = isAdded ? true : nil
         }
     }
 
@@ -305,6 +309,17 @@ public struct WorkoutSession: Codable, Sendable {
         loadWorkingValues()
     }
 
+    /// For today only: appended to the end, the saved workout untouched.
+    /// Ends a session that had run out of exercises on the first one added.
+    public mutating func add(_ exercise: Exercise, plan: WorkoutExercise) {
+        let wasFinished = isFinished
+        entries.append(Entry(exercise: exercise, plan: plan, isAdded: true))
+        if wasFinished {
+            exerciseIndex = entries.count - 1
+            loadWorkingValues()
+        }
+    }
+
     /// Where Back goes: the latest exercise left behind that still has
     /// sets to do. A finished one is history, not somewhere to return to.
     public var backEntry: Entry? {
@@ -429,7 +444,7 @@ public struct WorkoutSession: Codable, Sendable {
     /// weight: a short set is a bad day, a different load is a new plan.
     public var weightDrift: [String: Weight] {
         var drift: [String: Weight] = [:]
-        for entry in entries where entry.exercise.equipment.isLoadable {
+        for entry in entries where entry.exercise.equipment.isLoadable && !entry.isAdded {
             guard let last = logs.last(where: { $0.planLineID == entry.id }) else { continue }
             if last.weight != entry.plan.targetWeight { drift[entry.id] = last.weight }
         }
@@ -440,7 +455,7 @@ public struct WorkoutSession: Codable, Sendable {
     /// isn't the plan's.
     public var inclineDrift: [String: Double] {
         var drift: [String: Double] = [:]
-        for entry in entries where entry.exercise.equipment.inclineStep != nil {
+        for entry in entries where entry.exercise.equipment.inclineStep != nil && !entry.isAdded {
             guard let last = logs.last(where: { $0.planLineID == entry.id }), let incline = last.incline else { continue }
             if abs(incline - (entry.plan.targetIncline ?? 0)) > 0.001 { drift[entry.id] = incline }
         }

@@ -260,3 +260,12 @@ struct SummarySheet: View {
         }
     }
 }
+                ToolbarItem(placement: .topBarLeading) {
+                    if let workoutID = model.session?.workoutID {
+                        NavigationLink {
+                            AddExercisesView(workoutID: workoutID, intoSession: true)
+                        } label: {
+                            Label("Add", systemImage: "plus")
+                        }
+                    }
+                }

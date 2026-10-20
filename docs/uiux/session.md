@@ -132,7 +132,9 @@ every exercise done or skipped
 ```
  ≡ jump sheet — the rack you wanted is busy
  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-                 Jump to              Done
+  (+ Add)        Jump to              Done    ← + Add: the picker, for today
+                                                only; the saved workout and
+                                                its plan stay as they were
   ✓ Walking                  1 × 5 · 3 lb    ← done rows are disabled
   ● Seated Machine Rows      1 of 3 done     ← ● = where you are
     Lat Pull Downs          3 × 10 · 60 lb

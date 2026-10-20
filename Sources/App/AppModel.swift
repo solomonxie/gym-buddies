@@ -225,21 +225,33 @@ final class AppModel {
     /// New lines take the default sets/reps and the weight you last lifted.
     func add(_ exerciseIDs: [String], to workoutID: String) {
         guard var workout = workout(id: workoutID) else { return }
-        for id in exerciseIDs {
-            let last = Stats.lastSession(exerciseID: id, in: logs)?.sets.last { $0.exerciseID == id }
-            let exercise = exercisesByID[id]
-            let measure = exercise?.measure ?? .reps
-            workout.exercises.append(WorkoutExercise(
-                id: UUID().uuidString,
-                exerciseID: id,
-                // One long bout for cardio; the usual sets for everything else.
-                targetSets: measure == .minutes ? 1 : settings.defaultSets,
-                targetReps: last?.reps ?? (measure == .reps ? settings.defaultReps : measure.defaultTarget),
-                targetWeight: last?.weight ?? .zero,
-                targetIncline: exercise?.equipment.inclineStep == nil ? nil : (last?.incline ?? 0)
-            ))
-        }
+        workout.exercises += exerciseIDs.map(newLine)
         saveWorkout(workout)
+    }
+
+    /// Today only — the saved workout is untouched.
+    func addToSession(_ exerciseIDs: [String]) {
+        updateSession { session in
+            for id in exerciseIDs {
+                if let exercise = exercisesByID[id] { session.add(exercise, plan: newLine(for: id)) }
+            }
+        }
+        if pendingSummary?.isFinished == true, session?.isFinished == false { pendingSummary = nil }
+    }
+
+    private func newLine(for id: String) -> WorkoutExercise {
+        let last = Stats.lastSession(exerciseID: id, in: logs)?.sets.last { $0.exerciseID == id }
+        let exercise = exercisesByID[id]
+        let measure = exercise?.measure ?? .reps
+        return WorkoutExercise(
+            id: UUID().uuidString,
+            exerciseID: id,
+            // One long bout for cardio; the usual sets for everything else.
+            targetSets: measure == .minutes ? 1 : settings.defaultSets,
+            targetReps: last?.reps ?? (measure == .reps ? settings.defaultReps : measure.defaultTarget),
+            targetWeight: last?.weight ?? .zero,
+            targetIncline: exercise?.equipment.inclineStep == nil ? nil : (last?.incline ?? 0)
+        )
     }
 
     // MARK: - Gyms
