@@ -94,6 +94,17 @@ public enum Stats {
         }
         return count
     }
+
+    /// Calendar days from the most recent logged session to `now`; nil if none.
+    public static func daysSinceLast(
+        _ logs: [WorkoutLog],
+        asOf now: Date,
+        calendar: Calendar = .current
+    ) -> Int? {
+        guard let last = logs.map(\.startedAt).max() else { return nil }
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: last), to: calendar.startOfDay(for: now)).day ?? 0
+        return max(0, days)
+    }
 }
 
 extension Stats {

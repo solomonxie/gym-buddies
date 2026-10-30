@@ -101,6 +101,9 @@ private struct ProgressSummary: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.tertiary)
                 }
+                if let days = Stats.daysSinceLast(model.logs, asOf: .now) {
+                    SinceLast(days: days)
+                }
                 WeekDots(days: Stats.weekDots(model.logs, asOf: .now))
                 HStack(alignment: .firstTextBaseline) {
                     figure("\(recent.count)", "sessions")
@@ -121,6 +124,24 @@ private struct ProgressSummary: View {
             Text(label).font(.footnote).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// `6  days since last workout` — a fact, not a nag.
+private struct SinceLast: View {
+    let days: Int
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(days == 0 ? "Today" : "\(days)")
+                .font(.system(size: 40, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(.primary)
+            Text(days == 0 ? "last workout" : days == 1 ? "day since last workout" : "days since last workout")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

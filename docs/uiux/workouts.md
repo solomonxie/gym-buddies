@@ -27,8 +27,9 @@ are pushed from it instead of taking a tab each.
  ╰───────────────────╯ ╰──────────────────╯
  ╭────────────────────────────────────────╮
  │ PROGRESS · LAST 30 DAYS              › │  ← hidden until a session is
- │  (✓)  ( )  (✓)  (✓)  ( )  (✓)  ( )     │     logged; tap → Progress
- │   M    T    W    T    F    S    S      │
+ │ 6  days since last workout             │     logged; tap → Progress
+ │  (✓)  ( )  (✓)  (✓)  ( )  (✓)  ( )     │  ← days since last workout:
+ │   M    T    W    T    F    S    S      │     any workout, big number
  │ 12          38k          8h 40m        │
  │ sessions    lb moved     time          │
  ╰────────────────────────────────────────╯
@@ -272,6 +273,9 @@ long name
 | `train.heroSummary` | {n} exercises · ~{minutes} min · last {n} days ago |
 | `train.more` | + {n} more |
 | `train.progress` | {n} sets logged · {elapsed} |
+| `train.sinceLast` | {n} days since last workout |
+| `train.sinceLastOne` | 1 day since last workout |
+| `train.sinceLastToday` | Today  last workout |
 | `workouts.header` | WORKOUTS |
 | `workouts.summary` | {n} exercises · ~{minutes} min |
 | `workouts.lastDone` | Last done {n} days ago |

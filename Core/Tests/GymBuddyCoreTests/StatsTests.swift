@@ -97,6 +97,17 @@ final class StatsTests: XCTestCase {
         XCTAssertEqual(Stats.streak([log("a", day: 0, sets: [])], asOf: today), 0)
     }
 
+    func testDaysSinceLastCountsFromTheMostRecentSession() {
+        let now = Fixtures.t0 + 9 * 86_400
+        let logs = [log("a", day: 6, sets: []), log("b", day: 2, sets: [])]
+        XCTAssertEqual(Stats.daysSinceLast(logs, asOf: now), 3)
+    }
+
+    func testDaysSinceLastIsZeroOnTheDayAndNilWithNoHistory() {
+        XCTAssertEqual(Stats.daysSinceLast([log("a", day: 4, sets: [])], asOf: Fixtures.t0 + 4 * 86_400), 0)
+        XCTAssertNil(Stats.daysSinceLast([], asOf: Fixtures.t0))
+    }
+
     func testHistoryFollowsARenameButKeepsTheNameOfADeletedWorkout() {
         let log = WorkoutLog(id: "l", workoutID: Fixtures.workout.id, workoutName: "Old name",
                              startedAt: Fixtures.t0, finishedAt: Fixtures.t0,
