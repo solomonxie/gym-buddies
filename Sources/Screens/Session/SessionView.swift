@@ -7,6 +7,7 @@ struct SessionView: View {
     @Environment(AppModel.self) private var model
     @State private var showingJump = false
     @State private var showingExit = false
+    @State private var exitChoice: ExitChoice?
     @State private var showingSets = false
     @State private var editing: SessionField?
     @State private var logged = 0
@@ -48,28 +49,20 @@ struct SessionView: View {
             AdjustSheet(field: field)
                 .presentationDetents([.height(260)])
         }
-        .confirmationDialog(
-            session.hasLoggedAnything ? "Finish this workout?" : "Leave?",
-            isPresented: $showingExit, titleVisibility: .visible
-        ) {
-            Button("Keep in background") { model.isSessionPresented = false }
-            if session.hasLoggedAnything {
-                Button("Save & exit") {
-                    if session.driftedLineIDs.isEmpty { model.saveSession(updatingPlan: false) }
-                    else { model.pendingSummary = session }
-                }
-                Button("Discard", role: .destructive) { model.discardSession() }
-            } else {
-                Button("Leave", role: .destructive) { model.discardSession() }
-            }
-            Button("Keep going", role: .cancel) {}
-        } message: {
-            if session.hasLoggedAnything {
-                let minutes = Int(session.elapsed(at: .now) / 60)
-                Text("\(session.logs.count) set\(session.logs.count == 1 ? "" : "s") logged, \(minutes) minute\(minutes == 1 ? "" : "s").")
-            } else {
-                Text("Nothing was logged, so nothing will be saved.")
-            }
+        .sheet(isPresented: $showingExit, onDismiss: runExitChoice) {
+            ExitSheet(session: session) { exitChoice = $0 }
+        }
+    }
+
+    private func runExitChoice() {
+        guard let choice = exitChoice, let session = model.session else { return }
+        exitChoice = nil
+        switch choice {
+        case .background: model.isSessionPresented = false
+        case .save:
+            if session.driftedLineIDs.isEmpty { model.saveSession(updatingPlan: false) }
+            else { model.pendingSummary = session }
+        case .discard: model.discardSession()
         }
     }
 

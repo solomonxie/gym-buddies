@@ -154,15 +154,19 @@ every exercise done or skipped
  │ ( Cancel )                           │
  └──────────────────────────────────────┘
 
- × with sets logged
+ × with sets logged — bottom sheet
  ┌──────────────────────────────────────┐
- │ Finish this workout?                 │
- │ 7 sets logged, 14 minutes.           │
- │ ( Keep in background )               │  ← hides the screen, keeps
- │ ( Save & exit )                      │     the session and its clocks
- │ ( Discard )!                         │
- │ ( Keep going )                       │
+ │         Finish this workout?         │
+ │      7 sets logged, 14 minutes.      │
+ │ [[        Save & exit           ]]   │  ← green, filled, 64pt
+ │ (      Keep in background       )    │  ← hides the screen, keeps
+ │ (          Discard              )!   │     the session and its clocks
+ │              Keep going              │
  └──────────────────────────────────────┘
+   Discard asks once more:
+   "Discard this workout? 7 logged sets
+    will be lost. This can't be undone."
+   ( Cancel )  ( Discard )!
 
  × with nothing logged
  ┌──────────────────────────────────────┐
@@ -207,7 +211,7 @@ every exercise done or skipped
   │ NOTES                                │
   │ How it went, anything to remember    │
   ╰──────────────────────────────────────╯
-  ( Discard )!         [[ Save ]]           ← Discard asks once more
+  ( Discard )!         [[ Save ]]           ← Save green; Discard asks once more
 ```
 
 ## Interactions

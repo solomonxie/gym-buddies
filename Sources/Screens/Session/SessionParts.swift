@@ -252,7 +252,7 @@ struct SummarySheet: View {
                         model.updateSession { $0.notes = notes }
                         model.saveSession(updatingPlan: updatePlan)
                     }
-                    .buttonStyle(PrimaryButtonStyle())
+                    .buttonStyle(PrimaryButtonStyle(tint: Theme.done))
                 }
                 .padding(.horizontal, Theme.Metrics.gutter)
                 .padding(.vertical, 10)
@@ -262,9 +262,73 @@ struct SummarySheet: View {
                 Button("Cancel", role: .cancel) {}
                 Button("Discard", role: .destructive) { model.discardSession() }
             } message: {
-                Text("\(log.sets.count) logged set\(log.sets.count == 1 ? "" : "s") won't be saved.")
+                Text("\(log.sets.count) logged set\(log.sets.count == 1 ? "" : "s") will be lost. This can't be undone.")
             }
             .onAppear { notes = session.notes }
         }
+    }
+}
+
+// MARK: - Exit
+
+enum ExitChoice { case background, save, discard }
+
+/// Save is the loud, safe default; Discard is red and asks again.
+struct ExitSheet: View {
+    let session: WorkoutSession
+    let choose: (ExitChoice) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var confirmingDiscard = false
+
+    var body: some View {
+        let logged = session.hasLoggedAnything
+        VStack(spacing: 10) {
+            VStack(spacing: 4) {
+                Text(logged ? "Finish this workout?" : "Leave?").font(.headline)
+                Text(message(logged)).font(.subheadline).foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.center)
+            .padding(.bottom, 6)
+
+            if logged {
+                Button("Save & exit") { pick(.save) }
+                    .buttonStyle(PrimaryButtonStyle(tint: Theme.done))
+            }
+            wide("Keep in background", tint: Theme.accent) { pick(.background) }
+            if logged {
+                wide("Discard", tint: .red) { confirmingDiscard = true }
+            } else {
+                wide("Leave", tint: .red) { pick(.discard) }
+            }
+            Button("Keep going") { dismiss() }
+                .font(.body.weight(.medium))
+                .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .padding(Theme.Metrics.gutter)
+        .presentationDetents([.height(logged ? 380 : 300)])
+        .alert("Discard this workout?", isPresented: $confirmingDiscard) {
+            Button("Cancel", role: .cancel) {}
+            Button("Discard", role: .destructive) { pick(.discard) }
+        } message: {
+            Text("\(session.logs.count) logged set\(session.logs.count == 1 ? "" : "s") will be lost. This can't be undone.")
+        }
+    }
+
+    private func message(_ logged: Bool) -> String {
+        guard logged else { return "Nothing was logged, so nothing will be saved." }
+        let minutes = Int(session.elapsed(at: .now) / 60)
+        return "\(session.logs.count) set\(session.logs.count == 1 ? "" : "s") logged, \(minutes) minute\(minutes == 1 ? "" : "s")."
+    }
+
+    private func wide(_ title: String, tint: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title).frame(maxWidth: .infinity, minHeight: Theme.tapTarget)
+        }
+        .buttonStyle(SoftButtonStyle(tint: tint))
+    }
+
+    private func pick(_ choice: ExitChoice) {
+        choose(choice)
+        dismiss()
     }
 }
